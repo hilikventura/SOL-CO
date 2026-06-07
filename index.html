@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ונטורה סליים</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Heebo:wght@300;400;600;700;800&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green:   #4ade80;
+      --teal:    #2dd4bf;
+      --purple:  #8b5cf6;
+      --purple2: #a78bfa;
+      --pink:    #f472b6;
+      --amber:   #f59e0b;
+      --bg:      #f8fafc;
+      --surface: #ffffff;
+      --text:    #0f172a;
+      --muted:   #64748b;
+      --border:  #e2e8f0;
+      --radius:  16px;
+      --shadow:  0 4px 20px rgba(0,0,0,.08);
+      --shadow-lg: 0 12px 40px rgba(0,0,0,.14);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Heebo', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      direction: rtl;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── View switching ── */
+    .view          { display: none; }
+    #public-view   { display: block; }
+    #login-view    { display: flex; }
+    #admin-view    { display: block; }
+
+    body.show-login  #public-view,
+    body.show-login  #admin-view,
+    body.show-admin  #public-view,
+    body.show-admin  #login-view  { display: none; }
+
+    body.show-login  #login-view  { display: flex; }
+    body.show-admin  #admin-view  { display: block; }
+    body:not(.show-login):not(.show-admin) #login-view,
+    body:not(.show-login):not(.show-admin) #admin-view { display: none; }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      border: none; cursor: pointer;
+      border-radius: 12px;
+      font-family: 'Heebo', Arial, sans-serif;
+      font-weight: 700; font-size: .9rem;
+      padding: 10px 22px;
+      transition: transform .15s, box-shadow .15s, opacity .15s, background .15s;
+      white-space: nowrap; line-height: 1;
+    }
+    .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.16); }
+    .btn:active:not(:disabled) { transform: translateY(0); }
+    .btn:disabled { opacity: .38; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+
+    .btn-primary { background: linear-gradient(135deg, var(--purple), var(--pink)); color: #fff; }
+    .btn-ghost   { background: transparent; border: 2px solid var(--purple2); color: var(--purple); }
+    .btn-ghost:hover:not(:disabled) { background: var(--purple2); color: #fff; }
+    .btn-red     { background: #fef2f2; color: #dc2626; border: none; }
+    .btn-red:hover:not(:disabled) { background: #fee2e2; }
+
+    /* ══════════════════════════
+       PUBLIC PAGE
+    ══════════════════════════ */
+    #public-view { min-height: 100vh; display: flex; flex-direction: column; }
+
+    .hero {
+      background: linear-gradient(135deg, #34d399 0%, #2dd4bf 35%, #818cf8 70%, #c084fc 100%);
+      padding: 70px 24px 90px;
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse at 15% 60%, rgba(255,255,255,.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 85% 20%, rgba(255,255,255,.1) 0%, transparent 45%);
+    }
+    .hero-blob {
+      display: inline-block; font-size: 3.5rem; margin-bottom: 12px;
+      animation: heroFloat 3.5s ease-in-out infinite; position: relative;
+    }
+    @keyframes heroFloat {
+      0%,100% { transform: translateY(0) rotate(-3deg); }
+      50%      { transform: translateY(-16px) rotate(3deg); }
+    }
+    .hero h1 {
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(2rem, 7vw, 4rem); color: #fff;
+      text-shadow: 0 4px 18px rgba(0,0,0,.2); position: relative;
+    }
+    .hero-sub {
+      color: rgba(255,255,255,.92); margin-top: 12px;
+      font-size: clamp(.95rem, 2.5vw, 1.15rem); position: relative;
+    }
+
+    .gallery-wrap {
+      flex: 1; max-width: 1160px; margin: 0 auto;
+      padding: 40px 24px 100px; width: 100%;
+    }
+
+    /* Sticky action bar */
+    .action-bar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(248,250,252,.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 0; margin-bottom: 40px;
+      display: flex; align-items: center;
+      justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    }
+    .action-bar h2 { font-size: 1.25rem; font-weight: 800; }
+    .action-bar-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+    .sel-badge {
+      background: var(--purple); color: #fff;
+      border-radius: 999px; padding: 5px 16px;
+      font-size: .84rem; font-weight: 700;
+      opacity: 0; transform: scale(.85);
+      transition: opacity .2s, transform .2s; pointer-events: none;
+    }
+    .sel-badge.visible { opacity: 1; transform: scale(1); }
+
+    /* Category section — public */
+    .cat-section { margin-bottom: 56px; }
+    .cat-section:last-child { margin-bottom: 0; }
+
+    .cat-header {
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 24px; padding-bottom: 14px;
+      border-bottom: 2.5px solid var(--border);
+    }
+    .cat-header-icon { font-size: 2.2rem; line-height: 1; }
+    .cat-header-text h3 {
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.65rem; color: var(--text);
+    }
+    .cat-header-text p { font-size: .88rem; color: var(--muted); margin-top: 2px; }
+
+    .cat-count-badge {
+      margin-right: auto;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 4px 14px;
+      font-size: .8rem; font-weight: 700;
+    }
+
+    .img-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .img-card {
+      background: var(--surface); border-radius: var(--radius);
+      overflow: hidden; box-shadow: var(--shadow);
+      cursor: pointer; position: relative;
+      border: 3px solid transparent;
+      transition: transform .22s, box-shadow .22s, border-color .18s;
+      user-select: none; -webkit-tap-highlight-color: transparent;
+    }
+    .img-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+    .img-card.selected {
+      border-color: var(--purple);
+      box-shadow: 0 0 0 4px rgba(139,92,246,.2), var(--shadow-lg);
+    }
+    .img-card figure { position: relative; padding-bottom: 100%; overflow: hidden; }
+    .img-card figure img {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; display: block; transition: transform .3s;
+    }
+    .img-card:hover figure img { transform: scale(1.04); }
+
+    .sel-overlay {
+      position: absolute; inset: 0;
+      background: rgba(139,92,246,.08); opacity: 0;
+      transition: opacity .18s; pointer-events: none;
+    }
+    .img-card.selected .sel-overlay { opacity: 1; }
+
+    .check-bubble {
+      position: absolute; top: 10px; right: 10px;
+      width: 32px; height: 32px; border-radius: 50%;
+      background: #fff; border: 2.5px solid #ddd;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .18s, border-color .18s, transform .18s;
+      font-size: 15px; color: transparent;
+      box-shadow: 0 2px 8px rgba(0,0,0,.12);
+    }
+    .img-card.selected .check-bubble {
+      background: var(--purple); border-color: var(--purple);
+      color: #fff; transform: scale(1.1);
+    }
+
+    .img-card .card-info {
+      padding: 10px 13px 12px;
+      border-top: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .img-card .card-title {
+      font-size: .9rem; font-weight: 700; color: var(--text);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .img-card .card-title.no-title { font-size: .8rem; font-weight: 600; color: var(--muted); }
+    .img-card .card-price { font-size: .88rem; font-weight: 800; color: var(--purple); }
+    .img-card .card-price.no-price { display: none; }
+
+    .empty-state {
+      grid-column: 1/-1; text-align: center;
+      padding: 60px 20px; color: var(--muted);
+    }
+    .empty-state .empty-icon { font-size: 4rem; margin-bottom: 14px; display: block; }
+    .empty-state p { font-size: 1rem; line-height: 1.6; }
+
+    /* Send panel */
+    .send-panel {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+      background: var(--surface); border-top: 2px solid var(--border);
+      box-shadow: 0 -6px 30px rgba(0,0,0,.1);
+      padding: 16px 24px;
+      display: flex; align-items: center;
+      justify-content: space-between; gap: 16px; flex-wrap: wrap;
+      transform: translateY(100%);
+      transition: transform .3s cubic-bezier(.4,0,.2,1);
+    }
+    .send-panel.visible { transform: translateY(0); }
+    .send-panel-info { font-size: .92rem; font-weight: 600; color: var(--text); }
+    .send-panel-info span { color: var(--purple); font-size: 1.1rem; font-weight: 800; }
+    .send-panel-btns { display: flex; gap: 10px; align-items: center; }
+
+    .pub-footer {
+      text-align: center; padding: 24px 20px 32px;
+      border-top: 1px solid var(--border);
+    }
+    .pub-footer a {
+      font-size: .78rem; color: #cbd5e1; text-decoration: none; transition: color .2s;
+    }
+    .pub-footer a:hover { color: var(--purple); }
+
+    /* ══════════════════════════
+       LOGIN PAGE
+    ══════════════════════════ */
+    #login-view {
+      min-height: 100vh; align-items: center; justify-content: center;
+      padding: 24px;
+      background: linear-gradient(135deg, #34d399, #2dd4bf 40%, #818cf8 70%, #c084fc);
+    }
+    .login-card {
+      background: var(--surface); border-radius: 24px; padding: 52px 44px;
+      width: 100%; max-width: 420px; box-shadow: 0 28px 72px rgba(0,0,0,.22);
+      text-align: center;
+    }
+    .login-card .lock-icon { font-size: 3.2rem; margin-bottom: 12px; display: block; }
+    .login-card h2 {
+      font-family: 'Fredoka One', cursive; font-size: 2rem; margin-bottom: 6px;
+    }
+    .login-card .login-sub { color: var(--muted); font-size: .9rem; margin-bottom: 32px; }
+
+    .form-field { margin-bottom: 18px; text-align: right; }
+    .form-field label {
+      display: block; font-size: .83rem; font-weight: 700; color: #374151;
+      margin-bottom: 7px;
+    }
+    .form-field input {
+      width: 100%; padding: 13px 16px;
+      border: 2px solid var(--border); border-radius: 12px;
+      font-size: .98rem; font-family: 'Heebo', Arial, sans-serif;
+      outline: none; transition: border-color .2s, box-shadow .2s;
+      direction: ltr; text-align: left; color: var(--text);
+    }
+    .form-field input:focus {
+      border-color: var(--purple2);
+      box-shadow: 0 0 0 4px rgba(167,139,250,.18);
+    }
+    .form-field input::placeholder { color: #b0b8c8; }
+    .login-error {
+      background: #fef2f2; color: #dc2626;
+      border: 1.5px solid #fecaca; border-radius: 10px;
+      padding: 10px 14px; font-size: .86rem; font-weight: 600;
+      margin-bottom: 16px; display: none; text-align: center;
+    }
+    .login-error.show { display: block; }
+    .btn-login-submit {
+      width: 100%;
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      color: #fff; border: none; border-radius: 13px; padding: 15px;
+      font-size: 1.05rem; font-family: 'Heebo', Arial, sans-serif; font-weight: 700;
+      cursor: pointer; margin-top: 8px; transition: transform .15s, box-shadow .15s;
+    }
+    .btn-login-submit:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(139,92,246,.4); }
+    .login-back-link { margin-top: 22px; font-size: .86rem; color: var(--muted); }
+    .login-back-link a { color: var(--purple); font-weight: 700; text-decoration: none; }
+
+    /* ══════════════════════════
+       ADMIN PAGE
+    ══════════════════════════ */
+    #admin-view { min-height: 100vh; background: #f1f5f9; }
+
+    .admin-nav {
+      background: var(--surface); border-bottom: 2px solid var(--border);
+      padding: 0 32px; height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      box-shadow: 0 2px 12px rgba(0,0,0,.06); position: sticky; top: 0; z-index: 50;
+    }
+    .admin-nav .brand { font-family: 'Fredoka One', cursive; font-size: 1.45rem; }
+    .admin-nav .brand em { color: var(--purple); font-style: normal; }
+    .admin-nav-right { display: flex; gap: 10px; align-items: center; }
+
+    .admin-body { max-width: 1160px; margin: 0 auto; padding: 40px 24px 80px; }
+
+    /* Stats */
+    .stats-bar { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+    .stat-card {
+      background: var(--surface); border-radius: 14px;
+      padding: 18px 24px; box-shadow: var(--shadow);
+      flex: 1; min-width: 140px; border-right: 4px solid var(--purple2);
+    }
+    .stat-card.macrame { border-right-color: var(--amber); }
+    .stat-card .stat-num { font-size: 2rem; font-weight: 800; color: var(--purple); line-height: 1; }
+    .stat-card.macrame .stat-num { color: var(--amber); }
+    .stat-card .stat-lbl { font-size: .82rem; color: var(--muted); font-weight: 600; margin-top: 4px; }
+
+    /* Cloud chips */
+    .cloud-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+    .chip { font-size: .78rem; font-weight: 700; border-radius: 999px; padding: 5px 13px; }
+    .chip-ok  { background: #dcfce7; color: #16a34a; }
+    .chip-bad { background: #fef2f2; color: #dc2626; }
+
+    /* Settings card */
+    .settings-card {
+      background: var(--surface); border-radius: 18px;
+      box-shadow: var(--shadow); margin-bottom: 32px;
+      overflow: hidden; border: 1.5px solid var(--border);
+    }
+    .settings-toggle {
+      width: 100%; background: none; border: none; padding: 16px 20px;
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer; font-family: 'Heebo', Arial, sans-serif;
+      font-size: .95rem; font-weight: 700; color: var(--text); transition: background .15s;
+    }
+    .settings-toggle:hover { background: #f8fafc; }
+    .settings-toggle .s-left { display: flex; align-items: center; gap: 10px; }
+    .settings-toggle .s-status {
+      font-size: .78rem; font-weight: 700; padding: 3px 10px; border-radius: 999px;
+    }
+    .s-status.ok  { background: #dcfce7; color: #16a34a; }
+    .s-status.bad { background: #fef2f2; color: #dc2626; }
+    .settings-body { padding: 0 20px 20px; border-top: 1px solid var(--border); display: none; }
+    .settings-body.open { display: block; }
+
+    .service-section { margin-top: 20px; border: 1.5px solid var(--border); border-radius: 14px; overflow: hidden; }
+    .service-title {
+      background: #f8fafc; padding: 10px 16px;
+      font-size: .88rem; font-weight: 800; color: var(--text);
+      border-bottom: 1.5px solid var(--border);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .service-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
+
+    .setup-guide {
+      background: #f0fdf4; border: 1.5px solid #bbf7d0;
+      border-radius: 10px; padding: 12px 14px;
+      font-size: .82rem; line-height: 1.8; color: #166534;
+    }
+    .setup-guide ol { padding-right: 20px; }
+    .setup-guide a  { color: var(--purple); font-weight: 700; }
+
+    .sfield { display: flex; flex-direction: column; gap: 5px; }
+    .sfield label { font-size: .76rem; font-weight: 700; color: var(--muted); letter-spacing: .3px; }
+    .sfield input {
+      padding: 10px 13px; border: 1.5px solid var(--border); border-radius: 10px;
+      font-size: .88rem; font-family: 'Heebo', Arial, sans-serif;
+      direction: ltr; outline: none; transition: border-color .2s, box-shadow .2s; color: var(--text);
+    }
+    .sfield input:focus { border-color: var(--purple2); box-shadow: 0 0 0 3px rgba(167,139,250,.18); }
+    .btn-save-settings {
+      margin-top: 16px;
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      color: #fff; border: none; border-radius: 11px; padding: 12px 28px;
+      font-family: 'Heebo', Arial, sans-serif; font-weight: 700; font-size: .92rem;
+      cursor: pointer; transition: transform .15s, box-shadow .15s;
+    }
+    .btn-save-settings:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(139,92,246,.35); }
+
+    /* Upload grid — 2 zones side by side */
+    .upload-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 20px; margin-bottom: 40px;
+    }
+    .upload-cat-wrap { display: flex; flex-direction: column; gap: 10px; }
+    .upload-cat-label {
+      font-size: 1.05rem; font-weight: 800; color: var(--text);
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .upload-zone {
+      border: 2.5px dashed #c4b5fd; border-radius: 18px;
+      background: #faf5ff; padding: 36px 16px;
+      text-align: center; cursor: pointer; flex: 1;
+      transition: border-color .2s, background .2s, transform .15s;
+    }
+    .upload-zone.macrame-zone { border-color: #fcd34d; background: #fffbeb; }
+    .upload-zone:hover, .upload-zone.dragging {
+      border-color: var(--purple); background: #ede9fe; transform: scale(1.005);
+    }
+    .upload-zone.macrame-zone:hover, .upload-zone.macrame-zone.dragging {
+      border-color: var(--amber); background: #fef3c7;
+    }
+    .upload-zone .upload-icon { font-size: 2.5rem; margin-bottom: 8px; display: block; }
+    .upload-zone h3 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+    .upload-zone p { color: var(--muted); font-size: .8rem; }
+    .upload-zone .upload-hint {
+      display: inline-block; margin-top: 12px;
+      background: var(--purple); color: #fff;
+      border-radius: 999px; padding: 5px 16px; font-size: .78rem; font-weight: 700;
+    }
+    .upload-zone.macrame-zone .upload-hint { background: var(--amber); }
+
+    /* Upload progress */
+    .upload-progress {
+      background: var(--surface); border-radius: 14px;
+      padding: 16px 20px; margin-bottom: 24px;
+      box-shadow: var(--shadow); display: none;
+    }
+    .upload-progress.show { display: block; }
+    .progress-bar-track { background: #e2e8f0; border-radius: 999px; height: 8px; overflow: hidden; margin-top: 10px; }
+    .progress-bar-fill {
+      background: linear-gradient(90deg, var(--green), var(--purple));
+      height: 100%; border-radius: 999px; transition: width .2s; width: 0%;
+    }
+
+    /* Admin category sections */
+    .admin-cat-section { margin-bottom: 44px; }
+    .admin-cat-header {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 18px; padding-bottom: 12px;
+      border-bottom: 2.5px solid var(--border);
+    }
+    .admin-cat-header h3 {
+      font-family: 'Fredoka One', cursive; font-size: 1.35rem; color: var(--text);
+    }
+    .admin-cat-header .cat-n {
+      font-size: .8rem; font-weight: 700; color: var(--muted);
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: 999px; padding: 3px 12px;
+    }
+
+    .admin-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(195px, 1fr)); gap: 20px;
+    }
+
+    .admin-card {
+      background: var(--surface); border-radius: var(--radius);
+      overflow: hidden; box-shadow: var(--shadow); transition: transform .2s, box-shadow .2s;
+    }
+    .admin-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+    .admin-card figure { position: relative; padding-bottom: 100%; overflow: hidden; background: var(--bg); }
+    .admin-card figure img {
+      position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block;
+    }
+    .admin-card .card-footer {
+      padding: 12px; border-top: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .card-field { display: flex; flex-direction: column; gap: 3px; }
+    .card-field label { font-size: .72rem; font-weight: 700; color: var(--muted); text-transform: uppercase; }
+    .card-field input {
+      width: 100%; padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 9px;
+      font-size: .85rem; font-family: 'Heebo', Arial, sans-serif; color: var(--text);
+      background: var(--bg); outline: none; transition: border-color .2s; direction: rtl;
+    }
+    .card-field input:focus { border-color: var(--purple2); box-shadow: 0 0 0 3px rgba(167,139,250,.18); background: #fff; }
+    .card-field input.price-input { direction: ltr; text-align: right; }
+    .card-field input::placeholder { color: #b0b8c8; }
+
+    .card-del-row { display: flex; align-items: center; justify-content: space-between; margin-top: 2px; }
+    .card-del-row .fname {
+      flex: 1; font-size: .73rem; font-weight: 600; color: #b0b8c8;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-left: 8px;
+    }
+    .btn-del {
+      flex-shrink: 0; background: #fef2f2; color: #dc2626;
+      border: none; border-radius: 8px; padding: 5px 11px; font-size: .77rem;
+      font-family: 'Heebo', Arial, sans-serif; font-weight: 700; cursor: pointer;
+    }
+    .btn-del:hover { background: #fee2e2; }
+
+    /* Section divider */
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
+    }
+    .section-header h3 { font-size: 1.15rem; font-weight: 800; }
+
+    .admin-empty {
+      grid-column: 1/-1; text-align: center; padding: 40px 20px; color: #94a3b8;
+    }
+    .admin-empty .ico { font-size: 3rem; margin-bottom: 10px; display: block; }
+
+    /* Fallback modal */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.5);
+      backdrop-filter: blur(4px); z-index: 8000;
+      display: flex; align-items: center; justify-content: center; padding: 20px;
+      opacity: 0; pointer-events: none; transition: opacity .25s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal-box {
+      background: var(--surface); border-radius: 20px; padding: 32px 28px;
+      width: 100%; max-width: 480px; box-shadow: 0 24px 64px rgba(0,0,0,.25);
+      transform: translateY(20px); transition: transform .25s;
+    }
+    .modal-overlay.open .modal-box { transform: translateY(0); }
+    .modal-box h3 { font-size: 1.15rem; font-weight: 800; margin-bottom: 8px; }
+    .modal-box p  { font-size: .88rem; color: var(--muted); margin-bottom: 14px; line-height: 1.5; }
+    .modal-textarea {
+      width: 100%; border: 1.5px solid var(--border); border-radius: 12px;
+      padding: 12px 14px; font-size: .88rem; font-family: 'Heebo', Arial, sans-serif;
+      resize: none; outline: none; background: #f8fafc; color: var(--text);
+      direction: rtl; line-height: 1.6;
+    }
+    .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 14px; flex-wrap: wrap; }
+
+    /* ── Contact modal ── */
+    .contact-modal-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 6px;
+    }
+    .contact-modal-grid .cfield:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+    }
+    .cfield { display: flex; flex-direction: column; gap: 5px; }
+    .cfield label {
+      font-size: .8rem; font-weight: 700; color: #374151;
+    }
+    .cfield input {
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 11px;
+      font-size: .95rem;
+      font-family: 'Heebo', Arial, sans-serif;
+      direction: rtl;
+      outline: none;
+      color: var(--text);
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .cfield input:focus {
+      border-color: var(--purple2);
+      box-shadow: 0 0 0 3px rgba(167,139,250,.18);
+    }
+    .cfield input::placeholder { color: #b0b8c8; }
+    .cfield input.invalid { border-color: #dc2626; }
+    .contact-modal-title {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 6px;
+    }
+    .contact-modal-title h3 { font-size: 1.2rem; font-weight: 800; }
+    .contact-modal-sub { font-size: .86rem; color: var(--muted); margin-bottom: 18px; line-height: 1.5; }
+    .contact-err {
+      background: #fef2f2; color: #dc2626;
+      border: 1.5px solid #fecaca; border-radius: 9px;
+      padding: 9px 13px; font-size: .84rem; font-weight: 600;
+      margin-top: 10px; display: none;
+    }
+    .contact-err.show { display: block; }
+    @media (max-width: 500px) {
+      .contact-modal-grid { grid-template-columns: 1fr; }
+      .contact-modal-grid .cfield:last-child:nth-child(odd) { grid-column: auto; }
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 90px; left: 50%;
+      transform: translateX(-50%) translateY(30px);
+      background: #0f172a; color: #fff; border-radius: 14px;
+      padding: 12px 24px; font-weight: 700; font-size: .9rem;
+      z-index: 9999; opacity: 0; transition: opacity .25s, transform .25s;
+      pointer-events: none; white-space: nowrap; box-shadow: 0 8px 24px rgba(0,0,0,.25);
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .login-card { padding: 38px 24px; }
+      .img-grid, .admin-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .admin-nav { padding: 0 16px; }
+      .send-panel { flex-direction: column; align-items: stretch; }
+      .send-panel-btns { justify-content: flex-end; }
+      .upload-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     PUBLIC VIEW
+══════════════════════════════════════ -->
+<div id="public-view">
+
+  <header class="hero">
+    <span class="hero-blob">🫧</span>
+    <h1>הגעתם לונטורה סליים</h1>
+    <p class="hero-sub">בחרו מה שאהבתם ושלחו לנו — נחזור אליכם בהקדם! 💚</p>
+  </header>
+
+  <main class="gallery-wrap">
+    <div class="action-bar">
+      <h2>הגלריה שלנו</h2>
+      <div class="action-bar-right">
+        <span class="sel-badge" id="sel-badge">0 נבחרו</span>
+        <button class="btn btn-ghost" id="btn-clear-pub" onclick="clearSelection()" style="display:none">✕ נקה</button>
+      </div>
+    </div>
+
+    <!-- Slime section -->
+    <div class="cat-section" id="pub-slime-section">
+      <div class="cat-header">
+        <span class="cat-header-icon">🫧</span>
+        <div class="cat-header-text">
+          <h3>הסליימים שלנו</h3>
+          <p>לחצו על תמונה כדי לבחור</p>
+        </div>
+        <span class="cat-count-badge" id="pub-slime-count"></span>
+      </div>
+      <div class="img-grid" id="pub-grid-slime"></div>
+    </div>
+
+    <!-- Macrame section -->
+    <div class="cat-section" id="pub-macrame-section">
+      <div class="cat-header">
+        <span class="cat-header-icon">🪢</span>
+        <div class="cat-header-text">
+          <h3>המקרמה שלנו</h3>
+          <p>לחצו על תמונה כדי לבחור</p>
+        </div>
+        <span class="cat-count-badge" id="pub-macrame-count"></span>
+      </div>
+      <div class="img-grid" id="pub-grid-macrame"></div>
+    </div>
+
+  </main>
+
+  <footer class="pub-footer">
+    <a href="#" onclick="showLogin(); return false;">כניסת אדמין</a>
+  </footer>
+</div>
+
+<!-- Floating send panel -->
+<div class="send-panel" id="send-panel">
+  <div class="send-panel-info">
+    בחרת <span id="panel-count">0</span> פריטים
+  </div>
+  <div class="send-panel-btns">
+    <button class="btn btn-ghost" onclick="clearSelection()">נקה בחירה</button>
+    <button class="btn btn-primary" onclick="sendMail()">✉️&nbsp; שלח רשימה לסול</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     LOGIN VIEW
+══════════════════════════════════════ -->
+<div id="login-view">
+  <div class="login-card">
+    <span class="lock-icon">🔐</span>
+    <h2>כניסת אדמין</h2>
+    <p class="login-sub">ניהול גלריית ונטורה סליים</p>
+
+    <div class="login-error" id="login-error">שם משתמש או סיסמה שגויים ❌</div>
+
+    <div class="form-field">
+      <label for="inp-user">שם משתמש</label>
+      <input id="inp-user" type="text" placeholder="admin"
+             autocomplete="off" spellcheck="false"
+             onkeydown="if(event.key==='Enter') focusPass()" />
+    </div>
+    <div class="form-field">
+      <label for="inp-pass">סיסמה</label>
+      <input id="inp-pass" type="password" placeholder="••••••••"
+             autocomplete="off"
+             onkeydown="if(event.key==='Enter') doLogin()" />
+    </div>
+
+    <button class="btn-login-submit" onclick="doLogin()">כניסה →</button>
+
+    <p class="login-back-link">
+      <a href="#" onclick="showPublic(); return false;">← חזרה לדף הראשי</a>
+    </p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     ADMIN VIEW
+══════════════════════════════════════ -->
+<div id="admin-view">
+  <nav class="admin-nav">
+    <div class="brand">ונטורה סליים <em>| ניהול</em></div>
+    <div class="admin-nav-right">
+      <button class="btn btn-ghost" onclick="showPublic()" style="font-size:.85rem;padding:8px 16px">👁&nbsp; דף ראשי</button>
+      <button class="btn btn-red" onclick="doLogout()" style="font-size:.85rem;padding:8px 16px">התנתק</button>
+    </div>
+  </nav>
+
+  <div class="admin-body">
+
+    <!-- Stats -->
+    <div class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-num" id="stat-slime">0</div>
+        <div class="stat-lbl">🫧 סליימים</div>
+      </div>
+      <div class="stat-card macrame">
+        <div class="stat-num" id="stat-macrame">0</div>
+        <div class="stat-lbl">🪢 מקרמה</div>
+      </div>
+    </div>
+
+    <!-- Cloud status chips -->
+    <div class="cloud-chips">
+      <span class="chip chip-bad" id="chip-cloudinary">☁️ Cloudinary: לא מוגדר</span>
+      <span class="chip chip-bad" id="chip-firebase">🔥 Firebase: לא מוגדר</span>
+      <span class="chip chip-bad" id="chip-w3f">✉️ Web3Forms: לא מוגדר</span>
+    </div>
+
+    <!-- Settings -->
+    <div class="settings-card">
+      <button class="settings-toggle" onclick="toggleSettings()">
+        <span class="s-left">⚙️ הגדרות שירותי ענן</span>
+        <span class="s-status bad" id="settings-status">לא מוגדר</span>
+      </button>
+      <div class="settings-body" id="settings-body">
+
+        <div class="service-section">
+          <div class="service-title">☁️ Cloudinary — אחסון תמונות בענן</div>
+          <div class="service-body">
+            <div class="setup-guide">
+              <strong>הגדרה חד-פעמית:</strong>
+              <ol>
+                <li>היכנסו ל-<a href="https://cloudinary.com" target="_blank" rel="noopener">cloudinary.com</a> וצרו חשבון חינמי</li>
+                <li>העתיקו את <strong>Cloud Name</strong> מהדשבורד</li>
+                <li>Settings ← Upload ← הוסיפו <strong>Upload Preset</strong> (Unsigned)</li>
+              </ol>
+            </div>
+            <div class="sfield">
+              <label>CLOUD NAME</label>
+              <input id="s-cloud-name" type="text" placeholder="my-cloud-name" />
+            </div>
+            <div class="sfield">
+              <label>UPLOAD PRESET (Unsigned)</label>
+              <input id="s-upload-preset" type="text" placeholder="my_upload_preset" />
+            </div>
+          </div>
+        </div>
+
+        <div class="service-section">
+          <div class="service-title">🔥 Firebase — סנכרון קטלוג בין מכשירים</div>
+          <div class="service-body">
+            <div class="setup-guide">
+              <strong>הגדרה חד-פעמית:</strong>
+              <ol>
+                <li>היכנסו ל-<a href="https://console.firebase.google.com" target="_blank" rel="noopener">console.firebase.google.com</a></li>
+                <li>צרו Project ← Build ← Realtime Database ← Test mode</li>
+                <li>העתיקו את ה-URL: <code>https://XXX-default-rtdb.firebaseio.com</code></li>
+              </ol>
+            </div>
+            <div class="sfield">
+              <label>FIREBASE DATABASE URL</label>
+              <input id="s-firebase-url" type="text" placeholder="https://your-project-default-rtdb.firebaseio.com" />
+            </div>
+          </div>
+        </div>
+
+        <div class="service-section">
+          <div class="service-title">✉️ Web3Forms — שליחת מייל</div>
+          <div class="service-body">
+            <div class="setup-guide">
+              <strong>הגדרה חד-פעמית:</strong>
+              <ol>
+                <li>היכנסו ל-<a href="https://web3forms.com" target="_blank" rel="noopener">web3forms.com</a></li>
+                <li>הכניסו <strong>solventura1215@gmail.com</strong> ← אשרו במייל</li>
+                <li>העתיקו את <strong>Access Key</strong></li>
+              </ol>
+            </div>
+            <div class="sfield">
+              <label>WEB3FORMS ACCESS KEY</label>
+              <input id="s-w3f-key" type="text" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-save-settings" onclick="saveSettings()">💾 שמור הגדרות</button>
+      </div>
+    </div>
+
+    <!-- ══ Upload zones ══ -->
+    <div class="upload-grid">
+
+      <!-- Slime upload -->
+      <div class="upload-cat-wrap">
+        <div class="upload-cat-label">🫧 תמונות סליים</div>
+        <div class="upload-zone" id="upload-zone-slime"
+             onclick="document.getElementById('file-input-slime').click()"
+             ondragover="onDragOver(event,'slime')"
+             ondragleave="onDragLeave(event,'slime')"
+             ondrop="onDrop(event,'slime')">
+          <span class="upload-icon">📤</span>
+          <h3>גרור או לחץ לבחירה</h3>
+          <p>JPG · PNG · WEBP · GIF</p>
+          <span class="upload-hint">+ הוסף סליים</span>
+        </div>
+        <input type="file" id="file-input-slime" accept="image/*" multiple
+               onchange="handleUpload(this.files,'slime')" style="display:none"/>
+      </div>
+
+      <!-- Macrame upload -->
+      <div class="upload-cat-wrap">
+        <div class="upload-cat-label">🪢 תמונות מקרמה</div>
+        <div class="upload-zone macrame-zone" id="upload-zone-macrame"
+             onclick="document.getElementById('file-input-macrame').click()"
+             ondragover="onDragOver(event,'macrame')"
+             ondragleave="onDragLeave(event,'macrame')"
+             ondrop="onDrop(event,'macrame')">
+          <span class="upload-icon">📤</span>
+          <h3>גרור או לחץ לבחירה</h3>
+          <p>JPG · PNG · WEBP · GIF</p>
+          <span class="upload-hint">+ הוסף מקרמה</span>
+        </div>
+        <input type="file" id="file-input-macrame" accept="image/*" multiple
+               onchange="handleUpload(this.files,'macrame')" style="display:none"/>
+      </div>
+
+    </div>
+
+    <!-- Upload progress bar -->
+    <div class="upload-progress" id="upload-progress">
+      <div style="font-size:.88rem;font-weight:700;color:var(--purple)">
+        מעלה תמונות... <span id="prog-text"></span>
+      </div>
+      <div class="progress-bar-track"><div class="progress-bar-fill" id="prog-fill"></div></div>
+    </div>
+
+    <!-- Delete all + grids -->
+    <div class="section-header">
+      <h3>כל התמונות בגלריה</h3>
+      <button class="btn btn-red" style="font-size:.85rem;padding:8px 16px" onclick="deleteAll()">
+        🗑&nbsp; מחק הכל
+      </button>
+    </div>
+
+    <!-- Slime grid -->
+    <div class="admin-cat-section">
+      <div class="admin-cat-header">
+        <span style="font-size:1.5rem">🫧</span>
+        <h3>סליימים</h3>
+        <span class="cat-n" id="admin-slime-count">0</span>
+      </div>
+      <div class="admin-grid" id="admin-grid-slime"></div>
+    </div>
+
+    <!-- Macrame grid -->
+    <div class="admin-cat-section">
+      <div class="admin-cat-header">
+        <span style="font-size:1.5rem">🪢</span>
+        <h3>מקרמה</h3>
+        <span class="cat-n" id="admin-macrame-count">0</span>
+      </div>
+      <div class="admin-grid" id="admin-grid-macrame"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Contact details modal -->
+<div class="modal-overlay" id="contact-modal" onclick="closeContactModal(event)">
+  <div class="modal-box">
+    <div class="contact-modal-title">
+      <span style="font-size:1.6rem">📋</span>
+      <h3>פרטים לשליחה</h3>
+    </div>
+    <p class="contact-modal-sub">מלאו את הפרטים ונחזור אליכם בהקדם 💚</p>
+
+    <div class="contact-modal-grid">
+      <div class="cfield">
+        <label for="c-name">שם מלא *</label>
+        <input id="c-name" type="text" placeholder="ישראל ישראלי" />
+      </div>
+      <div class="cfield">
+        <label for="c-phone">טלפון *</label>
+        <input id="c-phone" type="tel" placeholder="050-0000000" />
+      </div>
+      <div class="cfield">
+        <label for="c-email">אימייל</label>
+        <input id="c-email" type="email" placeholder="israel@gmail.com" />
+      </div>
+      <div class="cfield">
+        <label for="c-address">כתובת מגורים</label>
+        <input id="c-address" type="text" placeholder="רחוב, עיר" />
+      </div>
+    </div>
+
+    <div class="contact-err" id="contact-err">נא למלא שם וטלפון ❌</div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeContactModal()">ביטול</button>
+      <button class="btn btn-primary" id="contact-submit-btn" onclick="submitWithContact()">✉️ שלח לסול</button>
+    </div>
+  </div>
+</div>
+
+<!-- Fallback modal -->
+<div class="modal-overlay" id="fallback-modal" onclick="closeFallbackModal(event)">
+  <div class="modal-box">
+    <h3>📋 הפריטים שנבחרו</h3>
+    <p>העתיקי את הטקסט מטה ושלחי ידנית לסול בוואטסאפ או מייל.</p>
+    <textarea class="modal-textarea" id="fallback-text" rows="9" readonly></textarea>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeFallbackModal()">סגור</button>
+      <button class="btn btn-primary" onclick="copyFallbackText()">📋 העתק טקסט</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+
+<script>
+/* ================================================================
+   CONFIG
+================================================================ */
+const CREDS  = { user: 'admin', pass: 'ventura1215' };
+const LS_KEY = 'ventura_slime_v3';
+const LS_CFG = 'ventura_slime_cfg';
+
+/* ================================================================
+   STATE
+================================================================ */
+let images   = [];          // { id, name, title, price, category, dataUrl }
+let selected = new Set();
+let contact  = { name: '', phone: '', email: '', address: '' };
+
+const LS_CONTACT = 'ventura_slime_contact';
+
+function loadContact() {
+  try { contact = Object.assign({}, contact, JSON.parse(localStorage.getItem(LS_CONTACT) || '{}')); }
+  catch {}
+}
+function saveContact() {
+  localStorage.setItem(LS_CONTACT, JSON.stringify(contact));
+}
+
+/* ================================================================
+   SETTINGS
+================================================================ */
+let cfg = { cloudName: '', uploadPreset: '', firebaseUrl: '', w3fKey: '' };
+
+function loadSettings() {
+  try { cfg = Object.assign({}, cfg, JSON.parse(localStorage.getItem(LS_CFG) || '{}')); }
+  catch {}
+  updateSettingsUI();
+}
+
+function saveSettings() {
+  cfg.cloudName    = (document.getElementById('s-cloud-name').value    || '').trim();
+  cfg.uploadPreset = (document.getElementById('s-upload-preset').value || '').trim();
+  cfg.firebaseUrl  = (document.getElementById('s-firebase-url').value  || '').trim().replace(/\/$/, '');
+  cfg.w3fKey       = (document.getElementById('s-w3f-key').value       || '').trim();
+  localStorage.setItem(LS_CFG, JSON.stringify(cfg));
+  updateSettingsUI();
+  showToast('✅ הגדרות נשמרו');
+}
+
+function updateSettingsUI() {
+  const cloudOk    = !!(cfg.cloudName && cfg.uploadPreset);
+  const firebaseOk = !!cfg.firebaseUrl;
+  const w3fOk      = !!cfg.w3fKey;
+  const allOk      = cloudOk && firebaseOk && w3fOk;
+
+  const statusEl = document.getElementById('settings-status');
+  if (statusEl) {
+    statusEl.textContent = allOk ? 'הכל מוגדר ✓' : (cloudOk || firebaseOk || w3fOk ? 'הגדרה חלקית' : 'לא מוגדר');
+    statusEl.className   = 's-status ' + (allOk ? 'ok' : 'bad');
+  }
+  setChip('chip-cloudinary', cloudOk,    '☁️ Cloudinary', cloudOk    ? 'פעיל' : 'לא מוגדר');
+  setChip('chip-firebase',   firebaseOk, '🔥 Firebase',   firebaseOk ? 'פעיל' : 'לא מוגדר');
+  setChip('chip-w3f',        w3fOk,      '✉️ Web3Forms',   w3fOk      ? 'פעיל' : 'לא מוגדר');
+
+  setVal('s-cloud-name',    cfg.cloudName);
+  setVal('s-upload-preset', cfg.uploadPreset);
+  setVal('s-firebase-url',  cfg.firebaseUrl);
+  setVal('s-w3f-key',       cfg.w3fKey);
+}
+
+function setChip(id, ok, label, status) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = label + ': ' + status;
+  el.className   = 'chip ' + (ok ? 'chip-ok' : 'chip-bad');
+}
+function setVal(id, v) {
+  const el = document.getElementById(id);
+  if (el) el.value = v || '';
+}
+function toggleSettings() {
+  document.getElementById('settings-body').classList.toggle('open');
+  updateSettingsUI();
+}
+
+/* ================================================================
+   CATALOG — Firebase + localStorage fallback
+================================================================ */
+async function loadCatalog() {
+  if (cfg.firebaseUrl) {
+    try {
+      const res  = await fetch(cfg.firebaseUrl + '/catalog.json');
+      const data = await res.json();
+      if (data && typeof data === 'object') {
+        images = Object.values(data).filter(Boolean);
+        localStorage.setItem(LS_KEY, JSON.stringify(images));
+        return;
+      }
+      images = [];
+      return;
+    } catch (err) { console.warn('Firebase load failed', err); }
+  }
+  try { images = JSON.parse(localStorage.getItem(LS_KEY) || '[]'); }
+  catch { images = []; }
+}
+
+async function saveCatalog() {
+  localStorage.setItem(LS_KEY, JSON.stringify(images));
+  if (!cfg.firebaseUrl) return;
+  try {
+    const obj = {};
+    images.forEach(img => { obj[img.id] = img; });
+    await fetch(cfg.firebaseUrl + '/catalog.json', {
+      method: 'PUT', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(obj)
+    });
+  } catch (err) {
+    console.warn('Firebase save failed', err);
+    showToast('⚠️ Firebase: שגיאה בשמירה (נשמר מקומית)');
+  }
+}
+
+/* ================================================================
+   CLOUDINARY UPLOAD
+================================================================ */
+async function uploadFile(file) {
+  if (cfg.cloudName && cfg.uploadPreset) {
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('upload_preset', cfg.uploadPreset);
+    const res  = await fetch(
+      'https://api.cloudinary.com/v1_1/' + cfg.cloudName + '/image/upload',
+      { method: 'POST', body: fd }
+    );
+    const data = await res.json();
+    if (!data.secure_url) throw new Error((data.error && data.error.message) || 'Cloudinary error');
+    return data.secure_url;
+  }
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload  = e => resolve(e.target.result);
+    r.onerror = reject;
+    r.readAsDataURL(file);
+  });
+}
+
+/* ================================================================
+   VIEW ROUTING
+================================================================ */
+function showPublic() {
+  document.body.className = '';
+  renderPublic();
+}
+
+function showLogin() {
+  document.body.className = 'show-login';
+  document.getElementById('inp-user').value = '';
+  document.getElementById('inp-pass').value = '';
+  document.getElementById('login-error').classList.remove('show');
+  setTimeout(() => document.getElementById('inp-user').focus(), 80);
+}
+
+async function showAdmin() {
+  document.body.className = 'show-admin';
+  await loadCatalog();
+  renderAdmin();
+}
+
+/* ================================================================
+   AUTH
+================================================================ */
+function focusPass() { document.getElementById('inp-pass').focus(); }
+
+function doLogin() {
+  const u = document.getElementById('inp-user').value.trim();
+  const p = document.getElementById('inp-pass').value;
+  const errEl = document.getElementById('login-error');
+  if (u === CREDS.user && p === CREDS.pass) {
+    errEl.classList.remove('show');
+    showAdmin();
+  } else {
+    errEl.classList.add('show');
+    document.getElementById('inp-pass').value = '';
+    document.getElementById('inp-pass').focus();
+  }
+}
+function doLogout() { showPublic(); }
+
+/* ================================================================
+   HELPERS — filter by category
+================================================================ */
+function byCategory(cat) {
+  return images.filter(img => (img.category || 'slime') === cat);
+}
+
+/* ================================================================
+   PUBLIC — RENDER
+================================================================ */
+function renderPublic() {
+  selected.clear();
+  updateSelUI();
+
+  const slimeImgs   = byCategory('slime');
+  const macrameImgs = byCategory('macrame');
+
+  renderPubSection('slime',   slimeImgs);
+  renderPubSection('macrame', macrameImgs);
+}
+
+function renderPubSection(cat, imgs) {
+  const sectionEl = document.getElementById('pub-' + cat + '-section');
+  const gridEl    = document.getElementById('pub-grid-' + cat);
+  const countEl   = document.getElementById('pub-' + cat + '-count');
+
+  if (!imgs.length) {
+    sectionEl.style.display = 'none';
+    return;
+  }
+  sectionEl.style.display = '';
+  countEl.textContent = imgs.length + ' פריטים';
+
+  gridEl.innerHTML = imgs.map(img => {
+    const title    = img.title  ? img.title  : img.name;
+    const hasTitle = !!img.title;
+    const price    = img.price  ? '₪' + img.price : '';
+    return `
+    <div class="img-card" id="card-${img.id}" onclick="toggleSelect('${img.id}')">
+      <div class="sel-overlay"></div>
+      <div class="check-bubble">✓</div>
+      <figure>
+        <img src="${img.dataUrl}" alt="${esc(title)}" loading="lazy" decoding="async" />
+      </figure>
+      <div class="card-info">
+        <div class="card-title ${hasTitle ? '' : 'no-title'}" title="${esc(title)}">${esc(title)}</div>
+        <div class="card-price ${price ? '' : 'no-price'}">${esc(price)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ================================================================
+   SELECTION
+================================================================ */
+function toggleSelect(id) {
+  const card = document.getElementById('card-' + id);
+  if (!card) return;
+  if (selected.has(id)) {
+    selected.delete(id);
+    card.classList.remove('selected');
+  } else {
+    selected.add(id);
+    card.classList.add('selected');
+  }
+  updateSelUI();
+}
+
+function clearSelection() {
+  selected.forEach(id => document.getElementById('card-' + id)?.classList.remove('selected'));
+  selected.clear();
+  updateSelUI();
+}
+
+function updateSelUI() {
+  const n = selected.size;
+  const badge = document.getElementById('sel-badge');
+  badge.textContent = n + (n === 1 ? ' נבחר' : ' נבחרו');
+  badge.classList.toggle('visible', n > 0);
+  document.getElementById('btn-clear-pub').style.display = n ? 'inline-flex' : 'none';
+  document.getElementById('send-panel').classList.toggle('visible', n > 0);
+  document.getElementById('panel-count').textContent = n;
+}
+
+/* ================================================================
+   BUILD MESSAGE — grouped by category + contact info
+================================================================ */
+function buildMessage(ct) {
+  const slimeSel   = images.filter(img => selected.has(img.id) && (img.category || 'slime') === 'slime');
+  const macrameSel = images.filter(img => selected.has(img.id) && (img.category || 'slime') === 'macrame');
+  const lines = [];
+
+  // Contact block
+  lines.push('👤 פרטי הלקוח:');
+  lines.push('שם: '     + ct.name);
+  lines.push('טלפון: '  + ct.phone);
+  if (ct.email)   lines.push('אימייל: '  + ct.email);
+  if (ct.address) lines.push('כתובת: '  + ct.address);
+
+  function addItems(arr, label) {
+    if (!arr.length) return;
+    lines.push('');
+    lines.push(label);
+    arr.forEach((img, i) => {
+      const title = (img.title || img.name).trim();
+      const price = (img.price || '').trim();
+      lines.push(price
+        ? '  ' + (i + 1) + '. ' + title + '  |  מחיר: ₪' + price
+        : '  ' + (i + 1) + '. ' + title);
+    });
+  }
+
+  addItems(slimeSel,   '🫧 סליימים:');
+  addItems(macrameSel, '🪢 מקרמה:');
+  return lines.join('\n');
+}
+
+/* ================================================================
+   SEND EMAIL — step 1: open contact modal
+================================================================ */
+function sendMail() {
+  if (!selected.size) return;
+  openContactModal();
+}
+
+/* ================================================================
+   CONTACT MODAL
+================================================================ */
+function openContactModal() {
+  // Pre-fill from saved contact
+  document.getElementById('c-name').value    = contact.name    || '';
+  document.getElementById('c-phone').value   = contact.phone   || '';
+  document.getElementById('c-email').value   = contact.email   || '';
+  document.getElementById('c-address').value = contact.address || '';
+  document.getElementById('contact-err').classList.remove('show');
+  document.getElementById('contact-modal').classList.add('open');
+  setTimeout(() => document.getElementById('c-name').focus(), 80);
+}
+
+function closeContactModal(event) {
+  if (event && event.target !== document.getElementById('contact-modal')) return;
+  document.getElementById('contact-modal').classList.remove('open');
+}
+
+/* ================================================================
+   SEND EMAIL — step 2: validate + actually send
+================================================================ */
+async function submitWithContact() {
+  const name    = document.getElementById('c-name').value.trim();
+  const phone   = document.getElementById('c-phone').value.trim();
+  const email   = document.getElementById('c-email').value.trim();
+  const address = document.getElementById('c-address').value.trim();
+  const errEl   = document.getElementById('contact-err');
+
+  // Validate required fields
+  if (!name || !phone) {
+    errEl.classList.add('show');
+    document.getElementById('c-name').classList.toggle('invalid', !name);
+    document.getElementById('c-phone').classList.toggle('invalid', !phone);
+    return;
+  }
+  errEl.classList.remove('show');
+
+  // Save for next time
+  contact = { name, phone, email, address };
+  saveContact();
+
+  const ct      = contact;
+  const list    = buildMessage(ct);
+  const message = 'שלום סול!\n\n' + list + '\n\nתודה! 🫧';
+
+  // Close modal, disable submit
+  document.getElementById('contact-modal').classList.remove('open');
+  const sendBtn = document.querySelector('#send-panel .btn-primary');
+  if (sendBtn) { sendBtn.disabled = true; sendBtn.textContent = '⏳ שולח...'; }
+
+  if (!cfg.w3fKey) {
+    if (sendBtn) { sendBtn.disabled = false; sendBtn.innerHTML = '✉️&nbsp; שלח רשימה לסול'; }
+    openFallbackModal(message);
+    return;
+  }
+
+  try {
+    const res = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        access_key: cfg.w3fKey,
+        subject:    'בחירת פריטים מגלריית ונטורה סליים — ' + name,
+        from_name:  name,
+        message:    message,
+        botcheck:   ''
+      })
+    });
+    const json = await res.json();
+    if (json.success) {
+      showToast('✅ המייל נשלח לסול בהצלחה!');
+      clearSelection();
+    } else {
+      throw new Error(json.message || 'שגיאה');
+    }
+  } catch (err) {
+    console.error('Web3Forms error:', err);
+    showToast('❌ שגיאה בשליחה — נסה שוב');
+    openFallbackModal(message);
+  } finally {
+    if (sendBtn) {
+      sendBtn.disabled  = false;
+      sendBtn.innerHTML = '✉️&nbsp; שלח רשימה לסול';
+    }
+  }
+}
+
+/* ================================================================
+   FALLBACK MODAL
+================================================================ */
+function openFallbackModal(text) {
+  document.getElementById('fallback-text').value = text;
+  document.getElementById('fallback-modal').classList.add('open');
+}
+function closeFallbackModal(event) {
+  if (event && event.target !== document.getElementById('fallback-modal')) return;
+  document.getElementById('fallback-modal').classList.remove('open');
+}
+function copyFallbackText() {
+  const ta = document.getElementById('fallback-text');
+  ta.select();
+  try { navigator.clipboard.writeText(ta.value).catch(() => document.execCommand('copy')); }
+  catch { document.execCommand('copy'); }
+  showToast('✅ הטקסט הועתק!');
+}
+
+/* ================================================================
+   ADMIN — RENDER
+================================================================ */
+function renderAdmin() {
+  const slimeImgs   = byCategory('slime');
+  const macrameImgs = byCategory('macrame');
+
+  document.getElementById('stat-slime').textContent          = slimeImgs.length;
+  document.getElementById('stat-macrame').textContent        = macrameImgs.length;
+  document.getElementById('admin-slime-count').textContent   = slimeImgs.length;
+  document.getElementById('admin-macrame-count').textContent = macrameImgs.length;
+
+  renderAdminGrid('admin-grid-slime',   slimeImgs,   '🫧 טרם הועלו תמונות סליים');
+  renderAdminGrid('admin-grid-macrame', macrameImgs, '🪢 טרם הועלו תמונות מקרמה');
+
+  updateSettingsUI();
+}
+
+function renderAdminGrid(gridId, imgs, emptyMsg) {
+  const grid = document.getElementById(gridId);
+  if (!imgs.length) {
+    grid.innerHTML = `<div class="admin-empty"><span class="ico">📭</span><p>${emptyMsg}</p></div>`;
+    return;
+  }
+  grid.innerHTML = imgs.map(img => `
+    <div class="admin-card">
+      <figure>
+        <img src="${img.dataUrl}" alt="${esc(img.title || img.name)}" loading="lazy" decoding="async" />
+      </figure>
+      <div class="card-footer">
+        <div class="card-field">
+          <label>כותרת</label>
+          <input type="text"
+                 value="${esc(img.title || '')}"
+                 placeholder="הזן כותרת..."
+                 oninput="updateField('${img.id}','title',this.value)"
+                 onblur="saveCatalog()" />
+        </div>
+        <div class="card-field">
+          <label>מחיר (₪)</label>
+          <input type="number" min="0" step="0.5"
+                 class="price-input"
+                 value="${esc(img.price || '')}"
+                 placeholder="0"
+                 oninput="updateField('${img.id}','price',this.value)"
+                 onblur="saveCatalog()" />
+        </div>
+        <div class="card-del-row">
+          <span class="fname" title="${esc(img.name)}">${esc(img.name)}</span>
+          <button class="btn-del" onclick="deleteImage('${img.id}')">🗑 מחק</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ================================================================
+   UPLOAD
+================================================================ */
+async function handleUpload(fileList, category) {
+  const files = Array.from(fileList).filter(f => f.type.startsWith('image/'));
+  if (!files.length) { showToast('⚠️ לא נבחרו קבצי תמונה'); return; }
+
+  const progressEl = document.getElementById('upload-progress');
+  const progFill   = document.getElementById('prog-fill');
+  const progText   = document.getElementById('prog-text');
+
+  progressEl.classList.add('show');
+  progFill.style.width = '0%';
+
+  let done = 0;
+  const errors = [];
+
+  for (const file of files) {
+    try {
+      const url = await uploadFile(file);
+      images.push({
+        id:       Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+        name:     file.name,
+        title:    '',
+        price:    '',
+        category: category,
+        dataUrl:  url
+      });
+    } catch (err) {
+      errors.push(file.name);
+      console.error('Upload error', file.name, err);
+    }
+    done++;
+    progFill.style.width = Math.round((done / files.length) * 100) + '%';
+    progText.textContent = done + ' / ' + files.length;
+  }
+
+  await saveCatalog();
+  renderAdmin();
+
+  setTimeout(() => { progressEl.classList.remove('show'); progFill.style.width = '0%'; }, 600);
+
+  const catLabel = category === 'slime' ? 'סליים' : 'מקרמה';
+  if (errors.length) {
+    showToast('⚠️ ' + (done - errors.length) + ' הועלו, ' + errors.length + ' נכשלו');
+  } else {
+    showToast('✅ ' + done + ' תמונות ' + catLabel + ' הועלו');
+  }
+  document.getElementById('file-input-' + category).value = '';
+}
+
+function onDragOver(e, cat)  {
+  e.preventDefault();
+  document.getElementById('upload-zone-' + cat).classList.add('dragging');
+}
+function onDragLeave(e, cat) {
+  document.getElementById('upload-zone-' + cat).classList.remove('dragging');
+}
+function onDrop(e, cat) {
+  e.preventDefault();
+  document.getElementById('upload-zone-' + cat).classList.remove('dragging');
+  handleUpload(e.dataTransfer.files, cat);
+}
+
+/* ================================================================
+   UPDATE FIELD
+================================================================ */
+function updateField(id, field, value) {
+  const img = images.find(i => i.id === id);
+  if (img) img[field] = value;
+}
+
+/* ================================================================
+   DELETE
+================================================================ */
+async function deleteImage(id) {
+  if (!confirm('למחוק את התמונה הזו?')) return;
+  images = images.filter(img => img.id !== id);
+  await saveCatalog();
+  renderAdmin();
+  showToast('🗑 התמונה נמחקה');
+}
+
+async function deleteAll() {
+  if (!images.length) return;
+  if (!confirm('למחוק את כל ' + images.length + ' התמונות?')) return;
+  images = [];
+  await saveCatalog();
+  renderAdmin();
+  showToast('🗑 כל התמונות נמחקו');
+}
+
+/* ================================================================
+   UTILS
+================================================================ */
+function esc(str) {
+  return String(str || '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+let toastTimer;
+function showToast(msg) {
+  clearTimeout(toastTimer);
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+/* ================================================================
+   BOOT
+================================================================ */
+(async function init() {
+  loadSettings();
+  loadContact();
+  await loadCatalog();
+  renderPublic();
+})();
+</script>
+</body>
+</html>
