@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -30,7 +30,7 @@
     body {
       font-family: 'Heebo', Arial, sans-serif;
       background: var(--bg); color: var(--text);
-      min-height: 100vh; direction: rtl;
+      min-height: 100vh; direction: ltr;
       -webkit-font-smoothing: antialiased;
     }
 
@@ -190,12 +190,12 @@
     .login-card .lock-icon { font-size: 3.2rem; margin-bottom: 12px; display: block; }
     .login-card h2 { font-family: 'Fredoka One', cursive; font-size: 2rem; margin-bottom: 6px; }
     .login-card .login-sub { color: var(--muted); font-size: .9rem; margin-bottom: 32px; }
-    .form-field { margin-bottom: 18px; text-align: right; }
+    .form-field { margin-bottom: 18px; text-align: left; }
     .form-field label { display: block; font-size: .83rem; font-weight: 700; color: #374151; margin-bottom: 7px; }
     .form-field input {
       width: 100%; padding: 13px 16px; border: 2px solid var(--border); border-radius: 12px;
       font-size: .98rem; font-family: 'Heebo', Arial, sans-serif; outline: none;
-      transition: border-color .2s, box-shadow .2s; direction: ltr; text-align: left; color: var(--text);
+      transition: border-color .2s, box-shadow .2s; direction: ltr; text-align: left; color: var(--text); background: #fff;
     }
     .form-field input:focus { border-color: var(--purple2); box-shadow: 0 0 0 4px rgba(167,139,250,.18); }
     .form-field input::placeholder { color: #b0b8c8; }
@@ -231,9 +231,9 @@
     .stats-bar { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
     .stat-card {
       background: var(--surface); border-radius: 14px; padding: 18px 24px;
-      box-shadow: var(--shadow); flex: 1; min-width: 140px; border-right: 4px solid var(--purple2);
+      box-shadow: var(--shadow); flex: 1; min-width: 140px; border-left: 4px solid var(--purple2);
     }
-    .stat-card.macrame { border-right-color: var(--amber); }
+    .stat-card.macrame { border-left-color: var(--amber); }
     .stat-card .stat-num { font-size: 2rem; font-weight: 800; color: var(--purple); line-height: 1; }
     .stat-card.macrame .stat-num { color: var(--amber); }
     .stat-card .stat-lbl { font-size: .82rem; color: var(--muted); font-weight: 600; margin-top: 4px; }
@@ -273,7 +273,7 @@
       background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 10px;
       padding: 12px 14px; font-size: .82rem; line-height: 1.8; color: #166534;
     }
-    .setup-guide ol { padding-right: 20px; }
+    .setup-guide ol { padding-left: 20px; }
     .setup-guide a  { color: var(--purple); font-weight: 700; }
     .setup-guide code { background: #dcfce7; border-radius: 4px; padding: 1px 5px; font-size: .82rem; }
 
@@ -282,7 +282,7 @@
     .sfield input {
       padding: 10px 13px; border: 1.5px solid var(--border); border-radius: 10px;
       font-size: .88rem; font-family: 'Heebo', Arial, sans-serif; direction: ltr;
-      outline: none; transition: border-color .2s, box-shadow .2s; color: var(--text);
+      outline: none; transition: border-color .2s, box-shadow .2s; color: var(--text); background: #fff;
     }
     .sfield input:focus { border-color: var(--purple2); box-shadow: 0 0 0 3px rgba(167,139,250,.18); }
     .btn-save-settings {
@@ -342,13 +342,13 @@
     .card-field input {
       width: 100%; padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 9px;
       font-size: .85rem; font-family: 'Heebo', Arial, sans-serif; color: var(--text);
-      background: var(--bg); outline: none; transition: border-color .2s; direction: rtl;
+      background: var(--bg); outline: none; transition: border-color .2s; direction: ltr;
     }
     .card-field input:focus { border-color: var(--purple2); box-shadow: 0 0 0 3px rgba(167,139,250,.18); background: #fff; }
-    .card-field input.price-input { direction: ltr; text-align: right; }
+    .card-field input.price-input { direction: ltr; text-align: left; }
     .card-field input::placeholder { color: #b0b8c8; }
     .card-del-row { display: flex; align-items: center; justify-content: space-between; margin-top: 2px; }
-    .card-del-row .fname { flex: 1; font-size: .73rem; font-weight: 600; color: #b0b8c8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-left: 8px; }
+    .card-del-row .fname { flex: 1; font-size: .73rem; font-weight: 600; color: #b0b8c8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: 8px; }
     .btn-del { flex-shrink: 0; background: #fef2f2; color: #dc2626; border: none; border-radius: 8px; padding: 5px 11px; font-size: .77rem; font-family: 'Heebo', Arial, sans-serif; font-weight: 700; cursor: pointer; }
     .btn-del:hover { background: #fee2e2; }
 
@@ -361,7 +361,7 @@
     .cfield label { font-size: .8rem; font-weight: 700; color: #374151; }
     .cfield input {
       padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 11px;
-      font-size: .95rem; font-family: 'Heebo', Arial, sans-serif; direction: rtl;
+      font-size: .95rem; font-family: 'Heebo', Arial, sans-serif; direction: ltr;
       outline: none; color: var(--text); transition: border-color .2s, box-shadow .2s;
     }
     .cfield input:focus { border-color: var(--purple2); box-shadow: 0 0 0 3px rgba(167,139,250,.18); }
@@ -392,7 +392,7 @@
     .modal-textarea {
       width: 100%; border: 1.5px solid var(--border); border-radius: 12px;
       padding: 12px 14px; font-size: .88rem; font-family: 'Heebo', Arial, sans-serif;
-      resize: none; outline: none; background: #f8fafc; color: var(--text); direction: rtl; line-height: 1.6;
+      resize: none; outline: none; background: #f8fafc; color: var(--text); direction: ltr; line-height: 1.6;
     }
     .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 14px; flex-wrap: wrap; }
 
@@ -425,22 +425,22 @@
   <header class="hero">
     <span class="hero-blob">🫧</span>
     <h1>BySOL</h1>
-    <p class="hero-sub">בחרו מה שאהבתם ושלחו לנו — נחזור אליכם בהקדם! 💚</p>
+    <p class="hero-sub">Pick what you love and send it to us — we'll get back to you soon! 💚</p>
   </header>
 
   <main class="gallery-wrap">
     <div class="action-bar">
-      <h2>הגלריה שלנו</h2>
+      <h2>Our Gallery</h2>
       <div class="action-bar-right">
-        <span class="sel-badge" id="sel-badge">0 נבחרו</span>
-        <button class="btn btn-ghost" id="btn-clear-pub" onclick="clearSelection()" style="display:none">✕ נקה</button>
+        <span class="sel-badge" id="sel-badge">0 selected</span>
+        <button class="btn btn-ghost" id="btn-clear-pub" onclick="clearSelection()" style="display:none">✕ Clear</button>
       </div>
     </div>
 
     <div class="cat-section" id="pub-slime-section">
       <div class="cat-header">
         <span class="cat-header-icon">🫧</span>
-        <div class="cat-header-text"><h3>הסליימים שלנו</h3><p>לחצו על תמונה כדי לבחור</p></div>
+        <div class="cat-header-text"><h3>Our Slimes</h3><p>Click an image to select</p></div>
         <span class="cat-count-badge" id="pub-slime-count"></span>
       </div>
       <div class="img-grid" id="pub-grid-slime"></div>
@@ -449,7 +449,7 @@
     <div class="cat-section" id="pub-macrame-section">
       <div class="cat-header">
         <span class="cat-header-icon">🪢</span>
-        <div class="cat-header-text"><h3>המקרמה שלנו</h3><p>לחצו על תמונה כדי לבחור</p></div>
+        <div class="cat-header-text"><h3>Our Macramé</h3><p>Click an image to select</p></div>
         <span class="cat-count-badge" id="pub-macrame-count"></span>
       </div>
       <div class="img-grid" id="pub-grid-macrame"></div>
@@ -457,16 +457,16 @@
   </main>
 
   <footer class="pub-footer">
-    <a href="#" onclick="showLogin(); return false;">כניסת אדמין</a>
+    <a href="#" onclick="showLogin(); return false;">Admin Login</a>
   </footer>
 </div>
 
 <!-- Floating send panel -->
 <div class="send-panel" id="send-panel">
-  <div class="send-panel-info">בחרת <span id="panel-count">0</span> פריטים</div>
+  <div class="send-panel-info">You selected <span id="panel-count">0</span> items</div>
   <div class="send-panel-btns">
-    <button class="btn btn-ghost" onclick="clearSelection()">נקה בחירה</button>
-    <button class="btn btn-primary" onclick="sendMail()">✉️&nbsp; שלח רשימה לסול</button>
+    <button class="btn btn-ghost" onclick="clearSelection()">Clear Selection</button>
+    <button class="btn btn-primary" onclick="sendMail()">✉️&nbsp; Send to Sol</button>
   </div>
 </div>
 
@@ -474,66 +474,66 @@
 <div id="login-view">
   <div class="login-card">
     <span class="lock-icon">🔐</span>
-    <h2>כניסת אדמין</h2>
-    <p class="login-sub">ניהול גלריית BySOL</p>
-    <div class="login-error" id="login-error">שם משתמש או סיסמה שגויים ❌</div>
+    <h2>Admin Login</h2>
+    <p class="login-sub">BySOL Gallery Management</p>
+    <div class="login-error" id="login-error">Incorrect username or password ❌</div>
     <div class="form-field">
-      <label for="inp-user">שם משתמש</label>
-      <input id="inp-user" type="text" placeholder="admin" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter') focusPass()" />
+      <label for="inp-user">Username</label>
+      <input id="inp-user" type="text" placeholder="solportal" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter') focusPass()" />
     </div>
     <div class="form-field">
-      <label for="inp-pass">סיסמה</label>
+      <label for="inp-pass">Password</label>
       <input id="inp-pass" type="password" placeholder="••••••••" autocomplete="off" onkeydown="if(event.key==='Enter') doLogin()" />
     </div>
-    <button class="btn-login-submit" onclick="doLogin()">כניסה →</button>
-    <p class="login-back-link"><a href="#" onclick="showPublic(); return false;">← חזרה לדף הראשי</a></p>
+    <button class="btn-login-submit" onclick="doLogin()">Login →</button>
+    <p class="login-back-link"><a href="#" onclick="showPublic(); return false;">← Back to Gallery</a></p>
   </div>
 </div>
 
 <!-- ADMIN VIEW -->
 <div id="admin-view">
   <nav class="admin-nav">
-    <div class="brand">BySOL <em>| ניהול</em></div>
+    <div class="brand">BySOL <em>| Admin</em></div>
     <div class="admin-nav-right">
-      <button class="btn btn-ghost" onclick="showPublic()" style="font-size:.85rem;padding:8px 16px">👁&nbsp; דף ראשי</button>
-      <button class="btn btn-red" onclick="doLogout()" style="font-size:.85rem;padding:8px 16px">התנתק</button>
+      <button class="btn btn-ghost" onclick="showPublic()" style="font-size:.85rem;padding:8px 16px">👁&nbsp; Public View</button>
+      <button class="btn btn-red" onclick="doLogout()" style="font-size:.85rem;padding:8px 16px">Logout</button>
     </div>
   </nav>
 
   <div class="admin-body">
 
     <div class="stats-bar">
-      <div class="stat-card"><div class="stat-num" id="stat-slime">0</div><div class="stat-lbl">🫧 סליימים</div></div>
-      <div class="stat-card macrame"><div class="stat-num" id="stat-macrame">0</div><div class="stat-lbl">🪢 מקרמה</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-slime">0</div><div class="stat-lbl">🫧 Slimes</div></div>
+      <div class="stat-card macrame"><div class="stat-num" id="stat-macrame">0</div><div class="stat-lbl">🪢 Macramé</div></div>
     </div>
 
     <div class="cloud-chips">
-      <span class="chip chip-bad" id="chip-github">🐙 GitHub: לא מוגדר</span>
-      <span class="chip chip-bad" id="chip-w3f">✉️ Web3Forms: לא מוגדר</span>
+      <span class="chip chip-bad" id="chip-github">🐙 GitHub: Not Set</span>
+      <span class="chip chip-bad" id="chip-w3f">✉️ Web3Forms: Not Set</span>
     </div>
 
     <!-- Settings -->
     <div class="settings-card">
       <button class="settings-toggle" onclick="toggleSettings()">
-        <span class="s-left">⚙️ הגדרות</span>
-        <span class="s-status bad" id="settings-status">לא מוגדר</span>
+        <span class="s-left">⚙️ Settings</span>
+        <span class="s-status bad" id="settings-status">Not Configured</span>
       </button>
       <div class="settings-body" id="settings-body">
 
         <!-- GitHub -->
         <div class="service-section">
-          <div class="service-title">🐙 GitHub — אחסון תמונות וקטלוג</div>
+          <div class="service-title">🐙 GitHub — Image & Catalog Storage</div>
           <div class="service-body">
             <div class="setup-guide">
-              <strong>הגדרה חד-פעמית — Personal Access Token:</strong>
+              <strong>One-time setup — Personal Access Token:</strong>
               <ol>
-                <li>GitHub → לחצו על תמונת הפרופיל (פינה ימנית עליונה) → <strong>Settings</strong></li>
-                <li>גללו לתחתית הסרגל השמאלי → <strong>Developer settings</strong></li>
+                <li>GitHub → click your profile picture (top right) → <strong>Settings</strong></li>
+                <li>Scroll to the bottom of the left sidebar → <strong>Developer settings</strong></li>
                 <li><strong>Personal access tokens</strong> → <strong>Fine-grained tokens</strong> → <strong>Generate new token</strong></li>
                 <li>Token name: <code>SOL-CO</code> | Expiration: <strong>No expiration</strong></li>
-                <li>Repository access → <strong>Only select repositories</strong> → בחרו <code>SOL-CO</code></li>
+                <li>Repository access → <strong>Only select repositories</strong> → choose <code>SOL-CO</code></li>
                 <li>Permissions → Repository permissions → <strong>Contents: Read and write</strong></li>
-                <li>לחצו <strong>Generate token</strong> — העתיקו מיד! (מוצג פעם אחת בלבד)</li>
+                <li>Click <strong>Generate token</strong> — copy it immediately! (shown only once)</li>
               </ol>
             </div>
             <div class="sfield">
@@ -549,14 +549,14 @@
 
         <!-- Web3Forms -->
         <div class="service-section">
-          <div class="service-title">✉️ Web3Forms — שליחת מייל</div>
+          <div class="service-title">✉️ Web3Forms — Email Sending</div>
           <div class="service-body">
             <div class="setup-guide">
-              <strong>הגדרה חד-פעמית:</strong>
+              <strong>One-time setup:</strong>
               <ol>
-                <li>היכנסו ל-<a href="https://web3forms.com" target="_blank" rel="noopener">web3forms.com</a></li>
-                <li>הכניסו <strong>solventura1215@gmail.com</strong> ← אשרו במייל</li>
-                <li>העתיקו את <strong>Access Key</strong></li>
+                <li>Go to <a href="https://web3forms.com" target="_blank" rel="noopener">web3forms.com</a></li>
+                <li>Enter <strong>solventura1215@gmail.com</strong> and confirm via email</li>
+                <li>Copy the <strong>Access Key</strong></li>
               </ol>
             </div>
             <div class="sfield">
@@ -566,51 +566,51 @@
           </div>
         </div>
 
-        <button class="btn-save-settings" onclick="saveSettings()">💾 שמור הגדרות</button>
+        <button class="btn-save-settings" onclick="saveSettings()">💾 Save Settings</button>
       </div>
     </div>
 
     <!-- Upload zones -->
     <div class="upload-grid">
       <div class="upload-cat-wrap">
-        <div class="upload-cat-label">🫧 תמונות סליים</div>
+        <div class="upload-cat-label">🫧 Slime Images</div>
         <div class="upload-zone" id="upload-zone-slime"
              onclick="document.getElementById('file-input-slime').click()"
              ondragover="onDragOver(event,'slime')" ondragleave="onDragLeave(event,'slime')" ondrop="onDrop(event,'slime')">
           <span class="upload-icon">📤</span>
-          <h3>גרור או לחץ לבחירה</h3>
+          <h3>Drag or click to upload</h3>
           <p>JPG · PNG · WEBP · GIF</p>
-          <span class="upload-hint">+ הוסף סליים</span>
+          <span class="upload-hint">+ Add Slime</span>
         </div>
         <input type="file" id="file-input-slime" accept="image/*" multiple onchange="handleUpload(this.files,'slime')" style="display:none"/>
       </div>
       <div class="upload-cat-wrap">
-        <div class="upload-cat-label">🪢 תמונות מקרמה</div>
+        <div class="upload-cat-label">🪢 Macramé Images</div>
         <div class="upload-zone macrame-zone" id="upload-zone-macrame"
              onclick="document.getElementById('file-input-macrame').click()"
              ondragover="onDragOver(event,'macrame')" ondragleave="onDragLeave(event,'macrame')" ondrop="onDrop(event,'macrame')">
           <span class="upload-icon">📤</span>
-          <h3>גרור או לחץ לבחירה</h3>
+          <h3>Drag or click to upload</h3>
           <p>JPG · PNG · WEBP · GIF</p>
-          <span class="upload-hint">+ הוסף מקרמה</span>
+          <span class="upload-hint">+ Add Macramé</span>
         </div>
         <input type="file" id="file-input-macrame" accept="image/*" multiple onchange="handleUpload(this.files,'macrame')" style="display:none"/>
       </div>
     </div>
 
     <div class="upload-progress" id="upload-progress">
-      <div style="font-size:.88rem;font-weight:700;color:var(--purple)">מעלה תמונות... <span id="prog-text"></span></div>
+      <div style="font-size:.88rem;font-weight:700;color:var(--purple)">Uploading... <span id="prog-text"></span></div>
       <div class="progress-bar-track"><div class="progress-bar-fill" id="prog-fill"></div></div>
     </div>
 
     <div class="section-header">
-      <h3>כל התמונות בגלריה</h3>
-      <button class="btn btn-red" style="font-size:.85rem;padding:8px 16px" onclick="deleteAll()">🗑&nbsp; מחק הכל</button>
+      <h3>All Gallery Images</h3>
+      <button class="btn btn-red" style="font-size:.85rem;padding:8px 16px" onclick="deleteAll()">🗑&nbsp; Delete All</button>
     </div>
 
     <div class="admin-cat-section">
       <div class="admin-cat-header">
-        <span style="font-size:1.5rem">🫧</span><h3>סליימים</h3>
+        <span style="font-size:1.5rem">🫧</span><h3>Slimes</h3>
         <span class="cat-n" id="admin-slime-count">0</span>
       </div>
       <div class="admin-grid" id="admin-grid-slime"></div>
@@ -618,7 +618,7 @@
 
     <div class="admin-cat-section">
       <div class="admin-cat-header">
-        <span style="font-size:1.5rem">🪢</span><h3>מקרמה</h3>
+        <span style="font-size:1.5rem">🪢</span><h3>Macramé</h3>
         <span class="cat-n" id="admin-macrame-count">0</span>
       </div>
       <div class="admin-grid" id="admin-grid-macrame"></div>
@@ -630,18 +630,18 @@
 <!-- Contact modal -->
 <div class="modal-overlay" id="contact-modal" onclick="closeContactModal(event)">
   <div class="modal-box">
-    <div class="contact-modal-title"><span style="font-size:1.6rem">📋</span><h3>פרטים לשליחה</h3></div>
-    <p class="contact-modal-sub">מלאו את הפרטים ונחזור אליכם בהקדם 💚</p>
+    <div class="contact-modal-title"><span style="font-size:1.6rem">📋</span><h3>Your Details</h3></div>
+    <p class="contact-modal-sub">Fill in your details and we'll get back to you soon 💚</p>
     <div class="contact-modal-grid">
-      <div class="cfield"><label for="c-name">שם מלא *</label><input id="c-name" type="text" placeholder="ישראל ישראלי" /></div>
-      <div class="cfield"><label for="c-phone">טלפון *</label><input id="c-phone" type="tel" placeholder="050-0000000" /></div>
-      <div class="cfield"><label for="c-email">אימייל</label><input id="c-email" type="email" placeholder="israel@gmail.com" /></div>
-      <div class="cfield"><label for="c-address">כתובת מגורים</label><input id="c-address" type="text" placeholder="רחוב, עיר" /></div>
+      <div class="cfield"><label for="c-name">Full Name *</label><input id="c-name" type="text" placeholder="Jane Smith" /></div>
+      <div class="cfield"><label for="c-phone">Phone *</label><input id="c-phone" type="tel" placeholder="+1-555-0000" /></div>
+      <div class="cfield"><label for="c-email">Email</label><input id="c-email" type="email" placeholder="jane@gmail.com" /></div>
+      <div class="cfield"><label for="c-address">Address</label><input id="c-address" type="text" placeholder="Street, City" /></div>
     </div>
-    <div class="contact-err" id="contact-err">נא למלא שם וטלפון ❌</div>
+    <div class="contact-err" id="contact-err">Please fill in name and phone ❌</div>
     <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeContactModal()">ביטול</button>
-      <button class="btn btn-primary" onclick="submitWithContact()">✉️ שלח לסול</button>
+      <button class="btn btn-ghost" onclick="closeContactModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitWithContact()">✉️ Send to Sol</button>
     </div>
   </div>
 </div>
@@ -649,12 +649,12 @@
 <!-- Fallback modal -->
 <div class="modal-overlay" id="fallback-modal" onclick="closeFallbackModal(event)">
   <div class="modal-box">
-    <h3>📋 הפריטים שנבחרו</h3>
-    <p>העתיקי את הטקסט מטה ושלחי ידנית לסול בוואטסאפ או מייל.</p>
+    <h3>📋 Selected Items</h3>
+    <p>Copy the text below and send it to Sol manually via WhatsApp or email.</p>
     <textarea class="modal-textarea" id="fallback-text" rows="9" readonly></textarea>
     <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeFallbackModal()">סגור</button>
-      <button class="btn btn-primary" onclick="copyFallbackText()">📋 העתק טקסט</button>
+      <button class="btn btn-ghost" onclick="closeFallbackModal()">Close</button>
+      <button class="btn btn-primary" onclick="copyFallbackText()">📋 Copy Text</button>
     </div>
   </div>
 </div>
@@ -698,7 +698,7 @@ function saveSettings() {
   cfg.w3fKey = (document.getElementById('s-w3f-key').value || '').trim();
   localStorage.setItem(LS_CFG, JSON.stringify(cfg));
   updateSettingsUI();
-  showToast('✅ הגדרות נשמרו');
+  showToast('✅ Settings saved');
 }
 
 function updateSettingsUI() {
@@ -708,17 +708,17 @@ function updateSettingsUI() {
 
   const statusEl = document.getElementById('settings-status');
   if (statusEl) {
-    statusEl.textContent = allOk ? 'הכל מוגדר ✓' : (ghOk || w3fOk ? 'הגדרה חלקית' : 'לא מוגדר');
+    statusEl.textContent = allOk ? 'All Set ✓' : (ghOk || w3fOk ? 'Partial Setup' : 'Not Configured');
     statusEl.className   = 's-status ' + (allOk ? 'ok' : 'bad');
   }
-  setChip('chip-github', ghOk,  '🐙 GitHub',    ghOk  ? 'פעיל' : 'לא מוגדר');
-  setChip('chip-w3f',    w3fOk, '✉️ Web3Forms',  w3fOk ? 'פעיל' : 'לא מוגדר');
+  setChip('chip-github', ghOk,  '🐙 GitHub',    ghOk  ? 'Active' : 'Not Set');
+  setChip('chip-w3f',    w3fOk, '✉️ Web3Forms',  w3fOk ? 'Active' : 'Not Set');
   setVal('s-gh-repo', cfg.ghRepo);
   // Show masked token so user knows it's saved
   const tokenEl = document.getElementById('s-gh-token');
   if (tokenEl) {
     tokenEl.value       = '';
-    tokenEl.placeholder = cfg.ghToken ? '••••••••  (שמור — הכנס מחדש רק אם רוצה לשנות)' : 'github_pat_...';
+    tokenEl.placeholder = cfg.ghToken ? '••••••••  (Saved — re-enter only to change)' : 'github_pat_...';
   }
   setVal('s-w3f-key', cfg.w3fKey);
 }
@@ -794,7 +794,7 @@ async function saveCatalog() {
     await ghApi('PUT', 'contents/catalog.json', body);
   } catch (err) {
     console.warn('GitHub catalog save failed', err);
-    showToast('⚠️ GitHub: שגיאה בשמירה (נשמר מקומית)');
+    showToast('⚠️ GitHub: Save error (saved locally)');
   }
 }
 
@@ -906,11 +906,11 @@ function renderPubSection(cat, imgs) {
   const countEl   = document.getElementById('pub-' + cat + '-count');
   if (!imgs.length) { sectionEl.style.display = 'none'; return; }
   sectionEl.style.display = '';
-  countEl.textContent = imgs.length + ' פריטים';
+  countEl.textContent = imgs.length + ' items';
   gridEl.innerHTML = imgs.map(img => {
     const title    = img.title ? img.title : img.name;
     const hasTitle = !!img.title;
-    const price    = img.price ? '₪' + img.price : '';
+    const price    = img.price ? '$' + img.price : '';
     return `
     <div class="img-card" id="card-${img.id}" onclick="toggleSelect('${img.id}')">
       <div class="sel-overlay"></div>
@@ -943,7 +943,7 @@ function clearSelection() {
 function updateSelUI() {
   const n = selected.size;
   const badge = document.getElementById('sel-badge');
-  badge.textContent = n + (n === 1 ? ' נבחר' : ' נבחרו');
+  badge.textContent = n + (n === 1 ? ' selected' : ' selected');
   badge.classList.toggle('visible', n > 0);
   document.getElementById('btn-clear-pub').style.display = n ? 'inline-flex' : 'none';
   document.getElementById('send-panel').classList.toggle('visible', n > 0);
@@ -957,11 +957,11 @@ function buildMessage(ct) {
   const slimeSel   = images.filter(img => selected.has(img.id) && (img.category || 'slime') === 'slime');
   const macrameSel = images.filter(img => selected.has(img.id) && (img.category || 'slime') === 'macrame');
   const lines = [];
-  lines.push('👤 פרטי הלקוח:');
-  lines.push('שם: '    + ct.name);
-  lines.push('טלפון: ' + ct.phone);
-  if (ct.email)   lines.push('אימייל: '  + ct.email);
-  if (ct.address) lines.push('כתובת: '   + ct.address);
+  lines.push('👤 Customer Details:');
+  lines.push('Name: '    + ct.name);
+  lines.push('Phone: '   + ct.phone);
+  if (ct.email)   lines.push('Email: '   + ct.email);
+  if (ct.address) lines.push('Address: ' + ct.address);
 
   function addItems(arr, label) {
     if (!arr.length) return;
@@ -970,12 +970,12 @@ function buildMessage(ct) {
       const title = (img.title || img.name).trim();
       const price = (img.price || '').trim();
       lines.push(price
-        ? '  ' + (i+1) + '. ' + title + '  |  מחיר: ₪' + price
+        ? '  ' + (i+1) + '. ' + title + '  |  Price: $' + price
         : '  ' + (i+1) + '. ' + title);
     });
   }
-  addItems(slimeSel,   '🫧 סליימים:');
-  addItems(macrameSel, '🪢 מקרמה:');
+  addItems(slimeSel,   '🫧 Slimes:');
+  addItems(macrameSel, '🪢 Macramé:');
   return lines.join('\n');
 }
 
@@ -1018,7 +1018,7 @@ async function submitWithContact() {
   contact = { name, phone, email, address };
   saveContact();
 
-  const message = 'שלום סול!\n\n' + buildMessage(contact) + '\n\nתודה! 🫧';
+  const message = 'Hi Sol!\n\n' + buildMessage(contact) + '\n\nThank you! 🫧';
   document.getElementById('contact-modal').classList.remove('open');
 
   const sendBtn = document.querySelector('#send-panel .btn-primary');
@@ -1035,18 +1035,18 @@ async function submitWithContact() {
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify({
         access_key: cfg.w3fKey,
-        subject:    'בחירת פריטים מ-BySOL — ' + name,
+        subject:    'BySOL Order from ' + name,
         from_name:  name,
         message:    message,
         botcheck:   ''
       })
     });
     const json = await res.json();
-    if (json.success) { showToast('✅ המייל נשלח לסול בהצלחה!'); clearSelection(); }
-    else throw new Error(json.message || 'שגיאה');
+    if (json.success) { showToast('✅ Email sent to Sol!'); clearSelection(); }
+    else throw new Error(json.message || 'Error');
   } catch (err) {
     console.error('Web3Forms error:', err);
-    showToast('❌ שגיאה בשליחה — נסה שוב');
+    showToast('❌ Send error — please try again');
     openFallbackModal(message);
   } finally {
     if (sendBtn) { sendBtn.disabled = false; sendBtn.innerHTML = '✉️&nbsp; שלח רשימה לסול'; }
@@ -1066,7 +1066,7 @@ function copyFallbackText() {
   ta.select();
   try { navigator.clipboard.writeText(ta.value).catch(() => document.execCommand('copy')); }
   catch { document.execCommand('copy'); }
-  showToast('✅ הטקסט הועתק!');
+  showToast('✅ Text copied!');
 }
 
 /* ================================================================
@@ -1079,8 +1079,8 @@ function renderAdmin() {
   document.getElementById('stat-macrame').textContent        = macrameImgs.length;
   document.getElementById('admin-slime-count').textContent   = slimeImgs.length;
   document.getElementById('admin-macrame-count').textContent = macrameImgs.length;
-  renderAdminGrid('admin-grid-slime',   slimeImgs,   '🫧 טרם הועלו תמונות סליים');
-  renderAdminGrid('admin-grid-macrame', macrameImgs, '🪢 טרם הועלו תמונות מקרמה');
+  renderAdminGrid('admin-grid-slime',   slimeImgs,   '🫧 No slime images uploaded yet');
+  renderAdminGrid('admin-grid-macrame', macrameImgs, '🪢 No macramé images uploaded yet');
   updateSettingsUI();
 }
 
@@ -1095,19 +1095,19 @@ function renderAdminGrid(gridId, imgs, emptyMsg) {
       <figure><img src="${img.dataUrl}" alt="${esc(img.title || img.name)}" loading="lazy" decoding="async" /></figure>
       <div class="card-footer">
         <div class="card-field">
-          <label>כותרת</label>
-          <input type="text" value="${esc(img.title || '')}" placeholder="הזן כותרת..."
+          <label>Title</label>
+          <input type="text" value="${esc(img.title || '')}" placeholder="Enter title..."
                  oninput="updateField('${img.id}','title',this.value)" onblur="saveCatalog()" />
         </div>
         <div class="card-field">
-          <label>מחיר (₪)</label>
+          <label>Price ($)</label>
           <input type="number" min="0" step="0.5" class="price-input"
                  value="${esc(img.price || '')}" placeholder="0"
                  oninput="updateField('${img.id}','price',this.value)" onblur="saveCatalog()" />
         </div>
         <div class="card-del-row">
           <span class="fname" title="${esc(img.name)}">${esc(img.name)}</span>
-          <button class="btn-del" onclick="deleteImage('${img.id}')">🗑 מחק</button>
+          <button class="btn-del" onclick="deleteImage('${img.id}')">🗑 Delete</button>
         </div>
       </div>
     </div>
@@ -1119,7 +1119,7 @@ function renderAdminGrid(gridId, imgs, emptyMsg) {
 ================================================================ */
 async function handleUpload(fileList, category) {
   const files = Array.from(fileList).filter(f => f.type.startsWith('image/'));
-  if (!files.length) { showToast('⚠️ לא נבחרו קבצי תמונה'); return; }
+  if (!files.length) { showToast('⚠️ No image files selected'); return; }
 
   const progressEl = document.getElementById('upload-progress');
   const progFill   = document.getElementById('prog-fill');
@@ -1145,9 +1145,9 @@ async function handleUpload(fileList, category) {
   await saveCatalog(); renderAdmin();
   setTimeout(() => { progressEl.classList.remove('show'); progFill.style.width = '0%'; }, 600);
 
-  const catLabel = category === 'slime' ? 'סליים' : 'מקרמה';
-  if (errors.length) showToast('⚠️ ' + (done - errors.length) + ' הועלו, ' + errors.length + ' נכשלו');
-  else showToast('✅ ' + done + ' תמונות ' + catLabel + ' הועלו');
+  const catLabel = category === 'slime' ? 'slime' : 'macramé';
+  if (errors.length) showToast('⚠️ ' + (done - errors.length) + ' uploaded, ' + errors.length + ' failed');
+  else showToast('✅ ' + done + ' ' + catLabel + ' images uploaded');
   document.getElementById('file-input-' + category).value = '';
 }
 
@@ -1164,21 +1164,21 @@ function updateField(id, field, value) { const img = images.find(i => i.id === i
    DELETE
 ================================================================ */
 async function deleteImage(id) {
-  if (!confirm('למחוק את התמונה הזו?')) return;
+  if (!confirm('Delete this image?')) return;
   const img = images.find(i => i.id === id);
   images = images.filter(i => i.id !== id);
   await Promise.all([saveCatalog(), deleteFileFromGitHub(img)]);
-  renderAdmin(); showToast('🗑 התמונה נמחקה');
+  renderAdmin(); showToast('🗑 Image deleted');
 }
 
 async function deleteAll() {
   if (!images.length) return;
-  if (!confirm('למחוק את כל ' + images.length + ' התמונות?')) return;
+  if (!confirm('Delete all ' + images.length + ' images?')) return;
   const toDelete = [...images];
   images = [];
   await saveCatalog();
   await Promise.all(toDelete.map(img => deleteFileFromGitHub(img)));
-  renderAdmin(); showToast('🗑 כל התמונות נמחקו');
+  renderAdmin(); showToast('🗑 All images deleted');
 }
 
 /* ================================================================
