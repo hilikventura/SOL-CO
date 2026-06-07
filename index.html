@@ -537,8 +537,8 @@
               </ol>
             </div>
             <div class="sfield">
-              <label>GITHUB REPO (owner/repo)</label>
-              <input id="s-gh-repo" type="text" placeholder="hilikventura/SOL-CO" />
+              <label>GITHUB REPO</label>
+              <input id="s-gh-repo" type="text" value="hilikventura/SOL-CO" readonly style="background:#f1f5f9;color:#64748b;cursor:default" />
             </div>
             <div class="sfield">
               <label>PERSONAL ACCESS TOKEN</label>
@@ -680,11 +680,13 @@ let contact  = { name: '', phone: '', email: '', address: '' };
 /* ================================================================
    SETTINGS
 ================================================================ */
-let cfg = { ghRepo: '', ghToken: '', w3fKey: '' };
+const GH_REPO_DEFAULT = 'hilikventura/SOL-CO';
+let cfg = { ghRepo: GH_REPO_DEFAULT, ghToken: '', w3fKey: '' };
 
 function loadSettings() {
   try { cfg = Object.assign({}, cfg, JSON.parse(localStorage.getItem(LS_CFG) || '{}')); }
   catch {}
+  if (!cfg.ghRepo) cfg.ghRepo = GH_REPO_DEFAULT; // always default to the known repo
   updateSettingsUI();
 }
 
@@ -753,19 +755,18 @@ function ghApi(method, path, body) {
    CATALOG — GitHub + localStorage fallback
 ================================================================ */
 async function loadCatalog() {
-  if (cfg.ghRepo) {
-    try {
-      const url = 'https://raw.githubusercontent.com/' + cfg.ghRepo + '/main/catalog.json?t=' + Date.now();
-      const res = await fetch(url);
-      if (res.ok) {
-        images = await res.json();
-        localStorage.setItem(LS_KEY, JSON.stringify(images));
-        return;
-      }
-      images = [];  // repo exists but no catalog yet
+  // Always try GitHub first — repo is public, no token needed for reading
+  try {
+    const repo = cfg.ghRepo || GH_REPO_DEFAULT;
+    const url = 'https://raw.githubusercontent.com/' + repo + '/main/catalog.json?t=' + Date.now();
+    const res = await fetch(url);
+    if (res.ok) {
+      images = await res.json();
+      localStorage.setItem(LS_KEY, JSON.stringify(images));
       return;
-    } catch (err) { console.warn('GitHub catalog load failed', err); }
-  }
+    }
+  } catch (err) { console.warn('GitHub catalog load failed', err); }
+  // Fallback to localStorage
   try { images = JSON.parse(localStorage.getItem(LS_KEY) || '[]'); }
   catch { images = []; }
 }
