@@ -1,15 +1,5 @@
 [
   {
-    "id": "mq42dpeqrgakx",
-    "name": "slime1.jpeg",
-    "title": "",
-    "price": "",
-    "category": "slime",
-    "dataUrl": "https://hilikventura.github.io/SOL-CO/images/slime/1780853813186_slime1.jpeg",
-    "sha": "b74dbda0c73f950dbf0bfc8c73133f642029d785",
-    "path": "images/slime/1780853813186_slime1.jpeg"
-  },
-  {
     "id": "mq42fj3jgqszg",
     "name": "slime1.jpeg",
     "title": "",
@@ -28,5 +18,15 @@
     "dataUrl": "https://hilikventura.github.io/SOL-CO/images/slime/1780853910428_slime3.jpeg",
     "sha": "b6e8c1a25348fe3d5cc414e592d12a64db098bdf",
     "path": "images/slime/1780853910428_slime3.jpeg"
+  },
+  {
+    "id": "mq42g20a7kb08",
+    "name": "slime2.jpeg",
+    "title": "",
+    "price": "",
+    "category": "slime",
+    "dataUrl": "https://hilikventura.github.io/SOL-CO/images/slime/1780853922886_slime2.jpeg",
+    "sha": "ce0f63a9163601cea78504f4a866b02248b8a225",
+    "path": "images/slime/1780853922886_slime2.jpeg"
   }
 ]
