@@ -665,10 +665,11 @@
 /* ================================================================
    CONFIG
 ================================================================ */
-const CREDS      = { user: 'admin', pass: 'ventura1215' };
+const CREDS      = { user: 'solportal', pass: 'ventura1215' };
 const LS_KEY     = 'ventura_slime_v3';
 const LS_CFG     = 'ventura_slime_cfg';
 const LS_CONTACT = 'ventura_slime_contact';
+const LS_SESSION = 'ventura_slime_session';
 
 /* ================================================================
    STATE
@@ -874,14 +875,16 @@ function doLogin() {
   const p = document.getElementById('inp-pass').value;
   const errEl = document.getElementById('login-error');
   if (u === CREDS.user && p === CREDS.pass) {
-    errEl.classList.remove('show'); showAdmin();
+    errEl.classList.remove('show');
+    localStorage.setItem(LS_SESSION, '1');
+    showAdmin();
   } else {
     errEl.classList.add('show');
     document.getElementById('inp-pass').value = '';
     document.getElementById('inp-pass').focus();
   }
 }
-function doLogout() { showPublic(); }
+function doLogout() { localStorage.removeItem(LS_SESSION); showPublic(); }
 
 /* ================================================================
    HELPERS
@@ -1199,7 +1202,11 @@ function showToast(msg) {
   loadSettings();
   loadContact();
   await loadCatalog();
-  renderPublic();
+  if (localStorage.getItem(LS_SESSION) === '1') {
+    await showAdmin();
+  } else {
+    renderPublic();
+  }
 })();
 </script>
 </body>
