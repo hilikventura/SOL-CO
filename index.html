@@ -691,9 +691,10 @@ function loadSettings() {
 }
 
 function saveSettings() {
-  cfg.ghRepo  = (document.getElementById('s-gh-repo').value   || '').trim();
-  cfg.ghToken = (document.getElementById('s-gh-token').value  || '').trim();
-  cfg.w3fKey  = (document.getElementById('s-w3f-key').value   || '').trim();
+  cfg.ghRepo = GH_REPO_DEFAULT; // always fixed
+  const tokenInput = (document.getElementById('s-gh-token').value || '').trim();
+  if (tokenInput) cfg.ghToken = tokenInput; // only overwrite if user typed something new
+  cfg.w3fKey = (document.getElementById('s-w3f-key').value || '').trim();
   localStorage.setItem(LS_CFG, JSON.stringify(cfg));
   updateSettingsUI();
   showToast('✅ הגדרות נשמרו');
@@ -711,9 +712,14 @@ function updateSettingsUI() {
   }
   setChip('chip-github', ghOk,  '🐙 GitHub',    ghOk  ? 'פעיל' : 'לא מוגדר');
   setChip('chip-w3f',    w3fOk, '✉️ Web3Forms',  w3fOk ? 'פעיל' : 'לא מוגדר');
-  setVal('s-gh-repo',    cfg.ghRepo);
-  // Don't show token value
-  setVal('s-w3f-key',    cfg.w3fKey);
+  setVal('s-gh-repo', cfg.ghRepo);
+  // Show masked token so user knows it's saved
+  const tokenEl = document.getElementById('s-gh-token');
+  if (tokenEl) {
+    tokenEl.value       = '';
+    tokenEl.placeholder = cfg.ghToken ? '••••••••  (שמור — הכנס מחדש רק אם רוצה לשנות)' : 'github_pat_...';
+  }
+  setVal('s-w3f-key', cfg.w3fKey);
 }
 
 function setChip(id, ok, label, status) {
