@@ -1,7 +1,7 @@
 <!--
   BySOL — Slime & Macramé Shop
   Creator : Sol Ventura
-  Version : 1.0
+  Version : 1.1
   Updated : 2026-06-08
 -->
 <!DOCTYPE html>
@@ -1076,30 +1076,36 @@ function fileToBase64(file) {
 
 async function uploadFile(file, category) {
   if (cfg.ghRepo && cfg.ghToken) {
-    const dataUrl = await fileToBase64(file);
-    const base64  = dataUrl.split(',')[1];
-    const safeName = Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-    const path     = 'images/' + category + '/' + safeName;
+    try {
+      const dataUrl  = await fileToBase64(file);
+      const base64   = dataUrl.split(',')[1];
+      const safeName = Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const path     = 'images/' + category + '/' + safeName;
 
-    const res  = await ghApi('PUT', 'contents/' + path, {
-      message: 'Upload ' + file.name,
-      content: base64
-    });
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.message || 'GitHub upload error');
+      const res = await ghApi('PUT', 'contents/' + path, {
+        message: 'Upload ' + file.name,
+        content: base64
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        console.warn('GitHub upload failed (' + (errData.message || res.status) + '), using local fallback');
+        showToast('⚠️ GitHub upload failed — saved locally');
+        // Fall through to base64 fallback below
+      } else {
+        const data = await res.json();
+        let baseUrl;
+        if (cfg.customDomain) {
+          baseUrl = 'https://' + cfg.customDomain.replace(/^https?:\/\//, '').replace(/\/$/, '');
+        } else {
+          const [owner, repo] = cfg.ghRepo.split('/');
+          baseUrl = 'https://' + owner + '.github.io/' + repo;
+        }
+        return { url: baseUrl + '/' + path, sha: data.content.sha, path };
+      }
+    } catch (err) {
+      console.warn('GitHub upload error, using local fallback:', err);
+      showToast('⚠️ GitHub error — saved locally');
     }
-    const data = await res.json();
-    // Use custom domain if set, otherwise GitHub Pages URL
-    let baseUrl;
-    if (cfg.customDomain) {
-      baseUrl = 'https://' + cfg.customDomain.replace(/^https?:\/\//, '').replace(/\/$/, '');
-    } else {
-      const [owner, repo] = cfg.ghRepo.split('/');
-      baseUrl = 'https://' + owner + '.github.io/' + repo;
-    }
-    const pageUrl = baseUrl + '/' + path;
-    return { url: pageUrl, sha: data.content.sha, path };
   }
   // Fallback: base64
   const dataUrl = await fileToBase64(file);
