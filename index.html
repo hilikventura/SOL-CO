@@ -66,41 +66,81 @@
     .btn-red:hover:not(:disabled) { background: #fee2e2; }
 
     /* ══ PUBLIC ══ */
-    #public-view { min-height: 100vh; display: flex; flex-direction: column; }
+    #public-view { min-height: 100vh; display: flex; flex-direction: column; background: #fef9f2; }
 
+    /* ── Floating decorations ── */
+    .float-deco {
+      position: absolute; pointer-events: none; user-select: none;
+      animation: floatDeco var(--dur,5s) ease-in-out infinite;
+      animation-delay: var(--delay,0s); will-change: transform;
+    }
+    @keyframes floatDeco {
+      0%,100% { transform: translateY(0)    rotate(var(--r1,-6deg)) scale(1); }
+      40%     { transform: translateY(-22px) rotate(var(--r2, 8deg)) scale(1.06); }
+      70%     { transform: translateY(-10px) rotate(var(--r3,-3deg)) scale(0.97); }
+    }
+
+    /* ── Hero ── */
     .hero {
-      background: linear-gradient(135deg, #34d399 0%, #2dd4bf 35%, #818cf8 70%, #c084fc 100%);
-      padding: 70px 24px 90px; text-align: center; position: relative; overflow: hidden;
+      background: linear-gradient(160deg, #fef9f2 0%, #fef0f8 55%, #f0f4ff 100%);
+      padding: 100px 24px 130px; text-align: center; position: relative; overflow: hidden;
     }
-    .hero::before {
-      content: ''; position: absolute; inset: 0;
-      background: radial-gradient(ellipse at 15% 60%, rgba(255,255,255,.15) 0%, transparent 50%),
-                  radial-gradient(ellipse at 85% 20%, rgba(255,255,255,.1) 0%, transparent 45%);
+    .hero-ring {
+      position: absolute; border-radius: 50%; border: 2px dashed;
+      pointer-events: none;
     }
-    .hero-blob {
-      display: inline-block; font-size: 3.5rem; margin-bottom: 12px;
-      animation: heroFloat 3.5s ease-in-out infinite; position: relative;
+    .hero-ring-1 { width:540px;height:540px; top:-140px; left:-120px; border-color:rgba(139,92,246,.12); }
+    .hero-ring-2 { width:320px;height:320px; bottom:-80px; right:-60px; border-color:rgba(244,114,182,.15); }
+    .hero-ring-3 { width:200px;height:200px; top:40px; right:15%; border-color:rgba(45,212,191,.2); }
+
+    .hero h1 {
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(4.5rem, 14vw, 9rem);
+      line-height: .95; letter-spacing: -3px; position: relative;
+      background: linear-gradient(135deg, #6d28d9 0%, #db2777 60%, #f59e0b 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero-sub {
+      color: #6b7280; margin-top: 20px; position: relative;
+      font-size: clamp(1rem, 2.5vw, 1.25rem); font-weight: 500; max-width: 480px; margin-inline: auto;
+    }
+    .hero-cta {
+      display: inline-block; margin-top: 36px; position: relative;
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      color: #fff; border-radius: 999px; padding: 14px 36px;
+      font-family: 'Fredoka One', cursive; font-size: 1.1rem; letter-spacing: .5px;
+      box-shadow: 0 8px 30px rgba(139,92,246,.4); cursor: pointer;
+      animation: ctaPulse 3s ease-in-out infinite;
+    }
+    @keyframes ctaPulse {
+      0%,100% { box-shadow: 0 8px 30px rgba(139,92,246,.4); }
+      50%      { box-shadow: 0 12px 40px rgba(139,92,246,.65); }
     }
     @keyframes heroFloat {
       0%,100% { transform: translateY(0) rotate(-3deg); }
       50%      { transform: translateY(-16px) rotate(3deg); }
     }
-    .hero h1 {
-      font-family: 'Fredoka One', cursive;
-      font-size: clamp(2rem, 7vw, 4rem); color: #fff;
-      text-shadow: 0 4px 18px rgba(0,0,0,.2); position: relative;
-    }
-    .hero-sub { color: rgba(255,255,255,.92); margin-top: 12px; font-size: clamp(.95rem, 2.5vw, 1.15rem); position: relative; }
 
-    .gallery-wrap { flex: 1; max-width: 1160px; margin: 0 auto; padding: 40px 24px 100px; width: 100%; }
+    /* ── Gallery wrap ── */
+    .gallery-wrap {
+      flex: 1; padding: 60px 24px 120px; position: relative;
+      background: #fef9f2;
+    }
+    .gallery-wrap::before {
+      content: ''; position: fixed; inset: 0; z-index: 0;
+      background-image: radial-gradient(circle, rgba(139,92,246,.07) 1px, transparent 1px);
+      background-size: 30px 30px; pointer-events: none;
+    }
+    .gallery-inner { max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
 
     .action-bar {
       position: sticky; top: 0; z-index: 100;
-      background: rgba(248,250,252,.95); backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border); padding: 14px 0; margin-bottom: 40px;
+      background: rgba(254,249,242,.95); backdrop-filter: blur(14px);
+      border-bottom: 2px dashed rgba(139,92,246,.13);
+      padding: 16px 0; margin-bottom: 60px;
       display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
     }
-    .action-bar h2 { font-size: 1.25rem; font-weight: 800; }
+    .action-bar h2 { font-family: 'Fredoka One', cursive; font-size: 1.6rem; color: var(--text); }
     .action-bar-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 
     .sel-badge {
@@ -110,71 +150,188 @@
     }
     .sel-badge.visible { opacity: 1; transform: scale(1); }
 
-    .cat-section { margin-bottom: 56px; }
-    .cat-section:last-child { margin-bottom: 0; }
-
-    .cat-header {
-      display: flex; align-items: center; gap: 14px;
-      margin-bottom: 24px; padding-bottom: 14px; border-bottom: 2.5px solid var(--border);
+    /* ── Tabs ── */
+    .tab-bar {
+      display: flex; gap: 10px; margin-bottom: 32px; flex-wrap: wrap;
     }
-    .cat-header-icon { font-size: 2.2rem; line-height: 1; }
-    .cat-header-text h3 { font-family: 'Fredoka One', cursive; font-size: 1.65rem; color: var(--text); }
-    .cat-header-text p  { font-size: .88rem; color: var(--muted); margin-top: 2px; }
+    .tab-btn {
+      display: flex; align-items: center; gap: 8px;
+      padding: 11px 28px; border-radius: 999px; border: 2.5px solid var(--border);
+      background: #fff; font-weight: 800; cursor: pointer; font-size: 1rem;
+      font-family: 'Heebo', sans-serif; transition: all .2s; color: var(--muted);
+    }
+    .tab-btn:hover { border-color: var(--purple); color: var(--purple); }
+    .tab-btn.active.slime-tab  { background: var(--purple); color: #fff; border-color: var(--purple); }
+    .tab-btn.active.macrame-tab { background: var(--amber);  color: #fff; border-color: var(--amber); }
+    .tab-count {
+      background: rgba(255,255,255,.3); border-radius: 999px;
+      padding: 1px 9px; font-size: .78rem; font-weight: 700;
+    }
+    .tab-btn:not(.active) .tab-count {
+      background: var(--bg); color: var(--muted);
+    }
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+
+    /* ── Category sections (legacy, kept for structure) ── */
+    .cat-section { margin-bottom: 0; }
     .cat-count-badge {
-      margin-right: auto; background: var(--bg); border: 1.5px solid var(--border);
+      background: #fff; border: 1.5px solid var(--border);
       color: var(--muted); border-radius: 999px; padding: 4px 14px; font-size: .8rem; font-weight: 700;
     }
 
-    .img-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+    /* ── Product cards (ToyHouse style) ── */
+    .img-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 20px; }
 
-    .img-card {
-      background: var(--surface); border-radius: var(--radius); overflow: hidden;
-      box-shadow: var(--shadow); cursor: pointer; position: relative;
-      border: 3px solid transparent;
-      transition: transform .22s, box-shadow .22s, border-color .18s;
-      user-select: none; -webkit-tap-highlight-color: transparent;
+    .prod-card {
+      background: #fff; border-radius: 14px; overflow: hidden;
+      border: 2px solid #ede8f8;
+      box-shadow: 0 2px 14px rgba(0,0,0,.07);
+      transition: box-shadow .25s, transform .25s, border-color .2s;
+      display: flex; flex-direction: column; position: relative;
     }
-    .img-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
-    .img-card.selected { border-color: var(--purple); box-shadow: 0 0 0 4px rgba(139,92,246,.2), var(--shadow-lg); }
-    .img-card figure { position: relative; padding-bottom: 100%; overflow: hidden; }
-    .img-card figure img {
+    .prod-card:hover {
+      box-shadow: 0 10px 36px rgba(139,92,246,.16);
+      transform: translateY(-5px);
+      border-color: #c4b5fd;
+    }
+    .prod-card.in-cart {
+      border-color: var(--purple);
+      box-shadow: 0 0 0 3px rgba(139,92,246,.18), 0 10px 28px rgba(139,92,246,.15);
+    }
+
+    /* Image area */
+    .prod-img {
+      position: relative; padding-bottom: 100%; overflow: hidden;
+      background: #f8f6ff; cursor: zoom-in;
+    }
+    .prod-img img {
       position: absolute; inset: 0; width: 100%; height: 100%;
-      object-fit: cover; display: block; transition: transform .3s;
+      object-fit: cover; display: block; transition: transform .4s ease;
     }
-    .img-card:hover figure img { transform: scale(1.04); }
-    .sel-overlay { position: absolute; inset: 0; background: rgba(139,92,246,.08); opacity: 0; transition: opacity .18s; pointer-events: none; }
-    .img-card.selected .sel-overlay { opacity: 1; }
-    .check-bubble {
-      position: absolute; top: 10px; right: 10px; width: 32px; height: 32px;
-      border-radius: 50%; background: #fff; border: 2.5px solid #ddd;
+    .prod-card:hover .prod-img img { transform: scale(1.07); }
+
+    /* Cart indicator badge on image */
+    .prod-in-cart-badge {
+      position: absolute; top: 10px; left: 10px; z-index: 3;
+      background: var(--purple); color: #fff; border-radius: 50%;
+      width: 32px; height: 32px; display: none; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 800; box-shadow: 0 2px 8px rgba(139,92,246,.4);
+    }
+    .prod-card.in-cart .prod-in-cart-badge { display: flex; }
+
+    /* Price badge if product has price */
+    .prod-badge {
+      position: absolute; top: 0; right: 0; z-index: 2;
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      color: #fff; font-size: .7rem; font-weight: 800;
+      padding: 5px 12px 5px 16px; border-radius: 0 0 0 12px; letter-spacing: .3px;
+    }
+
+    /* Info area */
+    .prod-info { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+
+    .prod-title {
+      font-size: .94rem; font-weight: 700; color: var(--text); line-height: 1.35;
+      min-height: 2.6em; overflow: hidden; display: -webkit-box;
+      -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    }
+    .prod-title.untitled { color: var(--muted); font-style: italic; font-weight: 500; }
+
+    .prod-price-row { display: flex; align-items: baseline; gap: 6px; min-height: 1.6em; }
+    .prod-price-val { font-size: 1.15rem; font-weight: 800; color: var(--purple); }
+    .prod-price-tbd { font-size: .8rem; color: var(--muted); }
+
+    /* Action buttons — ToyHouse style */
+    .prod-btns { display: flex; gap: 8px; }
+    .btn-cart {
+      flex: 1.4; background: var(--purple); color: #fff; border: none;
+      border-radius: 8px; padding: 9px 6px; cursor: pointer;
+      font-family: 'Heebo', sans-serif; font-size: .8rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; gap: 4px;
+      transition: background .15s, transform .15s;
+    }
+    .btn-cart:hover { background: #6d28d9; transform: translateY(-1px); }
+    .prod-card.in-cart .btn-cart { background: #16a34a; }
+    .btn-buy {
+      flex: 1; background: #fff; color: var(--purple);
+      border: 2px solid var(--purple); border-radius: 8px; padding: 8px 6px; cursor: pointer;
+      font-family: 'Heebo', sans-serif; font-size: .8rem; font-weight: 700;
       display: flex; align-items: center; justify-content: center;
-      transition: background .18s, border-color .18s, transform .18s;
-      font-size: 15px; color: transparent; box-shadow: 0 2px 8px rgba(0,0,0,.12);
+      transition: background .15s, color .15s, transform .15s;
     }
-    .img-card.selected .check-bubble { background: var(--purple); border-color: var(--purple); color: #fff; transform: scale(1.1); }
-    .img-card .card-info { padding: 10px 13px 12px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 4px; }
-    .img-card .card-title { font-size: .9rem; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .img-card .card-title.no-title { font-size: .8rem; font-weight: 600; color: var(--muted); }
-    .img-card .card-price { font-size: .88rem; font-weight: 800; color: var(--purple); }
-    .img-card .card-price.no-price { display: none; }
+    .btn-buy:hover { background: var(--purple); color: #fff; transform: translateY(-1px); }
 
-    .empty-state { grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--muted); }
-    .empty-state .empty-icon { font-size: 4rem; margin-bottom: 14px; display: block; }
-    .empty-state p { font-size: 1rem; line-height: 1.6; }
+    /* Cart icon in action bar */
+    .cart-icon-btn {
+      position: relative; background: var(--purple); color: #fff; border: none;
+      border-radius: 12px; padding: 9px 18px; cursor: pointer;
+      font-family: 'Heebo', sans-serif; font-size: .9rem; font-weight: 700;
+      display: flex; align-items: center; gap: 8px;
+      transition: background .15s, transform .15s;
+    }
+    .cart-icon-btn:hover { background: #6d28d9; transform: translateY(-1px); }
+    .cart-count-badge {
+      background: var(--pink); color: #fff; border-radius: 50%;
+      width: 20px; height: 20px; font-size: .72rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      display: none;
+    }
+    .cart-count-badge.has-items { display: flex; }
 
+    .empty-state {
+      grid-column: 1/-1; text-align: center; padding: 80px 20px; color: var(--muted);
+    }
+    .empty-state .empty-icon { font-size: 5rem; margin-bottom: 16px; display: block; animation: heroFloat 3s ease-in-out infinite; }
+    .empty-state p { font-size: 1.05rem; line-height: 1.7; }
+
+    /* ── Lightbox ── */
+    .lightbox-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.88);
+      backdrop-filter: blur(10px); z-index: 9500;
+      display: flex; align-items: center; justify-content: center; padding: 24px;
+      opacity: 0; pointer-events: none; transition: opacity .3s;
+    }
+    .lightbox-overlay.open { opacity: 1; pointer-events: all; }
+    .lightbox-img {
+      max-width: 88vw; max-height: 84vh; border-radius: 20px;
+      box-shadow: 0 40px 100px rgba(0,0,0,.6);
+      transform: scale(.88); transition: transform .35s cubic-bezier(.34,1.56,.64,1);
+      object-fit: contain;
+    }
+    .lightbox-overlay.open .lightbox-img { transform: scale(1); }
+    .lightbox-close {
+      position: absolute; top: 20px; right: 20px;
+      background: rgba(255,255,255,.15); border: none; color: #fff;
+      width: 46px; height: 46px; border-radius: 50%; font-size: 1.5rem;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      backdrop-filter: blur(4px); transition: background .2s, transform .2s;
+    }
+    .lightbox-close:hover { background: rgba(255,255,255,.3); transform: scale(1.1); }
+    .lightbox-title {
+      position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: rgba(0,0,0,.6); color: #fff; border-radius: 999px;
+      padding: 8px 20px; font-family: 'Fredoka One', cursive; font-size: 1rem;
+      backdrop-filter: blur(6px); white-space: nowrap;
+    }
+
+    /* ── Cart panel ── */
     .send-panel {
       position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
-      background: var(--surface); border-top: 2px solid var(--border);
-      box-shadow: 0 -6px 30px rgba(0,0,0,.1); padding: 16px 24px;
+      background: rgba(255,255,255,.98); border-top: 3px solid var(--purple);
+      box-shadow: 0 -8px 40px rgba(139,92,246,.2); padding: 14px 24px;
       display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
-      transform: translateY(100%); transition: transform .3s cubic-bezier(.4,0,.2,1);
+      transform: translateY(100%); transition: transform .35s cubic-bezier(.4,0,.2,1);
+      backdrop-filter: blur(14px);
     }
     .send-panel.visible { transform: translateY(0); }
-    .send-panel-info { font-size: .92rem; font-weight: 600; }
-    .send-panel-info span { color: var(--purple); font-size: 1.1rem; font-weight: 800; }
+    .send-panel-info { display: flex; align-items: center; gap: 10px; }
+    .cart-panel-icon { font-size: 1.8rem; }
+    .cart-panel-text { font-family: 'Fredoka One', cursive; font-size: 1.05rem; color: var(--text); }
+    .cart-panel-text span { color: var(--purple); font-size: 1.2rem; }
     .send-panel-btns { display: flex; gap: 10px; align-items: center; }
 
-    .pub-footer { text-align: center; padding: 24px 20px 32px; border-top: 1px solid var(--border); }
+    .pub-footer { text-align: center; padding: 24px 20px 32px; border-top: 1px dashed rgba(139,92,246,.15); background: #fef9f2; }
     .pub-footer a { font-size: .78rem; color: #cbd5e1; text-decoration: none; transition: color .2s; }
     .pub-footer a:hover { color: var(--purple); }
 
@@ -293,6 +450,33 @@
     }
     .btn-save-settings:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(139,92,246,.35); }
 
+    /* Upload details modal */
+    .udm-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 9500;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .udm-box {
+      background: #fff; border-radius: 22px; padding: 32px 28px; width: min(400px, 92vw);
+      box-shadow: 0 20px 60px rgba(139,92,246,.22); animation: fadeUp .2s ease;
+    }
+    .udm-box h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 4px; color: var(--text); }
+    .udm-file  { font-size: .78rem; color: var(--muted); margin-bottom: 18px; word-break: break-all; }
+    .udm-label { font-size: .82rem; font-weight: 700; color: var(--text); margin-bottom: 5px; display: block; }
+    .udm-required { color: #ef4444; }
+    .udm-input {
+      width: 100%; padding: 10px 14px; border: 2px solid var(--border); border-radius: 10px;
+      font-size: .95rem; font-family: inherit; margin-bottom: 14px; outline: none;
+      transition: border-color .2s;
+    }
+    .udm-input:focus { border-color: var(--purple); }
+    .udm-input.err   { border-color: #ef4444; background: #fef2f2; }
+    .udm-err-msg { font-size: .78rem; color: #ef4444; margin-top: -10px; margin-bottom: 12px; display: none; }
+    .udm-err-msg.show { display: block; }
+    .udm-btns { display: flex; gap: 10px; margin-top: 4px; }
+    .udm-btn-cancel { flex:1; padding:10px; border:2px solid var(--border); border-radius:10px; background:#fff; color:var(--muted); font-weight:700; cursor:pointer; font-size:.9rem; }
+    .udm-btn-ok     { flex:2; padding:10px; border:none; border-radius:10px; background:var(--purple); color:#fff; font-weight:800; cursor:pointer; font-size:.9rem; }
+    .udm-btn-ok:hover { background:#6d28d9; }
+
     /* Upload */
     .upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px; }
     .upload-cat-wrap { display: flex; flex-direction: column; gap: 10px; }
@@ -326,10 +510,17 @@
     .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
     .section-header h3 { font-size: 1.15rem; font-weight: 800; }
 
-    .admin-cat-section { margin-bottom: 44px; }
-    .admin-cat-header { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 2.5px solid var(--border); }
-    .admin-cat-header h3 { font-family: 'Fredoka One', cursive; font-size: 1.35rem; }
-    .admin-cat-header .cat-n { font-size: .8rem; font-weight: 700; color: var(--muted); background: var(--bg); border: 1.5px solid var(--border); border-radius: 999px; padding: 3px 12px; }
+    .admin-cat-section { margin-bottom: 0; }
+    .admin-tab-bar { display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap; }
+    .admin-tab-btn {
+      display: flex; align-items: center; gap: 8px;
+      padding: 9px 22px; border-radius: 999px; border: 2px solid var(--border);
+      background: #fff; font-weight: 700; cursor: pointer; font-size: .9rem;
+      font-family: 'Heebo', sans-serif; transition: all .2s; color: var(--muted);
+    }
+    .admin-tab-btn:hover { border-color: var(--purple); color: var(--purple); }
+    .admin-tab-btn.active.slime-tab   { background: var(--purple); color: #fff; border-color: var(--purple); }
+    .admin-tab-btn.active.macrame-tab { background: var(--amber);  color: #fff; border-color: var(--amber); }
 
     .admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(195px, 1fr)); gap: 20px; }
     .admin-card { background: var(--surface); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); transition: transform .2s, box-shadow .2s; }
@@ -409,12 +600,15 @@
 
     @media (max-width: 640px) {
       .login-card { padding: 38px 24px; }
-      .img-grid, .admin-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .img-grid, .admin-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
       .admin-nav { padding: 0 16px; }
       .send-panel { flex-direction: column; align-items: stretch; }
       .send-panel-btns { justify-content: flex-end; }
       .upload-grid { grid-template-columns: 1fr; }
       .contact-modal-grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: clamp(3.5rem, 20vw, 5.5rem); letter-spacing: -1px; }
+      .float-deco { display: none; } /* hide on mobile for clean look */
+      .hero-ring { display: none; }
     }
   </style>
 </head>
@@ -423,37 +617,54 @@
 <!-- PUBLIC VIEW -->
 <div id="public-view">
   <header class="hero">
-    <span class="hero-blob">🫧</span>
+    <!-- Dashed rings -->
+    <div class="hero-ring hero-ring-1"></div>
+    <div class="hero-ring hero-ring-2"></div>
+    <div class="hero-ring hero-ring-3"></div>
+    <!-- Floating decorations -->
+    <span class="float-deco" style="font-size:3.8rem;top:12%;left:6%;--dur:4.5s;--delay:0s;--r1:-8deg;--r2:6deg;--r3:-4deg">🫧</span>
+    <span class="float-deco" style="font-size:2.8rem;top:18%;right:8%;--dur:5.5s;--delay:.8s;--r1:5deg;--r2:-7deg;--r3:3deg">🪢</span>
+    <span class="float-deco" style="font-size:2.2rem;bottom:22%;left:10%;--dur:3.8s;--delay:.4s;--r1:-5deg;--r2:8deg;--r3:-6deg">✨</span>
+    <span class="float-deco" style="font-size:3rem;bottom:18%;right:6%;--dur:5s;--delay:1.2s;--r1:7deg;--r2:-5deg;--r3:4deg">🫧</span>
+    <span class="float-deco" style="font-size:1.8rem;top:50%;left:3%;--dur:4.2s;--delay:.6s;--r1:-4deg;--r2:6deg;--r3:-3deg">🌸</span>
+    <span class="float-deco" style="font-size:2rem;top:30%;right:3%;--dur:6s;--delay:2s;--r1:6deg;--r2:-4deg;--r3:5deg">💜</span>
+    <!-- Title -->
     <h1>BySOL</h1>
     <p class="hero-sub">Pick what you love and send it to us — we'll get back to you soon! 💚</p>
+    <div class="hero-cta">Browse the Collection ↓</div>
   </header>
 
   <main class="gallery-wrap">
+    <div class="gallery-inner">
     <div class="action-bar">
       <h2>Our Gallery</h2>
       <div class="action-bar-right">
-        <span class="sel-badge" id="sel-badge">0 selected</span>
-        <button class="btn btn-ghost" id="btn-clear-pub" onclick="clearSelection()" style="display:none">✕ Clear</button>
+        <button class="btn btn-ghost" id="btn-clear-pub" onclick="clearSelection()" style="display:none;font-size:.82rem;padding:7px 14px">✕ Clear Cart</button>
+        <button class="cart-icon-btn" id="cart-action-btn" onclick="sendMail()" style="display:none">
+          🛒 Send to Sol
+          <span class="cart-count-badge has-items" id="cart-badge-top">0</span>
+        </button>
       </div>
     </div>
 
-    <div class="cat-section" id="pub-slime-section">
-      <div class="cat-header">
-        <span class="cat-header-icon">🫧</span>
-        <div class="cat-header-text"><h3>Our Slimes</h3><p>Click an image to select</p></div>
-        <span class="cat-count-badge" id="pub-slime-count"></span>
-      </div>
+    <!-- Category tabs -->
+    <div class="tab-bar">
+      <button class="tab-btn slime-tab active" id="pub-tab-slime" onclick="switchPubTab('slime')">
+        🫧 Slime <span class="tab-count" id="pub-slime-count">0</span>
+      </button>
+      <button class="tab-btn macrame-tab" id="pub-tab-macrame" onclick="switchPubTab('macrame')">
+        🪢 Macramé <span class="tab-count" id="pub-macrame-count">0</span>
+      </button>
+    </div>
+
+    <div class="tab-pane active" id="pub-slime-section">
       <div class="img-grid" id="pub-grid-slime"></div>
     </div>
-
-    <div class="cat-section" id="pub-macrame-section">
-      <div class="cat-header">
-        <span class="cat-header-icon">🪢</span>
-        <div class="cat-header-text"><h3>Our Macramé</h3><p>Click an image to select</p></div>
-        <span class="cat-count-badge" id="pub-macrame-count"></span>
-      </div>
+    <div class="tab-pane" id="pub-macrame-section">
       <div class="img-grid" id="pub-grid-macrame"></div>
     </div>
+
+    </div> <!-- /gallery-inner -->
   </main>
 
   <footer class="pub-footer">
@@ -463,9 +674,12 @@
 
 <!-- Floating send panel -->
 <div class="send-panel" id="send-panel">
-  <div class="send-panel-info">You selected <span id="panel-count">0</span> items</div>
+  <div class="send-panel-info">
+    <span class="cart-panel-icon">🛒</span>
+    <div class="cart-panel-text"><span id="panel-count">0</span> items in your cart</div>
+  </div>
   <div class="send-panel-btns">
-    <button class="btn btn-ghost" onclick="clearSelection()">Clear Selection</button>
+    <button class="btn btn-ghost" onclick="clearSelection()">Clear Cart</button>
     <button class="btn btn-primary" onclick="sendMail()">✉️&nbsp; Send to Sol</button>
   </div>
 </div>
@@ -602,6 +816,28 @@
       </div>
     </div>
 
+    <!-- Upload details modal -->
+    <div class="udm-overlay" id="udm-overlay" style="display:none">
+      <div class="udm-box">
+        <h3>📝 Product Details</h3>
+        <div class="udm-file" id="udm-filename"></div>
+        <label class="udm-label">Product Name <span class="udm-required">*</span></label>
+        <input class="udm-input" id="udm-name" type="text" placeholder="e.g. Pink Cloud Slime"
+               oninput="this.classList.remove('err'); document.getElementById('udm-name-err').classList.remove('show')"
+               onkeydown="if(event.key==='Enter') udmConfirm()" />
+        <div class="udm-err-msg" id="udm-name-err">Please enter a product name</div>
+        <label class="udm-label">Price (₪) <span class="udm-required">*</span></label>
+        <input class="udm-input" id="udm-price" type="number" min="1" step="1" placeholder="e.g. 45"
+               oninput="this.classList.remove('err'); document.getElementById('udm-price-err').classList.remove('show')"
+               onkeydown="if(event.key==='Enter') udmConfirm()" />
+        <div class="udm-err-msg" id="udm-price-err">Please enter a valid price</div>
+        <div class="udm-btns">
+          <button class="udm-btn-cancel" onclick="udmCancel()">Cancel</button>
+          <button class="udm-btn-ok"     onclick="udmConfirm()">✓ Upload</button>
+        </div>
+      </div>
+    </div>
+
     <div class="upload-progress" id="upload-progress">
       <div style="font-size:.88rem;font-weight:700;color:var(--purple)">Uploading... <span id="prog-text"></span></div>
       <div class="progress-bar-track"><div class="progress-bar-fill" id="prog-fill"></div></div>
@@ -612,23 +848,31 @@
       <button class="btn btn-red" style="font-size:.85rem;padding:8px 16px" onclick="deleteAll()">🗑&nbsp; Delete All</button>
     </div>
 
-    <div class="admin-cat-section">
-      <div class="admin-cat-header">
-        <span style="font-size:1.5rem">🫧</span><h3>Slimes</h3>
-        <span class="cat-n" id="admin-slime-count">0</span>
-      </div>
-      <div class="admin-grid" id="admin-grid-slime"></div>
+    <!-- Admin category tabs -->
+    <div class="admin-tab-bar">
+      <button class="admin-tab-btn slime-tab active" id="admin-tab-slime" onclick="switchAdminTab('slime')">
+        🫧 Slime <span id="admin-slime-count">0</span>
+      </button>
+      <button class="admin-tab-btn macrame-tab" id="admin-tab-macrame" onclick="switchAdminTab('macrame')">
+        🪢 Macramé <span id="admin-macrame-count">0</span>
+      </button>
     </div>
 
-    <div class="admin-cat-section">
-      <div class="admin-cat-header">
-        <span style="font-size:1.5rem">🪢</span><h3>Macramé</h3>
-        <span class="cat-n" id="admin-macrame-count">0</span>
-      </div>
+    <div class="tab-pane active" id="admin-slime-pane">
+      <div class="admin-grid" id="admin-grid-slime"></div>
+    </div>
+    <div class="tab-pane" id="admin-macrame-pane">
       <div class="admin-grid" id="admin-grid-macrame"></div>
     </div>
 
   </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox-overlay" id="lightbox" onclick="closeLightbox(event)">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img class="lightbox-img" id="lightbox-img" src="" alt="" />
+  <div class="lightbox-title" id="lightbox-title"></div>
 </div>
 
 <!-- Contact modal -->
@@ -912,25 +1156,47 @@ function renderPublic() {
   renderPubSection('macrame', byCategory('macrame'));
 }
 
+function switchPubTab(cat) {
+  ['slime','macrame'].forEach(c => {
+    document.getElementById('pub-tab-' + c).classList.toggle('active', c === cat);
+    document.getElementById('pub-' + c + '-section').classList.toggle('active', c === cat);
+  });
+}
+
+function switchAdminTab(cat) {
+  ['slime','macrame'].forEach(c => {
+    document.getElementById('admin-tab-' + c).classList.toggle('active', c === cat);
+    document.getElementById('admin-' + c + '-pane').classList.toggle('active', c === cat);
+  });
+}
+
 function renderPubSection(cat, imgs) {
-  const sectionEl = document.getElementById('pub-' + cat + '-section');
-  const gridEl    = document.getElementById('pub-grid-' + cat);
-  const countEl   = document.getElementById('pub-' + cat + '-count');
-  if (!imgs.length) { sectionEl.style.display = 'none'; return; }
-  sectionEl.style.display = '';
-  countEl.textContent = imgs.length + ' items';
+  const gridEl  = document.getElementById('pub-grid-' + cat);
+  const countEl = document.getElementById('pub-' + cat + '-count');
+  countEl.textContent = imgs.length;
   gridEl.innerHTML = imgs.map(img => {
-    const title    = img.title ? img.title : img.name;
+    const title    = img.title || img.name;
     const hasTitle = !!img.title;
-    const price    = img.price ? '$' + img.price : '';
+    const price    = img.price ? '₪' + img.price : '';
+    const inCart   = selected.has(img.id);
     return `
-    <div class="img-card" id="card-${img.id}" onclick="toggleSelect('${img.id}')">
-      <div class="sel-overlay"></div>
-      <div class="check-bubble">✓</div>
-      <figure><img src="${img.dataUrl}" alt="${esc(title)}" loading="lazy" decoding="async" /></figure>
-      <div class="card-info">
-        <div class="card-title ${hasTitle ? '' : 'no-title'}" title="${esc(title)}">${esc(title)}</div>
-        <div class="card-price ${price ? '' : 'no-price'}">${esc(price)}</div>
+    <div class="prod-card${inCart ? ' in-cart' : ''}" id="card-${img.id}">
+      <div class="prod-img" onclick="openLightbox('${img.dataUrl}','${esc(title)}')">
+        <img src="${img.dataUrl}" alt="${esc(title)}" loading="lazy" decoding="async" />
+        <div class="prod-in-cart-badge">✓</div>
+        ${price ? '<div class="prod-badge">✦ Available</div>' : ''}
+      </div>
+      <div class="prod-info">
+        <div class="prod-title${hasTitle ? '' : ' untitled'}">${esc(title)}</div>
+        <div class="prod-price-row">
+          ${price ? `<span class="prod-price-val">${esc(price)}</span>` : '<span class="prod-price-tbd">Price on request</span>'}
+        </div>
+        <div class="prod-btns">
+          <button class="btn-cart" onclick="addToCart('${img.id}')">
+            ${inCart ? '✓ In Cart' : '🛒 Add to Cart'}
+          </button>
+          <button class="btn-buy" onclick="buyNow('${img.id}')">Buy Now</button>
+        </div>
       </div>
     </div>`;
   }).join('');
@@ -939,28 +1205,65 @@ function renderPubSection(cat, imgs) {
 /* ================================================================
    SELECTION
 ================================================================ */
-function toggleSelect(id) {
+/* Add / remove from cart */
+function addToCart(id) {
+  if (selected.has(id)) {
+    selected.delete(id);
+  } else {
+    selected.add(id);
+  }
+  updateCartUI();
+  // Re-render just this card's button states without full re-render
   const card = document.getElementById('card-' + id);
-  if (!card) return;
-  if (selected.has(id)) { selected.delete(id); card.classList.remove('selected'); }
-  else { selected.add(id); card.classList.add('selected'); }
-  updateSelUI();
+  if (card) {
+    const inCart = selected.has(id);
+    card.classList.toggle('in-cart', inCart);
+    const btn = card.querySelector('.btn-cart');
+    if (btn) btn.textContent = inCart ? '✓ In Cart' : '🛒 Add to Cart';
+    if (inCart) {
+      if (btn) btn.style.background = '#16a34a';
+      showToast('🛒 Added to cart!');
+    } else {
+      if (btn) btn.style.background = '';
+      showToast('Removed from cart');
+    }
+  }
+}
+
+/* Buy just this one item immediately */
+function buyNow(id) {
+  selected.clear();
+  selected.add(id);
+  updateCartUI();
+  sendMail();
 }
 
 function clearSelection() {
-  selected.forEach(id => document.getElementById('card-' + id)?.classList.remove('selected'));
-  selected.clear(); updateSelUI();
+  selected.forEach(id => {
+    const card = document.getElementById('card-' + id);
+    if (card) {
+      card.classList.remove('in-cart');
+      const btn = card.querySelector('.btn-cart');
+      if (btn) { btn.textContent = '🛒 Add to Cart'; btn.style.background = ''; }
+    }
+  });
+  selected.clear();
+  updateCartUI();
 }
 
-function updateSelUI() {
+function updateCartUI() {
   const n = selected.size;
-  const badge = document.getElementById('sel-badge');
-  badge.textContent = n + (n === 1 ? ' selected' : ' selected');
-  badge.classList.toggle('visible', n > 0);
-  document.getElementById('btn-clear-pub').style.display = n ? 'inline-flex' : 'none';
+  document.getElementById('btn-clear-pub').style.display  = n ? 'inline-flex' : 'none';
   document.getElementById('send-panel').classList.toggle('visible', n > 0);
   document.getElementById('panel-count').textContent = n;
+  const topBtn   = document.getElementById('cart-action-btn');
+  const topBadge = document.getElementById('cart-badge-top');
+  if (topBtn)   topBtn.style.display   = n ? 'flex' : 'none';
+  if (topBadge) topBadge.textContent   = n;
 }
+
+/* keep legacy name used elsewhere */
+function updateSelUI() { updateCartUI(); }
 
 /* ================================================================
    BUILD MESSAGE
@@ -982,7 +1285,7 @@ function buildMessage(ct) {
       const title = (img.title || img.name).trim();
       const price = (img.price || '').trim();
       lines.push(price
-        ? '  ' + (i+1) + '. ' + title + '  |  Price: $' + price
+        ? '  ' + (i+1) + '. ' + title + '  |  Price: ₪' + price
         : '  ' + (i+1) + '. ' + title);
     });
   }
@@ -1112,7 +1415,7 @@ function renderAdminGrid(gridId, imgs, emptyMsg) {
                  oninput="updateField('${img.id}','title',this.value)" onblur="saveCatalog()" />
         </div>
         <div class="card-field">
-          <label>Price ($)</label>
+          <label>Price (₪)</label>
           <input type="number" min="0" step="0.5" class="price-input"
                  value="${esc(img.price || '')}" placeholder="0"
                  oninput="updateField('${img.id}','price',this.value)" onblur="saveCatalog()" />
@@ -1129,9 +1432,55 @@ function renderAdminGrid(gridId, imgs, emptyMsg) {
 /* ================================================================
    UPLOAD
 ================================================================ */
+/* ── Upload details modal ── */
+function promptUploadDetails(filename) {
+  return new Promise(resolve => {
+    document.getElementById('udm-filename').textContent = filename;
+    document.getElementById('udm-name').value  = '';
+    document.getElementById('udm-price').value = '';
+    document.getElementById('udm-name').classList.remove('err');
+    document.getElementById('udm-price').classList.remove('err');
+    document.getElementById('udm-name-err').classList.remove('show');
+    document.getElementById('udm-price-err').classList.remove('show');
+    document.getElementById('udm-overlay').style.display = 'flex';
+    setTimeout(() => document.getElementById('udm-name').focus(), 50);
+    window._udmResolve = resolve;
+  });
+}
+function udmConfirm() {
+  const name  = document.getElementById('udm-name').value.trim();
+  const price = document.getElementById('udm-price').value.trim();
+  let valid = true;
+  if (!name)  { document.getElementById('udm-name').classList.add('err');  document.getElementById('udm-name-err').classList.add('show');  valid = false; }
+  if (!price || isNaN(price) || Number(price) <= 0) {
+    document.getElementById('udm-price').classList.add('err');
+    document.getElementById('udm-price-err').classList.add('show');
+    valid = false;
+  }
+  if (!valid) return;
+  document.getElementById('udm-overlay').style.display = 'none';
+  window._udmResolve({ title: name, price });
+}
+function udmCancel() {
+  document.getElementById('udm-overlay').style.display = 'none';
+  window._udmResolve(null);
+}
+
 async function handleUpload(fileList, category) {
   const files = Array.from(fileList).filter(f => f.type.startsWith('image/'));
   if (!files.length) { showToast('⚠️ No image files selected'); return; }
+
+  // Collect name + price for each file before uploading
+  const fileDetails = [];
+  for (const file of files) {
+    const details = await promptUploadDetails(file.name);
+    if (!details) {
+      showToast('Upload cancelled');
+      document.getElementById('file-input-' + category).value = '';
+      return;
+    }
+    fileDetails.push({ file, ...details });
+  }
 
   const progressEl = document.getElementById('upload-progress');
   const progFill   = document.getElementById('prog-fill');
@@ -1140,18 +1489,18 @@ async function handleUpload(fileList, category) {
 
   let done = 0; const errors = [];
 
-  for (const file of files) {
+  for (const { file, title, price } of fileDetails) {
     try {
       const { url, sha, path } = await uploadFile(file, category);
       images.push({
         id:       Date.now().toString(36) + Math.random().toString(36).slice(2,7),
-        name:     file.name, title: '', price: '',
+        name:     file.name, title, price,
         category, dataUrl: url, sha, path
       });
     } catch (err) { errors.push(file.name); console.error('Upload error', file.name, err); }
     done++;
-    progFill.style.width = Math.round((done / files.length) * 100) + '%';
-    progText.textContent = done + ' / ' + files.length;
+    progFill.style.width = Math.round((done / fileDetails.length) * 100) + '%';
+    progText.textContent = done + ' / ' + fileDetails.length;
   }
 
   await saveCatalog(); renderAdmin();
@@ -1208,6 +1557,49 @@ function showToast(msg) {
 }
 
 /* ================================================================
+   LIGHTBOX
+================================================================ */
+function openLightbox(src, title) {
+  const lb = document.getElementById('lightbox');
+  const img = document.getElementById('lightbox-img');
+  const lbTitle = document.getElementById('lightbox-title');
+  img.src = src; img.alt = title || '';
+  lbTitle.textContent = title || '';
+  lbTitle.style.display = title ? '' : 'none';
+  lb.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox(e) {
+  if (e && e.target !== document.getElementById('lightbox') && !e.target.classList.contains('lightbox-close')) return;
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+  setTimeout(() => { document.getElementById('lightbox-img').src = ''; }, 350);
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { document.getElementById('lightbox')?.classList.remove('open'); document.body.style.overflow = ''; } });
+
+/* ================================================================
+   CARD TILT EFFECT
+================================================================ */
+function initTilt() {
+  document.addEventListener('mousemove', e => {
+    const card = e.target.closest('.prod-card');
+    if (!card) return;
+    const rect = card.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width  - 0.5;
+    const y = (e.clientY - rect.top)  / rect.height - 0.5;
+    card.style.transform = `perspective(600px) rotateY(${x * 12}deg) rotateX(${-y * 12}deg) translateY(-8px) scale(1.02)`;
+  });
+  document.addEventListener('mouseleave', e => {
+    const card = e.target.closest?.('.prod-card');
+    if (card) card.style.transform = '';
+  }, true);
+  document.addEventListener('mouseover', e => {
+    const cards = document.querySelectorAll('.prod-card');
+    cards.forEach(c => { if (c !== e.target.closest('.prod-card')) c.style.transform = ''; });
+  });
+}
+
+/* ================================================================
    BOOT
 ================================================================ */
 (async function init() {
@@ -1219,6 +1611,7 @@ function showToast(msg) {
   } else {
     renderPublic();
   }
+  initTilt();
 })();
 </script>
 </body>
