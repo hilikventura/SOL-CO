@@ -28,5 +28,15 @@
     "dataUrl": "https://hilikventura.github.io/SOL-CO/images/slime/1780895941285_slime1.jpeg",
     "sha": "b74dbda0c73f950dbf0bfc8c73133f642029d785",
     "path": "images/slime/1780895941285_slime1.jpeg"
+  },
+  {
+    "id": "mq4rguei06sl8",
+    "name": "slime2.jpeg",
+    "title": "2",
+    "price": "3",
+    "category": "slime",
+    "dataUrl": "https://hilikventura.github.io/SOL-CO/images/slime/1780895950055_slime2.jpeg",
+    "sha": "ce0f63a9163601cea78504f4a866b02248b8a225",
+    "path": "images/slime/1780895950055_slime2.jpeg"
   }
 ]
