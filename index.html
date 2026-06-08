@@ -1621,4 +1621,12 @@ function initTilt() {
   loadContact();
   await loadCatalog();
   if (localStorage.getItem(LS_SESSION) === '1') {
- 
+    await showAdmin();
+  } else {
+    renderPublic();
+  }
+  initTilt();
+})();
+</script>
+</body>
+</html>
