@@ -30,53 +30,13 @@
     "path": "images/slime/1780891594915_slime2.jpeg"
   },
   {
-    "id": "mq4pf6azddhbj",
+    "id": "mq4pmbxst4huf",
     "name": "שמש.jpeg",
-    "title": "שמש",
+    "title": "ana",
     "price": "30",
     "category": "macrame",
-    "dataUrl": "https://hilikventura.github.io/SOL-CO/images/macrame/1780892512587____.jpeg",
+    "dataUrl": "https://hilikventura.github.io/SOL-CO/images/macrame/1780892846309____.jpeg",
     "sha": "417a5a180dc6e7559bd3c2795898bb7d7a9255be",
-    "path": "images/macrame/1780892512587____.jpeg"
-  },
-  {
-    "id": "mq4pfnlrahwn1",
-    "name": "עץ ירוק.jpeg",
-    "title": "עץ ירוק",
-    "price": "30",
-    "category": "macrame",
-    "dataUrl": "https://hilikventura.github.io/SOL-CO/images/macrame/1780892534614________.jpeg",
-    "sha": "b5c02752951c44e229701a1e20327aca92e2adf2",
-    "path": "images/macrame/1780892534614________.jpeg"
-  },
-  {
-    "id": "mq4pg0k0hljku",
-    "name": "סלסלה לשלט.jpeg",
-    "title": "סלסלה לטושים",
-    "price": "25",
-    "category": "macrame",
-    "dataUrl": "https://hilikventura.github.io/SOL-CO/images/macrame/1780892551706___________.jpeg",
-    "sha": "8758673562dd7929840bd28b058bcc462ca28c8e",
-    "path": "images/macrame/1780892551706___________.jpeg"
-  },
-  {
-    "id": "mq4pgfnkvd3jp",
-    "name": "סלסלה לשלט.jpeg",
-    "title": "סלסלה לשלט",
-    "price": "30",
-    "category": "macrame",
-    "dataUrl": "https://hilikventura.github.io/SOL-CO/images/macrame/1780892571198___________.jpeg",
-    "sha": "8758673562dd7929840bd28b058bcc462ca28c8e",
-    "path": "images/macrame/1780892571198___________.jpeg"
-  },
-  {
-    "id": "mq4pgtqzngwby",
-    "name": "ירח.jpeg",
-    "title": "ירח",
-    "price": "25",
-    "category": "macrame",
-    "dataUrl": "https://hilikventura.github.io/SOL-CO/images/macrame/1780892589555____.jpeg",
-    "sha": "1eb0ab23bcf67574f1e675a95d6ca82b9adca685",
-    "path": "images/macrame/1780892589555____.jpeg"
+    "path": "images/macrame/1780892846309____.jpeg"
   }
 ]
