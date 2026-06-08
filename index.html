@@ -1012,20 +1012,28 @@ function ghApi(method, path, body) {
    CATALOG — GitHub + localStorage fallback
 ================================================================ */
 async function loadCatalog() {
-  // Always try GitHub first — repo is public, no token needed for reading
-  try {
-    const repo = cfg.ghRepo || GH_REPO_DEFAULT;
-    const url = 'https://raw.githubusercontent.com/' + repo + '/main/catalog.json?t=' + Date.now();
-    const res = await fetch(url);
-    if (res.ok) {
-      images = await res.json();
-      localStorage.setItem(LS_KEY, JSON.stringify(images));
-      return;
-    }
-  } catch (err) { console.warn('GitHub catalog load failed', err); }
-  // Fallback to localStorage
-  try { images = JSON.parse(localStorage.getItem(LS_KEY) || '[]'); }
-  catch { images = []; }
+  const local = (() => { try { return JSON.parse(localStorage.getItem(LS_KEY) || '[]'); } catch { return []; } })();
+
+  // Only trust GitHub if we have a token (meaning we also SAVE there)
+  if (cfg.ghToken) {
+    try {
+      const repo = cfg.ghRepo || GH_REPO_DEFAULT;
+      const url  = 'https://raw.githubusercontent.com/' + repo + '/main/catalog.json?t=' + Date.now();
+      const res  = await fetch(url);
+      if (res.ok) {
+        const ghData = await res.json();
+        // Merge: GitHub is source of truth, but add any local-only items not yet pushed
+        const ghIds = new Set(ghData.map(i => i.id));
+        const localOnly = local.filter(i => !ghIds.has(i.id));
+        images = [...ghData, ...localOnly];
+        localStorage.setItem(LS_KEY, JSON.stringify(images));
+        return;
+      }
+    } catch (err) { console.warn('GitHub catalog load failed', err); }
+  }
+
+  // No token or GitHub failed — use localStorage only
+  images = local;
 }
 
 async function saveCatalog() {
@@ -1145,7 +1153,7 @@ function doLogout() { localStorage.removeItem(LS_SESSION); showPublic(); }
 /* ================================================================
    HELPERS
 ================================================================ */
-function byCategory(cat) { return images.filter(img => (img.category || 'slime') === cat); }
+function byCategory(cat) { return images.filter(img => img.category === cat); }
 
 /* ================================================================
    PUBLIC RENDER
