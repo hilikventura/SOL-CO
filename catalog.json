@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "id": "mq4s9ncqwyfwg",
+    "name": "slime1.jpeg",
+    "title": "1",
+    "price": "4",
+    "category": "slime",
+    "dataUrl": "https://hilikventura.github.io/SOL-CO/images/slime/1780897294014_slime1.jpeg",
+    "sha": "b74dbda0c73f950dbf0bfc8c73133f642029d785",
+    "path": "images/slime/1780897294014_slime1.jpeg"
+  }
+]
