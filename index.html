@@ -1,7 +1,7 @@
 <!--
   BySOL — Slime & Macramé Shop
   Creator : Sol Ventura
-  Version : 1.4
+  Version : 1.5
   Updated : 2026-06-08
 -->
 <!DOCTYPE html>
@@ -681,7 +681,7 @@
   <footer class="pub-footer">
     <a href="#" onclick="showLogin(); return false;">Admin Login</a>
     <br>
-    <span class="version-badge">BySOL · Sol Ventura · v1.4</span>
+    <span class="version-badge">BySOL · Sol Ventura · v1.5</span>
   </footer>
 </div>
 
@@ -720,7 +720,7 @@
 <!-- ADMIN VIEW -->
 <div id="admin-view">
   <nav class="admin-nav">
-    <div class="brand">BySOL <em>| Admin</em> <span class="version-badge" style="margin-top:0;margin-left:8px">Sol Ventura · v1.4</span></div>
+    <div class="brand">BySOL <em>| Admin</em> <span class="version-badge" style="margin-top:0;margin-left:8px">Sol Ventura · v1.5</span></div>
     <div class="admin-nav-right">
       <button class="btn btn-ghost" onclick="showPublic()" style="font-size:.85rem;padding:8px 16px">👁&nbsp; Public View</button>
       <button class="btn btn-red" onclick="doLogout()" style="font-size:.85rem;padding:8px 16px">Logout</button>
@@ -1194,15 +1194,24 @@ async function showAdmin() {
 ================================================================ */
 function focusPass() { document.getElementById('inp-pass').focus(); }
 
-function doLogin() {
-  const u = document.getElementById('inp-user').value.trim();
-  const p = document.getElementById('inp-pass').value;
+async function doLogin() {
+  const u = (document.getElementById('inp-user').value || '').trim();
+  const p = (document.getElementById('inp-pass').value || '');
   const errEl = document.getElementById('login-error');
+  const btn   = document.querySelector('.btn-login-submit');
   if (u === CREDS.user && p === CREDS.pass) {
     errEl.classList.remove('show');
+    if (btn) { btn.disabled = true; btn.textContent = '⏳ Loading...'; }
     localStorage.setItem(LS_SESSION, '1');
-    showAdmin();
+    try {
+      await showAdmin();
+    } catch (err) {
+      console.error('showAdmin failed:', err);
+      showToast('❌ Error loading admin panel');
+      if (btn) { btn.disabled = false; btn.textContent = 'Login →'; }
+    }
   } else {
+    errEl.textContent = u === CREDS.user ? '❌ Wrong password' : '❌ Wrong username or password';
     errEl.classList.add('show');
     document.getElementById('inp-pass').value = '';
     document.getElementById('inp-pass').focus();
@@ -1646,4 +1655,40 @@ function closeLightbox(e) {
   document.body.style.overflow = '';
   setTimeout(() => { document.getElementById('lightbox-img').src = ''; }, 350);
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { document.getE
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { document.getElementById('lightbox')?.classList.remove('open'); document.body.style.overflow = ''; } });
+
+/* ================================================================
+   CARD TILT EFFECT
+================================================================ */
+function initTilt() {
+  document.addEventListener('mousemove', e => {
+    const card = e.target.closest('.prod-card');
+    if (!card) return;
+    const rect = card.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width  - 0.5;
+    const y = (e.clientY - rect.top)  / rect.height - 0.5;
+    card.style.transform = `perspective(600px) rotateY(${x * 12}deg) rotateX(${-y * 12}deg) translateY(-8px) scale(1.02)`;
+  });
+  document.addEventListener('mouseout', e => {
+    const card = e.target.closest('.prod-card');
+    if (card && !card.contains(e.relatedTarget)) card.style.transform = '';
+  });
+}
+
+/* ================================================================
+   BOOT
+================================================================ */
+(async function init() {
+  loadSettings();
+  loadContact();
+  if (localStorage.getItem(LS_SESSION) === '1') {
+    await showAdmin(); // showAdmin calls loadCatalog internally
+  } else {
+    await loadCatalog();
+    renderPublic();
+  }
+  initTilt();
+})();
+</script>
+</body>
+</html>
