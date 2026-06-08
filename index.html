@@ -1,7 +1,7 @@
 <!--
   BySOL — Slime & Macramé Shop
   Creator : Sol Ventura
-  Version : 1.2
+  Version : 1.4
   Updated : 2026-06-08
 -->
 <!DOCTYPE html>
@@ -280,7 +280,7 @@
     .cart-count-badge {
       background: var(--pink); color: #fff; border-radius: 50%;
       width: 20px; height: 20px; font-size: .72rem; font-weight: 800;
-      display: flex; align-items: center; justify-content: center;
+      align-items: center; justify-content: center;
       display: none;
     }
     .cart-count-badge.has-items { display: flex; }
@@ -340,6 +340,11 @@
     .pub-footer { text-align: center; padding: 24px 20px 32px; border-top: 1px dashed rgba(139,92,246,.15); background: #fef9f2; }
     .pub-footer a { font-size: .78rem; color: #cbd5e1; text-decoration: none; transition: color .2s; }
     .pub-footer a:hover { color: var(--purple); }
+    .version-badge {
+      display: inline-flex; align-items: center; gap: 6px; margin-top: 8px;
+      font-size: .7rem; color: #94a3b8; font-family: monospace;
+      background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 999px; padding: 2px 10px;
+    }
 
     /* ══ LOGIN ══ */
     #login-view {
@@ -675,6 +680,8 @@
 
   <footer class="pub-footer">
     <a href="#" onclick="showLogin(); return false;">Admin Login</a>
+    <br>
+    <span class="version-badge">BySOL · Sol Ventura · v1.4</span>
   </footer>
 </div>
 
@@ -713,7 +720,7 @@
 <!-- ADMIN VIEW -->
 <div id="admin-view">
   <nav class="admin-nav">
-    <div class="brand">BySOL <em>| Admin</em></div>
+    <div class="brand">BySOL <em>| Admin</em> <span class="version-badge" style="margin-top:0;margin-left:8px">Sol Ventura · v1.4</span></div>
     <div class="admin-nav-right">
       <button class="btn btn-ghost" onclick="showPublic()" style="font-size:.85rem;padding:8px 16px">👁&nbsp; Public View</button>
       <button class="btn btn-red" onclick="doLogout()" style="font-size:.85rem;padding:8px 16px">Logout</button>
@@ -1039,7 +1046,7 @@ async function loadCatalog() {
       if (r.ok) {
         const d = await r.json();
         // Decode base64 content returned by the API
-        const jsonStr = decodeURIComponent(escape(atob(d.content.replace(/\n/g, ''))));
+        const jsonStr = new TextDecoder().decode(Uint8Array.from(atob(d.content.replace(/\n/g,'')), c => c.charCodeAt(0)));
         let ghData = JSON.parse(jsonStr);
         // Remove any IDs the user already deleted (handles CDN lag)
         ghData = ghData.filter(i => !deletedIds.has(i.id));
@@ -1070,7 +1077,14 @@ async function saveCatalog() {
     } catch {}
     const body = { message: 'Update catalog', content };
     if (sha) body.sha = sha;
-    await ghApi('PUT', 'contents/catalog.json', body);
+    const saveRes = await ghApi('PUT', 'contents/catalog.json', body);
+    if (saveRes.ok) {
+      // Prune LS_DELETED — catalog is now authoritative, no need to keep stale deleted IDs
+      localStorage.removeItem(LS_DELETED);
+    } else {
+      const errData = await saveRes.json().catch(() => ({}));
+      throw new Error(errData.message || 'GitHub PUT failed: ' + saveRes.status);
+    }
   } catch (err) {
     console.warn('GitHub catalog save failed', err);
     showToast('⚠️ GitHub: Save error (saved locally)');
@@ -1128,13 +1142,32 @@ async function uploadFile(file, category) {
 }
 
 async function deleteFileFromGitHub(img) {
-  if (!cfg.ghRepo || !cfg.ghToken || !img.sha || !img.path) return;
+  if (!cfg.ghRepo || !cfg.ghToken || !img.path) return;
   try {
-    await ghApi('DELETE', 'contents/' + img.path, {
+    // Always fetch the current SHA — stored SHA may be stale
+    let sha = img.sha;
+    const check = await ghApi('GET', 'contents/' + img.path);
+    if (check.ok) {
+      const fileData = await check.json();
+      sha = fileData.sha;
+    } else if (check.status === 404) {
+      return; // file already gone
+    }
+    if (!sha) return;
+
+    const res = await ghApi('DELETE', 'contents/' + img.path, {
       message: 'Delete ' + img.name,
-      sha: img.sha
+      sha
     });
-  } catch (err) { console.warn('GitHub delete failed', err); }
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      console.warn('GitHub delete failed:', errData.message || res.status);
+      showToast('⚠️ GitHub delete failed: ' + (errData.message || res.status));
+    }
+  } catch (err) {
+    console.warn('GitHub delete error', err);
+    showToast('⚠️ GitHub delete error — file may still exist on GitHub');
+  }
 }
 
 /* ================================================================
@@ -1216,7 +1249,7 @@ function renderPubSection(cat, imgs) {
     const inCart   = selected.has(img.id);
     return `
     <div class="prod-card${inCart ? ' in-cart' : ''}" id="card-${img.id}">
-      <div class="prod-img" onclick="openLightbox('${img.dataUrl}','${esc(title)}')">
+      <div class="prod-img" onclick="openLightbox('${esc(img.dataUrl)}','${esc(title)}')">
         <img src="${img.dataUrl}" alt="${esc(title)}" loading="lazy" decoding="async" />
         <div class="prod-in-cart-badge">✓</div>
         ${price ? '<div class="prod-badge">✦ Available</div>' : ''}
@@ -1304,8 +1337,8 @@ function updateSelUI() { updateCartUI(); }
    BUILD MESSAGE
 ================================================================ */
 function buildMessage(ct) {
-  const slimeSel   = images.filter(img => selected.has(img.id) && (img.category || 'slime') === 'slime');
-  const macrameSel = images.filter(img => selected.has(img.id) && (img.category || 'slime') === 'macrame');
+  const slimeSel   = images.filter(img => selected.has(img.id) && img.category === 'slime');
+  const macrameSel = images.filter(img => selected.has(img.id) && img.category === 'macrame');
   const lines = [];
   lines.push('👤 Customer Details:');
   lines.push('Name: '    + ct.name);
@@ -1372,10 +1405,10 @@ async function submitWithContact() {
   document.getElementById('contact-modal').classList.remove('open');
 
   const sendBtn = document.querySelector('#send-panel .btn-primary');
-  if (sendBtn) { sendBtn.disabled = true; sendBtn.textContent = '⏳ שולח...'; }
+  if (sendBtn) { sendBtn.disabled = true; sendBtn.textContent = '⏳ Sending...'; }
 
   if (!cfg.w3fKey) {
-    if (sendBtn) { sendBtn.disabled = false; sendBtn.innerHTML = '✉️&nbsp; שלח רשימה לסול'; }
+    if (sendBtn) { sendBtn.disabled = false; sendBtn.innerHTML = '✉️&nbsp; Send to Sol'; }
     openFallbackModal(message); return;
   }
 
@@ -1399,7 +1432,7 @@ async function submitWithContact() {
     showToast('❌ Send error — please try again');
     openFallbackModal(message);
   } finally {
-    if (sendBtn) { sendBtn.disabled = false; sendBtn.innerHTML = '✉️&nbsp; שלח רשימה לסול'; }
+    if (sendBtn) { sendBtn.disabled = false; sendBtn.innerHTML = '✉️&nbsp; Send to Sol'; }
   }
 }
 
@@ -1562,6 +1595,7 @@ function updateField(id, field, value) { const img = images.find(i => i.id === i
 async function deleteImage(id) {
   if (!confirm('Delete this image?')) return;
   const img = images.find(i => i.id === id);
+  if (!img) return;
   images = images.filter(i => i.id !== id);
   addDeletedId(id); // remember deletion even if GitHub CDN is cached
   await Promise.all([saveCatalog(), deleteFileFromGitHub(img)]);
@@ -1612,44 +1646,4 @@ function closeLightbox(e) {
   document.body.style.overflow = '';
   setTimeout(() => { document.getElementById('lightbox-img').src = ''; }, 350);
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { document.getElementById('lightbox')?.classList.remove('open'); document.body.style.overflow = ''; } });
-
-/* ================================================================
-   CARD TILT EFFECT
-================================================================ */
-function initTilt() {
-  document.addEventListener('mousemove', e => {
-    const card = e.target.closest('.prod-card');
-    if (!card) return;
-    const rect = card.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width  - 0.5;
-    const y = (e.clientY - rect.top)  / rect.height - 0.5;
-    card.style.transform = `perspective(600px) rotateY(${x * 12}deg) rotateX(${-y * 12}deg) translateY(-8px) scale(1.02)`;
-  });
-  document.addEventListener('mouseleave', e => {
-    const card = e.target.closest?.('.prod-card');
-    if (card) card.style.transform = '';
-  }, true);
-  document.addEventListener('mouseover', e => {
-    const cards = document.querySelectorAll('.prod-card');
-    cards.forEach(c => { if (c !== e.target.closest('.prod-card')) c.style.transform = ''; });
-  });
-}
-
-/* ================================================================
-   BOOT
-================================================================ */
-(async function init() {
-  loadSettings();
-  loadContact();
-  await loadCatalog();
-  if (localStorage.getItem(LS_SESSION) === '1') {
-    await showAdmin();
-  } else {
-    renderPublic();
-  }
-  initTilt();
-})();
-</script>
-</body>
-</html>
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { document.getE
