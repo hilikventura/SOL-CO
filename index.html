@@ -1,7 +1,7 @@
 <!--
   BySOL — Slime & Macramé Shop
   Creator : Sol Ventura
-  Version : 1.5
+  Version : 1.6
   Updated : 2026-06-08
 -->
 <!DOCTYPE html>
@@ -681,7 +681,7 @@
   <footer class="pub-footer">
     <a href="#" onclick="showLogin(); return false;">Admin Login</a>
     <br>
-    <span class="version-badge">BySOL · Sol Ventura · v1.5</span>
+    <span class="version-badge">BySOL · Sol Ventura · v1.6</span>
   </footer>
 </div>
 
@@ -720,7 +720,7 @@
 <!-- ADMIN VIEW -->
 <div id="admin-view">
   <nav class="admin-nav">
-    <div class="brand">BySOL <em>| Admin</em> <span class="version-badge" style="margin-top:0;margin-left:8px">Sol Ventura · v1.5</span></div>
+    <div class="brand">BySOL <em>| Admin</em> <span class="version-badge" style="margin-top:0;margin-left:8px">Sol Ventura · v1.6</span></div>
     <div class="admin-nav-right">
       <button class="btn btn-ghost" onclick="showPublic()" style="font-size:.85rem;padding:8px 16px">👁&nbsp; Public View</button>
       <button class="btn btn-red" onclick="doLogout()" style="font-size:.85rem;padding:8px 16px">Logout</button>
@@ -769,7 +769,11 @@
             </div>
             <div class="sfield">
               <label>PERSONAL ACCESS TOKEN</label>
-              <input id="s-gh-token" type="password" placeholder="github_pat_..." />
+              <div style="display:flex;gap:8px;align-items:center;">
+                <input id="s-gh-token" type="password" placeholder="github_pat_..." style="flex:1" />
+                <button onclick="testGithubConnection()" style="white-space:nowrap;padding:8px 14px;border:none;border-radius:10px;background:#8b5cf6;color:#fff;font-weight:700;cursor:pointer;font-size:13px;">🔗 Test</button>
+              </div>
+              <div id="gh-test-result" style="margin-top:6px;font-size:13px;display:none;"></div>
             </div>
             <div class="sfield">
               <label>CUSTOM DOMAIN (optional — leave blank to use GitHub Pages URL)</label>
@@ -1023,6 +1027,50 @@ function ghApi(method, path, body) {
 }
 
 /* ================================================================
+   GITHUB — Test connection
+================================================================ */
+async function testGithubConnection() {
+  // Pull token from field if user just typed a new one
+  const tokenInput = (document.getElementById('s-gh-token').value || '').trim();
+  const token = tokenInput || cfg.ghToken;
+  const resultEl = document.getElementById('gh-test-result');
+  resultEl.style.display = 'block';
+  resultEl.style.color = '#64748b';
+  resultEl.textContent = '⏳ Testing…';
+  if (!token) {
+    resultEl.style.color = '#ef4444';
+    resultEl.textContent = '❌ No token entered — paste your GitHub Personal Access Token above first.';
+    return;
+  }
+  try {
+    const res = await fetch('https://api.github.com/repos/' + cfg.ghRepo + '/contents/catalog.json', {
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Accept': 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28'
+      }
+    });
+    if (res.ok || res.status === 404) {
+      resultEl.style.color = '#16a34a';
+      resultEl.textContent = '✅ Token valid! GitHub connection OK.';
+      if (tokenInput) { cfg.ghToken = token; }
+    } else if (res.status === 401) {
+      resultEl.style.color = '#ef4444';
+      resultEl.textContent = '❌ Unauthorized (401) — token is invalid or expired. Generate a new one.';
+    } else if (res.status === 403) {
+      resultEl.style.color = '#ef4444';
+      resultEl.textContent = '❌ Forbidden (403) — token exists but lacks "Contents: Read & Write" permission.';
+    } else {
+      resultEl.style.color = '#ef4444';
+      resultEl.textContent = '❌ Error ' + res.status + ' — check repo name in settings.';
+    }
+  } catch (err) {
+    resultEl.style.color = '#ef4444';
+    resultEl.textContent = '❌ Network error: ' + err.message;
+  }
+}
+
+/* ================================================================
    CATALOG — GitHub + localStorage fallback
 ================================================================ */
 function getDeletedIds() {
@@ -1064,16 +1112,22 @@ async function loadCatalog() {
   images = local.filter(i => !deletedIds.has(i.id));
 }
 
+function utf8ToBase64(str) {
+  return btoa(String.fromCharCode(...new TextEncoder().encode(str)));
+}
+
 async function saveCatalog() {
   localStorage.setItem(LS_KEY, JSON.stringify(images));
   if (!cfg.ghRepo || !cfg.ghToken) return;
   try {
-    const content = btoa(unescape(encodeURIComponent(JSON.stringify(images, null, 2))));
+    const content = utf8ToBase64(JSON.stringify(images, null, 2));
     // Get current SHA (if file already exists)
     let sha;
     try {
       const r = await ghApi('GET', 'contents/catalog.json');
       if (r.ok) { const d = await r.json(); sha = d.sha; }
+      else if (r.status === 401) { showToast('❌ GitHub token invalid or expired — update in Settings'); return; }
+      else if (r.status === 403) { showToast('❌ GitHub token lacks write permission — check repo access in Settings'); return; }
     } catch {}
     const body = { message: 'Update catalog', content };
     if (sha) body.sha = sha;
@@ -1083,11 +1137,17 @@ async function saveCatalog() {
       localStorage.removeItem(LS_DELETED);
     } else {
       const errData = await saveRes.json().catch(() => ({}));
-      throw new Error(errData.message || 'GitHub PUT failed: ' + saveRes.status);
+      const msg = errData.message || ('HTTP ' + saveRes.status);
+      if (saveRes.status === 401) showToast('❌ GitHub: Unauthorized — re-enter your token in Settings');
+      else if (saveRes.status === 403) showToast('❌ GitHub: Forbidden — token missing "Contents: Read & Write" permission');
+      else if (saveRes.status === 409) showToast('⚠️ GitHub: Conflict — refresh and try again');
+      else if (saveRes.status === 422) showToast('⚠️ GitHub: ' + msg);
+      else showToast('⚠️ GitHub save failed (' + saveRes.status + '): ' + msg);
+      console.warn('GitHub catalog save failed', saveRes.status, errData);
     }
   } catch (err) {
     console.warn('GitHub catalog save failed', err);
-    showToast('⚠️ GitHub: Save error (saved locally)');
+    showToast('⚠️ GitHub: Save error (saved locally) — ' + (err.message || ''));
   }
 }
 
@@ -1563,10 +1623,13 @@ async function handleUpload(fileList, category) {
   const progFill   = document.getElementById('prog-fill');
   const progText   = document.getElementById('prog-text');
   progressEl.classList.add('show'); progFill.style.width = '0%';
+  progText.textContent = '0 / ' + fileDetails.length;
 
   let done = 0; const errors = [];
+  const total = fileDetails.length;
 
-  for (const { file, title, price } of fileDetails) {
+  // Upload all files in parallel for maximum speed
+  await Promise.all(fileDetails.map(async ({ file, title, price }) => {
     try {
       const { url, sha, path } = await uploadFile(file, category);
       images.push({
@@ -1574,13 +1637,14 @@ async function handleUpload(fileList, category) {
         name:     file.name, title, price,
         category, dataUrl: url, sha, path
       });
+      renderAdmin(); // show each image as soon as it's ready
     } catch (err) { errors.push(file.name); console.error('Upload error', file.name, err); }
     done++;
-    progFill.style.width = Math.round((done / fileDetails.length) * 100) + '%';
-    progText.textContent = done + ' / ' + fileDetails.length;
-  }
+    progFill.style.width = Math.round((done / total) * 100) + '%';
+    progText.textContent = done + ' / ' + total;
+  }));
 
-  await saveCatalog(); renderAdmin();
+  await saveCatalog();
   setTimeout(() => { progressEl.classList.remove('show'); progFill.style.width = '0%'; }, 600);
 
   const catLabel = category === 'slime' ? 'slime' : 'macramé';
