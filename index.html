@@ -479,7 +479,7 @@
     <div class="login-error" id="login-error">Incorrect username or password ❌</div>
     <div class="form-field">
       <label for="inp-user">Username</label>
-      <input id="inp-user" type="text" placeholder="solportal" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter') focusPass()" />
+      <input id="inp-user" type="text" placeholder="admin" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter') focusPass()" />
     </div>
     <div class="form-field">
       <label for="inp-pass">Password</label>
@@ -543,6 +543,10 @@
             <div class="sfield">
               <label>PERSONAL ACCESS TOKEN</label>
               <input id="s-gh-token" type="password" placeholder="github_pat_..." />
+            </div>
+            <div class="sfield">
+              <label>CUSTOM DOMAIN (optional — leave blank to use GitHub Pages URL)</label>
+              <input id="s-custom-domain" type="text" placeholder="bysolco.com" />
             </div>
           </div>
         </div>
@@ -665,7 +669,7 @@
 /* ================================================================
    CONFIG
 ================================================================ */
-const CREDS      = { user: 'solportal', pass: 'ventura1215' };
+const CREDS      = { user: 'admin', pass: 'ventura1215' };
 const LS_KEY     = 'ventura_slime_v3';
 const LS_CFG     = 'ventura_slime_cfg';
 const LS_CONTACT = 'ventura_slime_contact';
@@ -682,7 +686,7 @@ let contact  = { name: '', phone: '', email: '', address: '' };
    SETTINGS
 ================================================================ */
 const GH_REPO_DEFAULT = 'hilikventura/SOL-CO';
-let cfg = { ghRepo: GH_REPO_DEFAULT, ghToken: '', w3fKey: '' };
+let cfg = { ghRepo: GH_REPO_DEFAULT, ghToken: '', w3fKey: '', customDomain: '' };
 
 function loadSettings() {
   try { cfg = Object.assign({}, cfg, JSON.parse(localStorage.getItem(LS_CFG) || '{}')); }
@@ -696,6 +700,7 @@ function saveSettings() {
   const tokenInput = (document.getElementById('s-gh-token').value || '').trim();
   if (tokenInput) cfg.ghToken = tokenInput; // only overwrite if user typed something new
   cfg.w3fKey = (document.getElementById('s-w3f-key').value || '').trim();
+  cfg.customDomain = (document.getElementById('s-custom-domain').value || '').trim();
   localStorage.setItem(LS_CFG, JSON.stringify(cfg));
   updateSettingsUI();
   showToast('✅ Settings saved');
@@ -714,6 +719,7 @@ function updateSettingsUI() {
   setChip('chip-github', ghOk,  '🐙 GitHub',    ghOk  ? 'Active' : 'Not Set');
   setChip('chip-w3f',    w3fOk, '✉️ Web3Forms',  w3fOk ? 'Active' : 'Not Set');
   setVal('s-gh-repo', cfg.ghRepo);
+  setVal('s-custom-domain', cfg.customDomain);
   // Show masked token so user knows it's saved
   const tokenEl = document.getElementById('s-gh-token');
   if (tokenEl) {
@@ -826,9 +832,15 @@ async function uploadFile(file, category) {
       throw new Error(err.message || 'GitHub upload error');
     }
     const data = await res.json();
-    // Use GitHub Pages URL so images load fast from CDN
-    const [owner, repo] = cfg.ghRepo.split('/');
-    const pageUrl = 'https://' + owner + '.github.io/' + repo + '/' + path;
+    // Use custom domain if set, otherwise GitHub Pages URL
+    let baseUrl;
+    if (cfg.customDomain) {
+      baseUrl = 'https://' + cfg.customDomain.replace(/^https?:\/\//, '').replace(/\/$/, '');
+    } else {
+      const [owner, repo] = cfg.ghRepo.split('/');
+      baseUrl = 'https://' + owner + '.github.io/' + repo;
+    }
+    const pageUrl = baseUrl + '/' + path;
     return { url: pageUrl, sha: data.content.sha, path };
   }
   // Fallback: base64
