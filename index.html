@@ -1,7 +1,7 @@
 <!--
   BySOL — Slime & Macramé Shop
   Creator : Sol Ventura
-  Version : 1.1
+  Version : 1.2
   Updated : 2026-06-08
 -->
 <!DOCTYPE html>
@@ -924,6 +924,7 @@ const LS_KEY     = 'ventura_slime_v3';
 const LS_CFG     = 'ventura_slime_cfg';
 const LS_CONTACT = 'ventura_slime_contact';
 const LS_SESSION = 'ventura_slime_session';
+const LS_DELETED = 'ventura_slime_deleted'; // tracks deleted IDs to handle CDN cache
 
 /* ================================================================
    STATE
@@ -1017,20 +1018,34 @@ function ghApi(method, path, body) {
 /* ================================================================
    CATALOG — GitHub + localStorage fallback
 ================================================================ */
+function getDeletedIds() {
+  try { return new Set(JSON.parse(localStorage.getItem(LS_DELETED) || '[]')); }
+  catch { return new Set(); }
+}
+function addDeletedId(id) {
+  const s = getDeletedIds(); s.add(id);
+  localStorage.setItem(LS_DELETED, JSON.stringify([...s]));
+}
+
 async function loadCatalog() {
-  const local = (() => { try { return JSON.parse(localStorage.getItem(LS_KEY) || '[]'); } catch { return []; } })();
+  const local      = (() => { try { return JSON.parse(localStorage.getItem(LS_KEY) || '[]'); } catch { return []; } })();
+  const deletedIds = getDeletedIds();
 
   // Only trust GitHub if we have a token (meaning we also SAVE there)
   if (cfg.ghToken) {
     try {
-      const repo = cfg.ghRepo || GH_REPO_DEFAULT;
-      const url  = 'https://raw.githubusercontent.com/' + repo + '/main/catalog.json?t=' + Date.now();
-      const res  = await fetch(url);
-      if (res.ok) {
-        const ghData = await res.json();
-        // Merge: GitHub is source of truth, but add any local-only items not yet pushed
+      // Use GitHub API (not raw CDN) — always returns latest, not cached
+      const r = await ghApi('GET', 'contents/catalog.json');
+      if (r.ok) {
+        const d = await r.json();
+        // Decode base64 content returned by the API
+        const jsonStr = decodeURIComponent(escape(atob(d.content.replace(/\n/g, ''))));
+        let ghData = JSON.parse(jsonStr);
+        // Remove any IDs the user already deleted (handles CDN lag)
+        ghData = ghData.filter(i => !deletedIds.has(i.id));
+        // Merge: add local-only items not yet pushed to GitHub
         const ghIds = new Set(ghData.map(i => i.id));
-        const localOnly = local.filter(i => !ghIds.has(i.id));
+        const localOnly = local.filter(i => !ghIds.has(i.id) && !deletedIds.has(i.id));
         images = [...ghData, ...localOnly];
         localStorage.setItem(LS_KEY, JSON.stringify(images));
         return;
@@ -1038,8 +1053,8 @@ async function loadCatalog() {
     } catch (err) { console.warn('GitHub catalog load failed', err); }
   }
 
-  // No token or GitHub failed — use localStorage only
-  images = local;
+  // No token or GitHub failed — use localStorage, filter out deleted IDs
+  images = local.filter(i => !deletedIds.has(i.id));
 }
 
 async function saveCatalog() {
@@ -1548,6 +1563,7 @@ async function deleteImage(id) {
   if (!confirm('Delete this image?')) return;
   const img = images.find(i => i.id === id);
   images = images.filter(i => i.id !== id);
+  addDeletedId(id); // remember deletion even if GitHub CDN is cached
   await Promise.all([saveCatalog(), deleteFileFromGitHub(img)]);
   renderAdmin(); showToast('🗑 Image deleted');
 }
@@ -1556,6 +1572,7 @@ async function deleteAll() {
   if (!images.length) return;
   if (!confirm('Delete all ' + images.length + ' images?')) return;
   const toDelete = [...images];
+  toDelete.forEach(img => addDeletedId(img.id));
   images = [];
   await saveCatalog();
   await Promise.all(toDelete.map(img => deleteFileFromGitHub(img)));
