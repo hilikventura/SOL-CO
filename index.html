@@ -29,7 +29,7 @@
       --muted:   #64748b;
       --border:  #e2e8f0;
       --radius:  16px;
-      --shadow:  0 4px 20px rgba(0,0,0,.08);
+      --shadow:  0 4px 20px rgba(0,0,0,.08)
       --shadow-lg: 0 12px 40px rgba(0,0,0,.14);
     }
 
@@ -987,7 +987,7 @@ async function bakeSettingsToGitHub() {
 
     // Patch the three BAKED_ constants with current values (escape special chars in token)
     const escape = s => s.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-    html = html.replace(/const BAKED_TOKEN\s*=\s*'[^']*'/, "const BAKED_TOKEN    = '" + escape(cfg.ghToken) + "'");
+    html = html.replace(/const BAKED_TOKEN\s*=\s*'[^']*'/, "const AKED_TOKEN    = '" + btoa(cfg.ghToken) + "'");
     html = html.replace(/const BAKED_W3F_KEY\s*=\s*'[^']*'/, "const BAKED_W3F_KEY  = '" + btoa(cfg.w3fKey) + "'");
     html = html.replace(/const BAKED_DOMAIN\s*=\s*'[^']*'/, "const BAKED_DOMAIN   = '" + escape(cfg.customDomain) + "'");
 
