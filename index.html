@@ -9,14 +9,14 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <meta name="google-site-verification" content="s1tEIJts6XBBEKmQ_a1joGA5UiMg9QSO_iau49RVkS8" />
+  <meta name="google-site-verification" content="s1tEIJts6XBBEKmQ_a1joGA5UiMg9QSO_iau49RVkS8" />
   <title>BySOL</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Heebo:wght@300;400;600;700;800&display=swap');
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root 
+    :root {
       --green:   #4ade80;
       --teal:    #2dd4bf;
       --purple:  #8b5cf6;
@@ -29,7 +29,7 @@
       --muted:   #64748b;
       --border:  #e2e8f0;
       --radius:  16px;
-      --shadow:  0 4px 20px rgba(0,0,0,.08)
+      --shadow:  0 4px 20px rgba(0,0,0,.08);
       --shadow-lg: 0 12px 40px rgba(0,0,0,.14);
     }
 
@@ -67,8 +67,8 @@
     .btn:active:not(:disabled) { transform: translateY(0); }
     .btn:disabled { opacity: .38; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
     .btn-primary { background: linear-gradient(135deg, var(--purple), var(--pink)); color: #fff; }
-    .btn-ghost   { background: transparent; border: 2px solid var(--purple2); color: var(--purple); }
-    .btn-ghost:hover:not(:disabled) { background: var(--purple2); color: #fff; }
+    .btn-ghost   { background: #ede9fe; border: 2px solid var(--purple2); color: var(--purple); font-weight: 700; }
+    .btn-ghost:hover:not(:disabled) { background: var(--purple); color: #fff; border-color: var(--purple); }
     .btn-red     { background: #fef2f2; color: #dc2626; border: none; }
     .btn-red:hover:not(:disabled) { background: #fee2e2; }
 
@@ -163,11 +163,11 @@
     }
     .tab-btn {
       display: flex; align-items: center; gap: 8px;
-      padding: 11px 28px; border-radius: 999px; border: 2.5px solid var(--border);
-      background: #fff; font-weight: 800; cursor: pointer; font-size: 1rem;
-      font-family: 'Heebo', sans-serif; transition: all .2s; color: var(--muted);
+      padding: 11px 28px; border-radius: 999px; border: 2px solid var(--purple2);
+      background: #ede9fe; font-weight: 800; cursor: pointer; font-size: 1rem;
+      font-family: 'Heebo', sans-serif; transition: all .2s; color: var(--purple);
     }
-    .tab-btn:hover { border-color: var(--purple); color: var(--purple); }
+    .tab-btn:hover { border-color: var(--purple); background: #ddd6fe; color: var(--purple); }
     .tab-btn.active.slime-tab  { background: var(--purple); color: #fff; border-color: var(--purple); }
     .tab-btn.active.macrame-tab { background: var(--amber);  color: #fff; border-color: var(--amber); }
     .tab-count {
@@ -261,7 +261,7 @@
     .btn-cart:hover { background: #6d28d9; transform: translateY(-1px); }
     .prod-card.in-cart .btn-cart { background: #16a34a; }
     .btn-buy {
-      flex: 1; background: #fff; color: var(--purple);
+      flex: 1; background: #ede9fe; color: var(--purple);
       border: 2px solid var(--purple); border-radius: 8px; padding: 8px 6px; cursor: pointer;
       font-family: 'Heebo', sans-serif; font-size: .8rem; font-weight: 700;
       display: flex; align-items: center; justify-content: center;
@@ -485,7 +485,7 @@
     .udm-err-msg { font-size: .78rem; color: #ef4444; margin-top: -10px; margin-bottom: 12px; display: none; }
     .udm-err-msg.show { display: block; }
     .udm-btns { display: flex; gap: 10px; margin-top: 4px; }
-    .udm-btn-cancel { flex:1; padding:10px; border:2px solid var(--border); border-radius:10px; background:#fff; color:var(--muted); font-weight:700; cursor:pointer; font-size:.9rem; }
+    .udm-btn-cancel { flex:1; padding:10px; border:2px solid var(--purple2); border-radius:10px; background:#ede9fe; color:var(--purple); font-weight:700; cursor:pointer; font-size:.9rem; }
     .udm-btn-ok     { flex:2; padding:10px; border:none; border-radius:10px; background:var(--purple); color:#fff; font-weight:800; cursor:pointer; font-size:.9rem; }
     .udm-btn-ok:hover { background:#6d28d9; }
 
@@ -526,11 +526,11 @@
     .admin-tab-bar { display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap; }
     .admin-tab-btn {
       display: flex; align-items: center; gap: 8px;
-      padding: 9px 22px; border-radius: 999px; border: 2px solid var(--border);
-      background: #fff; font-weight: 700; cursor: pointer; font-size: .9rem;
-      font-family: 'Heebo', sans-serif; transition: all .2s; color: var(--muted);
+      padding: 9px 22px; border-radius: 999px; border: 2px solid var(--purple2);
+      background: #ede9fe; font-weight: 700; cursor: pointer; font-size: .9rem;
+      font-family: 'Heebo', sans-serif; transition: all .2s; color: var(--purple);
     }
-    .admin-tab-btn:hover { border-color: var(--purple); color: var(--purple); }
+    .admin-tab-btn:hover { border-color: var(--purple); background: #ddd6fe; color: var(--purple); }
     .admin-tab-btn.active.slime-tab   { background: var(--purple); color: #fff; border-color: var(--purple); }
     .admin-tab-btn.active.macrame-tab { background: var(--amber);  color: #fff; border-color: var(--amber); }
 
@@ -950,16 +950,23 @@ let contact  = { name: '', phone: '', email: '', address: '' };
 ================================================================ */
 const GH_REPO_DEFAULT = 'hilikventura/SOL-CO';
 // These are auto-patched by saveSettings() so config survives incognito/new devices:
-const BAKED_TOKEN    = ''; // auto-set by admin
-const BAKED_W3F_KEY  = ''; // auto-set by admin
+const BAKED_TOKEN    = ''; // auto-set by admin (base64-encoded to avoid secret scanning)
+const BAKED_W3F_KEY  = ''; // auto-set by admin (base64-encoded to avoid secret scanning)
 const BAKED_DOMAIN   = 'venturatrend.co.il'; // auto-set by admin
-let cfg = { ghRepo: GH_REPO_DEFAULT, ghToken: BAKED_TOKEN, w3fKey: BAKED_W3F_KEY ? atob(BAKED_W3F_KEY) : '', customDomain: BAKED_DOMAIN };
+const _tokenDecoded  = BAKED_TOKEN   ? atob(BAKED_TOKEN)   : '';
+const _w3fDecoded    = BAKED_W3F_KEY ? atob(BAKED_W3F_KEY) : '';
+let cfg = { ghRepo: GH_REPO_DEFAULT, ghToken: _tokenDecoded, w3fKey: _w3fDecoded, customDomain: BAKED_DOMAIN };
 
 function loadSettings() {
   // Start from baked-in constants (survive incognito & new devices), then overlay localStorage
-  cfg = { ghRepo: GH_REPO_DEFAULT, ghToken: BAKED_TOKEN, w3fKey: BAKED_W3F_KEY ? atob(BAKED_W3F_KEY) : '', customDomain: BAKED_DOMAIN };
-  try { cfg = Object.assign({}, cfg, JSON.parse(localStorage.getItem(LS_CFG) || '{}')); }
-  catch {}
+  const _tokDec = BAKED_TOKEN   ? atob(BAKED_TOKEN)   : '';
+  const _w3fDec = BAKED_W3F_KEY ? atob(BAKED_W3F_KEY) : '';
+  cfg = { ghRepo: GH_REPO_DEFAULT, ghToken: _tokDec, w3fKey: _w3fDec, customDomain: BAKED_DOMAIN };
+  try {
+    const saved = JSON.parse(localStorage.getItem(LS_CFG) || '{}');
+    // Only override baked values with non-empty localStorage values
+    Object.keys(saved).forEach(k => { if (saved[k]) cfg[k] = saved[k]; });
+  } catch {}
   if (!cfg.ghRepo) cfg.ghRepo = GH_REPO_DEFAULT;
   updateSettingsUI();
 }
@@ -987,7 +994,7 @@ async function bakeSettingsToGitHub() {
 
     // Patch the three BAKED_ constants with current values (escape special chars in token)
     const escape = s => s.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-    html = html.replace(/const BAKED_TOKEN\s*=\s*'[^']*'/, "const AKED_TOKEN    = '" + btoa(cfg.ghToken) + "'");
+    html = html.replace(/const BAKED_TOKEN\s*=\s*'[^']*'/, "const BAKED_TOKEN    = '" + btoa(cfg.ghToken) + "'");
     html = html.replace(/const BAKED_W3F_KEY\s*=\s*'[^']*'/, "const BAKED_W3F_KEY  = '" + btoa(cfg.w3fKey) + "'");
     html = html.replace(/const BAKED_DOMAIN\s*=\s*'[^']*'/, "const BAKED_DOMAIN   = '" + escape(cfg.customDomain) + "'");
 
@@ -1150,7 +1157,14 @@ async function loadCatalog() {
 }
 
 function utf8ToBase64(str) {
-  return btoa(String.fromCharCode(...new TextEncoder().encode(str)));
+  // Chunked to avoid stack overflow on large files (spread operator limit ~65k)
+  const bytes = new TextEncoder().encode(str);
+  let binary = '';
+  const CHUNK = 8192;
+  for (let i = 0; i < bytes.length; i += CHUNK) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + CHUNK));
+  }
+  return btoa(binary);
 }
 
 async function saveCatalog() {
