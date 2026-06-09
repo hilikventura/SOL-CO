@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>מדיניות פרטיות — BySOL</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🫏</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Heebo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --green: #4ade80; --teal: #2dd4bf; --purple: #8b5cf6; --purple2: #a78bfa;
+      --pink: #f472b6; --amber: #f59e0b; --bg: #fef9f2; --surface: #ffffff;
+      --text: #0f172a; --muted: #64748b; --border: #e2e8f0; --radius: 16px;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Heebo', Arial, sans-serif; background: var(--bg); color: var(--text);
+      min-height: 100vh; direction: rtl; -webkit-font-smoothing: antialiased;
+    }
+    .site-header {
+      background: rgba(255,255,255,.92); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border); padding: 16px 24px; display: flex;
+      align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100;
+    }
+    .logo {
+      font-family: 'Fredoka One', cursive; font-size: 1.6rem;
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none;
+    }
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 6px; color: var(--purple);
+      font-weight: 700; font-size: .9rem; text-decoration: none; background: #ede9fe;
+      border: 2px solid var(--purple2); padding: 8px 18px; border-radius: 12px;
+      transition: background .2s, color .2s;
+    }
+    .back-btn:hover { background: var(--purple); color: #fff; border-color: var(--purple); }
+    .hero-banner {
+      background: linear-gradient(160deg, #fef9f2 0%, #fef0f8 55%, #f0f4ff 100%);
+      padding: 60px 24px 50px; text-align: center; position: relative; overflow: hidden;
+    }
+    .hero-banner::before {
+      content: ''; position: absolute; width: 400px; height: 400px; border-radius: 50%;
+      border: 2px dashed rgba(139,92,246,.15); top: -100px; right: -80px; pointer-events: none;
+    }
+    .hero-banner::after {
+      content: ''; position: absolute; width: 300px; height: 300px; border-radius: 50%;
+      border: 2px dashed rgba(244,114,182,.12); bottom: -80px; left: -60px; pointer-events: none;
+    }
+    .hero-icon { font-size: 3.5rem; margin-bottom: 16px; display: block; }
+    .hero-banner h1 {
+      font-size: 2.2rem; font-weight: 800; background: linear-gradient(135deg, var(--purple), var(--pink));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px;
+    }
+    .hero-banner .subtitle { color: var(--muted); font-size: 1rem; font-weight: 400; }
+    .updated-badge {
+      display: inline-block; background: #ede9fe; color: var(--purple);
+      font-size: .8rem; font-weight: 700; padding: 4px 14px; border-radius: 999px; margin-top: 14px;
+    }
+    .notice-box {
+      max-width: 780px; margin: 32px auto 0; background: linear-gradient(135deg, #fef9c3, #fef3c7);
+      border: 2px solid #f59e0b; border-radius: var(--radius); padding: 22px 26px; display: flex;
+      gap: 14px; align-items: flex-start;
+    }
+    .notice-icon { font-size: 1.8rem; flex-shrink: 0; margin-top: 2px; }
+    .notice-box strong { display: block; font-size: 1.05rem; font-weight: 800; color: #92400e; margin-bottom: 6px; }
+    .notice-box p { color: #78350f; font-size: .95rem; line-height: 1.7; }
+    .content-wrap { max-width: 780px; margin: 0 auto; padding: 40px 24px 80px; }
+    .section-card {
+      background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border);
+      padding: 28px 30px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,.05);
+      transition: box-shadow .2s;
+    }
+    .section-card:hover { box-shadow: 0 8px 32px rgba(139,92,246,.1); }
+    .section-card h2 {
+      font-size: 1.15rem; font-weight: 800; color: var(--purple); margin-bottom: 14px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .section-card h2 .sec-icon { font-size: 1.2rem; }
+    .section-card p, .section-card li { color: #334155; font-size: .96rem; line-height: 1.85; }
+    .section-card ul { padding-right: 20px; margin-top: 8px; }
+    .section-card ul li { margin-bottom: 6px; list-style: none; padding-right: 8px; position: relative; }
+    .section-card ul li::before { content: '✦'; color: var(--purple2); font-size: .7rem; position: absolute; right: -8px; top: 5px; }
+    .exchange-card {
+      background: linear-gradient(135deg, #f0fdf4, #dcfce7); border: 2px solid var(--green);
+      border-radius: var(--radius); padding: 28px 30px; margin-bottom: 20px;
+    }
+    .exchange-card h2 { color: #166534; font-size: 1.15rem; font-weight: 800; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    .exchange-card p, .exchange-card li { color: #14532d; font-size: .96rem; line-height: 1.85; }
+    .exchange-card ul { padding-right: 20px; margin-top: 8px; }
+    .exchange-card ul li { margin-bottom: 6px; list-style: none; padding-right: 8px; position: relative; }
+    .exchange-card ul li::before { content: '✓'; color: var(--green); font-weight: 800; position: absolute; right: -8px; top: 2px; }
+    .third-party-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-top: 14px;
+    }
+    .tp-item { background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; text-align: center; }
+    .tp-item .tp-name { font-weight: 800; font-size: .95rem; color: var(--purple); margin-bottom: 4px; }
+    .tp-item .tp-role { font-size: .83rem; color: var(--muted); }
+    .contact-card {
+      background: linear-gradient(135deg, var(--purple), var(--pink)); border-radius: var(--radius);
+      padding: 28px 30px; text-align: center; color: #fff; margin-bottom: 20px;
+    }
+    .contact-card h2 { font-size: 1.15rem; font-weight: 800; margin-bottom: 10px; }
+    .contact-card p { font-size: .95rem; opacity: .92; line-height: 1.7; margin-bottom: 16px; }
+    .contact-card a {
+      display: inline-block; background: rgba(255,255,255,.2); border: 2px solid rgba(255,255,255,.6);
+      color: #fff; font-weight: 700; font-size: .95rem; padding: 10px 24px; border-radius: 12px;
+      text-decoration: none; transition: background .2s;
+    }
+    .contact-card a:hover { background: rgba(255,255,255,.35); }
+    .page-footer { text-align: center; padding: 24px; color: var(--muted); font-size: .83rem; border-top: 1px solid var(--border); }
+    .page-footer a { color: var(--purple); text-decoration: none; font-weight: 700; }
+    @media (max-width: 600px) {
+      .hero-banner h1 { font-size: 1.7rem; }
+      .section-card { padding: 20px 18px; }
+      .notice-box { flex-direction: column; gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a href="https://venturatrend.co.il" class="logo">🫏 BySOL</a>
+    <a href="https://venturatrend.co.il" class="back-btn">← חזרה לאתר</a>
+  </header>
+  <div class="hero-banner">
+    <span class="hero-icon">🔒</span>
+    <h1>מדיניות פרטיות</h1>
+    <p class="subtitle">BySOL — חנות סליים של סול ונטורה</p>
+    <span class="updated-badge">עודכן לאחרונה: יוני 2026</span>
+  </div>
+  <div style="max-width:780px;margin:0 auto;padding:0 24px;">
+    <div class="notice-box">
+      <span class="notice-icon">⚠️</span>
+      <div>
+        <strong>הבהרה חשובה — אין עסקאות כספיות באתר זה</strong>
+        <p>כל תגי המחיר, מחשבוני העגלה, ואזורי "תשלום" המוצגים באתר הם <strong>לצורכי הדגמה בלבד</strong> ואינם מבצעים כל חיוב אמיתי. האתר פועל על מודל <strong>החלפת מוצר במוצר</strong> בין חברים או קהילות עניין — ללא העברת כסף. אין כאן חנות מסחר אלקטרוני, אין עיבוד תשלומים, ואין שמירת פרטי כרטיס אשראי.</p>
+      </div>
+    </div>
+  </div>
+  <div class="content-wrap">
+    <div class="exchange-card">
+      <h2><span>🔄</span> מודל ההחלפה — איך זה עובד?</h2>
+      <p>BySOL היא פלטפורמת קהילה שמאפשרת להציג פריטי סליים ומקרמה ולאפשר <strong>החלפה ישירה</strong> בין בעלי עניין דומה.</p>
+      <ul>
+        <li>אין עסקאות כספיות — הכל בהחלפה.</li>
+        <li>יצירת קשר מתבצעת דרך טופס פנייה בלבד.</li>
+        <li>ההחלפה עצמה מסוכמת בין הצדדים ישירות, מחוץ לאתר.</li>
+        <li>המחירים המוצגים הם ייחוס ערך יחסי בלבד ואינם מחייבים.</li>
+      </ul>
+    </div>
+    <div class="section-card">
+      <h2><span class="sec-icon">📋</span> אילו נתונים נאספים?</h2>
+      <p>האתר אוסף מינימום מידע הכרחי בלבד:</p>
+      <ul>
+        <li><strong>טופס יצירת קשר</strong> — שם, כתובת אימייל, תוכן ההודעה.</li>
+        <li><strong>LocalStorage</strong> — שמירת עגלה זמנית ומועדפים על המכשיר בלבד.</li>
+        <li><strong>לא נאספים</strong>: פרטי תשלום, טלפון, כתובות, קובצי Cookie מעקב, Google Analytics.</li>
+      </ul>
+    </div>
+    <div class="section-card">
+      <h2><span class="sec-icon">🎯</span> לשם מה משתמשים במידע?</h2>
+      <ul>
+        <li>מענה לפניות ובקשות להחלפה.</li>
+        <li>שיפור חוויית הגלישה (LocalStorage).</li>
+        <li>המידע <strong>אינו</strong> נמכר או משותף לצד שלישי.</li>
+      </ul>
+    </div>
+    <div class="section-card">
+      <h2><span class="sec-icon">🔗</span> שירותי צד שלישי</h2>
+      <p>האתר משתמש בשירותים הבאים לצורכי תשתית בלבד:</p>
+      <div class="third-party-grid">
+        <div class="tp-item"><div class="tp-name">GitHub Pages</div><div class="tp-role">אחסון האתר</div></div>
+        <div class="tp-item"><div class="tp-name">Web3Forms</div><div class="tp-role">שליחת טופס</div></div>
+        <div class="tp-item"><div class="tp-name">Cloudflare</div><div class="tp-role">CDN + DNS</div></div>
+        <div class="tp-item"><div class="tp-name">Google Fonts</div><div class="tp-role">טעינת גופנים</div></div>
+      </div>
+    </div>
+    <div class="section-card">
+      <h2><span class="sec-icon">🍪</span> Cookie ו-LocalStorage</h2>
+      <ul>
+        <li><strong>LocalStorage</strong> — שמירה על המכשיר בלבד. ניתן למחיקה בהגדרות הדפדפן.</li>
+        <li><strong>Cloudflare Cookies</strong> — קובצים טכניים לאבטחה בלבד.</li>
+        <li>האתר <strong>אינו</strong> משתמש ב-Cookie למטרות שיווק או מעקב.</li>
+      </ul>
+    </div>
+    <div class="section-card">
+      <h2><span class="sec-icon">⚖️</span> זכויות המשתמש</h2>
+      <p>בהתאם לחוק הגנת הפרטיות הישראלי, יש לך זכות:</p>
+      <ul>
+        <li>לדעת אילו נתונים נשמרו אודותיך.</li>
+        <li>לבקש מחיקה של כל מידע שנשלח בטופס.</li>
+        <li>למחוק את ה-LocalStorage בהגדרות הדפדפן.</li>
+      </ul>
+      <p style="margin-top:12px;">לפניות נשמח לענות בתוך 14 ימי עסקים.</p>
+    </div>
+    <div class="section-card">
+      <h2><span class="sec-icon">🗓️</span> שמירת מידע</h2>
+      <ul>
+        <li>פניות בטופס — נשמרות לצורך מענה בלבד.</li>
+        <li>LocalStorage — נשמר עד שתמחק אותו ידנית.</li>
+      </ul>
+    </div>
+    <div class="section-card">
+      <h2><span class="sec-icon">👧</span> קטינים</h2>
+      <p>האתר מיועד לכל הגילאים. לא נאסף מידע מקטינים מתחת לגיל 13.</p>
+    </div>
+    <div class="section-card">
+      <h2><span class="sec-icon">📝</span> שינויים במדיניות</h2>
+      <p>אנו שומרים לעצמנו את הזכות לעדכן מדיניות זו. כל שינוי יצוין בתאריך בראש הדף.</p>
+    </div>
+    <div class="contact-card">
+      <h2>📬 יצירת קשר בנושא פרטיות</h2>
+      <p>שאלות, בקשות מחיקה, או כל עניין הקשור למדיניות:</p>
+      <a href="mailto:solventura1215@gmail.com">solventura1215@gmail.com</a>
+    </div>
+  </div>
+  <footer class="page-footer">
+    © 2026 BySOL — Sol Ventura | <a href="https://venturatrend.co.il">venturatrend.co.il</a> | כל הפריטים לצורכי החלפה בלבד.
+  </footer>
+</body>
+</html>
