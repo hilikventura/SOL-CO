@@ -2281,6 +2281,8 @@ function initTilt() {
   window.openAuthModal = function(){
     var modal=document.getElementById('auth-modal');
     modal.style.display='flex';
+    modal.style.opacity='1';
+    modal.style.pointerEvents='all';
     var s=getSession();
     if(s){
       showPanel('profile');
@@ -2293,7 +2295,7 @@ function initTilt() {
 
   window.closeAuthModal = function(){
     var modal=document.getElementById('auth-modal');
-    if(modal) modal.style.display='none';
+    if(modal){ modal.style.display='none'; modal.style.opacity=''; modal.style.pointerEvents=''; }
   };
 
   window.switchAuthTab = function(tab){
