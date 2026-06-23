@@ -710,11 +710,11 @@
     <div class="login-error" id="login-error">Incorrect username or password ❌</div>
     <div class="form-field">
       <label for="inp-user">Username</label>
-      <input id="inp-user" type="text" placeholder="admin" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter') focusPass()" />
+      <input id="inp-user" type="text" placeholder="admin" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter') focusPass()" / required>
     </div>
     <div class="form-field">
       <label for="inp-pass">Password</label>
-      <input id="inp-pass" type="password" placeholder="••••••••" autocomplete="off" onkeydown="if(event.key==='Enter') doLogin()" />
+      <input id="inp-pass" type="password" placeholder="••••••••" autocomplete="off" onkeydown="if(event.key==='Enter') doLogin()" / required>
     </div>
     <button class="btn-login-submit" onclick="doLogin()">Login →</button>
     <p class="login-back-link"><a href="#" onclick="showPublic(); return false;">← Back to Gallery</a></p>
@@ -769,19 +769,19 @@
             </div>
             <div class="sfield">
               <label>GITHUB REPO</label>
-              <input id="s-gh-repo" type="text" value="hilikventura/SOL-CO" readonly style="background:#f1f5f9;color:#64748b;cursor:default" />
+              <input id="s-gh-repo" type="text" value="hilikventura/SOL-CO" readonly style="background:#f1f5f9;color:#64748b;cursor:default" / aria-label="GitHub Repository" required>
             </div>
             <div class="sfield">
               <label>PERSONAL ACCESS TOKEN</label>
               <div style="display:flex;gap:8px;align-items:center;">
-                <input id="s-gh-token" type="password" placeholder="github_pat_..." style="flex:1" />
+                <input id="s-gh-token" type="password" placeholder="github_pat_..." style="flex:1" / aria-label="Personal Access Token">
                 <button onclick="testGithubConnection()" style="white-space:nowrap;padding:8px 14px;border:none;border-radius:10px;background:#8b5cf6;color:#fff;font-weight:700;cursor:pointer;font-size:13px;">🔗 Test</button>
               </div>
               <div id="gh-test-result" style="margin-top:6px;font-size:13px;display:none;"></div>
             </div>
             <div class="sfield">
               <label>CUSTOM DOMAIN (optional — leave blank to use GitHub Pages URL)</label>
-              <input id="s-custom-domain" type="text" placeholder="bysolco.com" />
+              <input id="s-custom-domain" type="text" placeholder="bysolco.com" / aria-label="Custom Domain (optional)">
             </div>
           </div>
         </div>
@@ -800,7 +800,7 @@
             </div>
             <div class="sfield">
               <label>WEB3FORMS ACCESS KEY</label>
-              <input id="s-w3f-key" type="text" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
+              <input id="s-w3f-key" type="text" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" / aria-label="Web3Forms Access Key" required>
             </div>
           </div>
         </div>
@@ -821,7 +821,7 @@
           <p>JPG · PNG · WEBP · GIF</p>
           <span class="upload-hint">+ Add Slime</span>
         </div>
-        <input type="file" id="file-input-slime" accept="image/*" multiple onchange="handleUpload(this.files,'slime')" style="display:none"/>
+        <input type="file" id="file-input-slime" accept="image/*" multiple onchange="handleUpload(this.files,'slime')" style="display:none"/ aria-label="Upload Slime images">
       </div>
       <div class="upload-cat-wrap">
         <div class="upload-cat-label">🪢 Macramé Images</div>
@@ -833,7 +833,7 @@
           <p>JPG · PNG · WEBP · GIF</p>
           <span class="upload-hint">+ Add Macramé</span>
         </div>
-        <input type="file" id="file-input-macrame" accept="image/*" multiple onchange="handleUpload(this.files,'macrame')" style="display:none"/>
+        <input type="file" id="file-input-macrame" accept="image/*" multiple onchange="handleUpload(this.files,'macrame')" style="display:none"/ aria-label="Upload Macramé images">
       </div>
     </div>
 
@@ -843,14 +843,16 @@
         <h3>📝 Product Details</h3>
         <div class="udm-file" id="udm-filename"></div>
         <label class="udm-label">Product Name <span class="udm-required">*</span></label>
-        <input class="udm-input" id="udm-name" type="text" placeholder="e.g. Pink Cloud Slime"
+        <label for="udm-name">Product Name</label>
+          <input class="udm-input" id="udm-name" type="text" placeholder="e.g. Pink Cloud Slime"
                oninput="this.classList.remove('err'); document.getElementById('udm-name-err').classList.remove('show')"
-               onkeydown="if(event.key==='Enter') udmConfirm()" />
+               onkeydown="if(event.key==='Enter') udmConfirm()" / required>
         <div class="udm-err-msg" id="udm-name-err">Please enter a product name</div>
         <label class="udm-label">Price (₪) <span class="udm-required">*</span></label>
-        <input class="udm-input" id="udm-price" type="number" min="1" step="1" placeholder="e.g. 45"
+        <label for="udm-price">Price (₪)</label>
+          <input class="udm-input" id="udm-price" type="number" min="1" step="1" placeholder="e.g. 45"
                oninput="this.classList.remove('err'); document.getElementById('udm-price-err').classList.remove('show')"
-               onkeydown="if(event.key==='Enter') udmConfirm()" />
+               onkeydown="if(event.key==='Enter') udmConfirm()" / required min="0">
         <div class="udm-err-msg" id="udm-price-err">Please enter a valid price</div>
         <div class="udm-btns">
           <button class="udm-btn-cancel" onclick="udmCancel()">Cancel</button>
@@ -892,7 +894,7 @@
 <!-- Lightbox -->
 <div class="lightbox-overlay" id="lightbox" onclick="closeLightbox(event)">
   <button class="lightbox-close" onclick="closeLightbox()">✕</button>
-  <img class="lightbox-img" id="lightbox-img" src="" alt="" />
+  <img class="lightbox-img" id="lightbox-img" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="" />
   <div class="lightbox-title" id="lightbox-title"></div>
 </div>
 
@@ -902,8 +904,8 @@
     <div class="contact-modal-title"><span style="font-size:1.6rem">📋</span><h3>Your Details</h3></div>
     <p class="contact-modal-sub">Fill in your details and we'll get back to you soon 💚</p>
     <div class="contact-modal-grid">
-      <div class="cfield"><label for="c-name">Full Name *</label><input id="c-name" type="text" placeholder="Jane Smith" /></div>
-      <div class="cfield"><label for="c-phone">Phone *</label><input id="c-phone" type="tel" placeholder="+1-555-0000" /></div>
+      <div class="cfield"><label for="c-name">Full Name *</label><input id="c-name" type="text" placeholder="Jane Smith" / required></div>
+      <div class="cfield"><label for="c-phone">Phone *</label><input id="c-phone" type="tel" placeholder="+1-555-0000" / required></div>
       <div class="cfield"><label for="c-email">Email</label><input id="c-email" type="email" placeholder="jane@gmail.com" /></div>
       <div class="cfield"><label for="c-address">Address</label><input id="c-address" type="text" placeholder="Street, City" /></div>
     </div>
@@ -920,7 +922,7 @@
   <div class="modal-box">
     <h3>📋 Selected Items</h3>
     <p>Copy the text below and send it to Sol manually via WhatsApp or email.</p>
-    <textarea class="modal-textarea" id="fallback-text" rows="9" readonly></textarea>
+    <textarea class="modal-textarea" id="fallback-text" rows="9" readonly aria-label="Order summary text"></textarea>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeFallbackModal()">Close</button>
       <button class="btn btn-primary" onclick="copyFallbackText()">📋 Copy Text</button>
