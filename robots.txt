@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://venturatrend.co.il/sitemap.xml
