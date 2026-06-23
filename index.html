@@ -1883,7 +1883,9 @@ async function submitWithContact() {
   contact = { name, phone, email, address };
   saveContact();
 
-  const message = 'Hi Sol!\n\n' + buildMessage(contact) + '\n\nThank you! 🫧';
+  const _ms = JSON.parse(localStorage.getItem('bysol_session')||'null');
+  const _mn = _ms ? '\n\n👤 שם חבר: ' + _ms.name + ' | ' + _ms.email : '';
+  const message = 'Hi Sol!\n\n' + buildMessage(contact) + _mn + '\n\nThank you! 🫧';
   document.getElementById('contact-modal').classList.remove('open');
 
   const sendBtn = document.querySelector('#send-panel .btn-primary');
