@@ -2295,12 +2295,22 @@ function initTilt() {
     <div id="panel-forgot" style="display:none">
       <div class="auth-tabs"><button class="auth-tab" onclick="switchAuthTab('login')">כניסה</button><button class="auth-tab" onclick="switchAuthTab('register')">הצטרפות</button></div>
       <h2>שחזור סיסמא 🔑</h2>
-      <p class="auth-sub">הכניסי את האימייל שלך ובחרי סיסמא חדשה</p>
-      <input class="auth-input" id="forgot-email" type="email" placeholder="אימייל רשום" autocomplete="email" />
-      <input class="auth-input" id="forgot-newpass" type="password" placeholder="סיסמא חדשה (6+ תווים)" autocomplete="new-password" />
-      <div class="auth-err" id="forgot-err"></div>
-      <div class="auth-success" id="forgot-ok" style="display:none">✅ הסיסמא עודכנה! כעת ניתן להתחבר</div>
-      <button class="btn btn-primary auth-btn" onclick="doResetPassword()">עדכון סיסמא</button>
+      <div id="forgot-step1">
+        <p class="auth-sub">הכניסי את האימייל שלך ונשלח קישור לאיפוס הסיסמא</p>
+        <input class="auth-input" id="forgot-email" type="email" placeholder="אימייל רשום" autocomplete="email" />
+        <div class="auth-err" id="forgot-err"></div>
+        <div class="auth-success" id="forgot-ok" style="display:none"></div>
+        <button class="btn btn-primary auth-btn" onclick="doSendResetLink()">שלח קישור לאיפוס 📧</button>
+        <button class="btn btn-ghost" style="width:100%;margin-top:8px" onclick="switchAuthTab('login')">← חזרה לכניסה</button>
+      </div>
+      <div id="forgot-step2" style="display:none">
+        <p class="auth-sub">הכניסי סיסמא חדשה</p>
+        <input class="auth-input" id="forgot-newpass" type="password" placeholder="סיסמא חדשה (6+ תווים)" autocomplete="new-password" />
+        <input class="auth-input" id="forgot-newpass2" type="password" placeholder="אימות סיסמא" autocomplete="new-password" />
+        <div class="auth-err" id="forgot-err2"></div>
+        <div class="auth-success" id="forgot-ok2" style="display:none"></div>
+        <button class="btn btn-primary auth-btn" onclick="doSetNewPassword()">שמירת סיסמא חדשה ✅</button>
+      </div>
     </div>
 
     <!-- Profile Panel -->
@@ -2548,28 +2558,64 @@ function initTilt() {
     }
   };
 
-  window.doResetPassword = function(){
-    var email=(document.getElementById('forgot-email')||{}).value||'';
-    var pass=(document.getElementById('forgot-newpass')||{}).value||'';
-    var errEl=document.getElementById('forgot-err');
-    var okEl=document.getElementById('forgot-ok');
-    errEl.style.display='none'; okEl.style.display='none';
-    email=email.trim().toLowerCase();
-    if(!email||!pass){errEl.textContent='אנא מלאי את כל השדות';errEl.style.display='';return;}
-    if(pass.length<6){errEl.textContent='הסיסמא חייבת להכיל לפחות 6 תווים';errEl.style.display='';return;}
-    var members=JSON.parse(localStorage.getItem('bysol_members')||'[]');
-    var found=false;
-    for(var i=0;i<members.length;i++){
-      if(members[i].email===email){
-        members[i].pw=btoa(unescape(encodeURIComponent(pass)));
-        found=true; break;
-      }
-    }
-    if(!found){errEl.textContent='כתובת אימייל לא מוכרת במערכת';errEl.style.display='';return;}
-    localStorage.setItem('bysol_members',JSON.stringify(members));
-    okEl.style.display='';
-    setTimeout(function(){ window.switchAuthTab('login'); },2200);
+  window.doSendResetLink = async function(){
+    var eml=(document.getElementById('forgot-email')||{}).value||'';
+    eml=eml.trim().toLowerCase();
+    var eEl=document.getElementById('forgot-err');var oEl=document.getElementById('forgot-ok');
+    eEl.style.display='none';oEl.style.display='none';eEl.textContent='';oEl.textContent='';
+    if(!eml){eEl.textContent='אנא הכניסי כתובת אימייל';eEl.style.display='block';return;}
+    var mems=JSON.parse(localStorage.getItem('bysol_members')||'[]');
+    var mem=mems.find(function(m){return m.email.toLowerCase()===eml;});
+    if(!mem){oEl.textContent='אם האימייל קיים במערכת, יישלח קישור לאיפוס 📧';oEl.style.display='block';return;}
+    var tb=new Uint8Array(24);crypto.getRandomValues(tb);
+    var tok=Array.from(tb).map(function(b){return b.toString(16).padStart(2,'0');}).join('');
+    localStorage.setItem('bysol_reset_'+tok,JSON.stringify({email:mem.email,expires:Date.now()+3600000}));
+    var rUrl=location.origin+'/?reset='+tok;
+    var rc=JSON.parse(localStorage.getItem('ventura_slime_cfg')||'{}');
+    if(!rc.w3fKey){eEl.textContent='שגיאה: Web3Forms לא מוגדר';eEl.style.display='block';return;}
+    try{
+      var rs=await fetch('https://api.web3forms.com/submit',{
+        method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
+        body:JSON.stringify({access_key:rc.w3fKey,subject:'איפוס סיסמא — BySOL',from_name:'BySOL',
+          message:'שלום '+(mem.name||'')+'!\n\nנשלחה בקשה לאיפוס סיסמא.\nלחצי על הקישור:\n\n'+rUrl+'\n\nתקף לשעה אחת.\n\nBySOL'})
+      });
+      var rj=await rs.json();
+      if(rj.success){oEl.textContent='קישור נשלח לאימייל 📧 בדקי גם ספאם';oEl.style.display='block';}
+      else{eEl.textContent='שגיאה בשליחה, נסי שוב';eEl.style.display='block';}
+    }catch(e){eEl.textContent='שגיאה בשליחה, נסי שוב';eEl.style.display='block';}
   };
+  window.doSetNewPassword = function(){
+    var p1=(document.getElementById('forgot-newpass')||{}).value||'';
+    var p2=(document.getElementById('forgot-newpass2')||{}).value||'';
+    var eEl=document.getElementById('forgot-err2');var oEl=document.getElementById('forgot-ok2');
+    eEl.style.display='none';oEl.style.display='none';
+    if(p1.length<6){eEl.textContent='סיסמא חייבת להכיל לפחות 6 תווים';eEl.style.display='block';return;}
+    if(p1!==p2){eEl.textContent='הסיסמאות אינן תואמות';eEl.style.display='block';return;}
+    var mems=JSON.parse(localStorage.getItem('bysol_members')||'[]');
+    var ix=mems.findIndex(function(m){return m.email.toLowerCase()===(window._resetEmail||'').toLowerCase();});
+    if(ix===-1){eEl.textContent='שגיאה — משתמש לא נמצא';eEl.style.display='block';return;}
+    mems[ix].password=p1;
+    localStorage.setItem('bysol_members',JSON.stringify(mems));
+    localStorage.removeItem('bysol_reset_'+(window._resetToken||''));
+    history.replaceState({},'',location.pathname);
+    oEl.textContent='✅ הסיסמא עודכנה! מועבר לכניסה...';oEl.style.display='block';
+    document.getElementById('forgot-newpass').value='';document.getElementById('forgot-newpass2').value='';
+    setTimeout(function(){switchAuthTab('login');},2500);
+  };
+  (function(){
+    var prms=new URLSearchParams(location.search);var tok=prms.get('reset');
+    if(!tok)return;
+    var raw=localStorage.getItem('bysol_reset_'+tok);
+    if(!raw){history.replaceState({},'',location.pathname);return;}
+    var sd=JSON.parse(raw);
+    if(Date.now()>sd.expires){localStorage.removeItem('bysol_reset_'+tok);history.replaceState({},'',location.pathname);return;}
+    window._resetToken=tok;window._resetEmail=sd.email;
+    setTimeout(function(){
+      openAuthModal('forgot');
+      var s1=document.getElementById('forgot-step1');var s2=document.getElementById('forgot-step2');
+      if(s1)s1.style.display='none';if(s2)s2.style.display='block';
+    },600);
+  })();
 
   window.checkRegEmail = function(val){
     var hint=document.getElementById('reg-exists-hint');
