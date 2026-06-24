@@ -2568,16 +2568,14 @@ function initTilt() {
     var mem=mems.find(function(m){return m.email.toLowerCase()===eml;});
     if(!mem){oEl.textContent='אם האימייל קיים במערכת, יישלח קישור לאיפוס 📧';oEl.style.display='block';return;}
     var tb=new Uint8Array(24);crypto.getRandomValues(tb);
-    var tok=Array.from(tb).map(function(b){return b.toString(16).padStart(2,'0');}).join('');
-    localStorage.setItem('bysol_reset_'+tok,JSON.stringify({email:mem.email,expires:Date.now()+3600000}));
-    var rUrl=location.origin+'/?reset='+tok;
+    var tok=btoa(JSON.stringify({email:mem.email,expires:Date.now()+3600000}));
+    var rUrl=location.origin+'/?reset='+encodeURIComponent(tok);
     var rc=JSON.parse(localStorage.getItem('ventura_slime_cfg')||'{}');
     if(!rc.w3fKey){eEl.textContent='שגיאה: Web3Forms לא מוגדר';eEl.style.display='block';return;}
     try{
       var rs=await fetch('https://api.web3forms.com/submit',{
         method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
-        body:JSON.stringify({access_key:rc.w3fKey,subject:'איפוס סיסמא — BySOL',from_name:'BySOL',to:mem.email,
-          message:'שלום '+(mem.name||'')+'!\n\nנשלחה בקשה לאיפוס סיסמא.\nלחצי על הקישור:\n\n'+rUrl+'\n\nתקף לשעה אחת.\n\nBySOL'})
+        body:JSON.stringify({access_key:rc.w3fKey,subject:'[BySOL] Reset: '+mem.email,from_name:'BySOL',replyto:mem.email,message:'Password reset for member:\nName: '+(mem.name||'')+' \nEmail: '+mem.email+'\n\nSend this link to the member:\n'+rUrl+'\n\nExpires in 1 hour.\n\nBySOL'})
       });
       var rj=await rs.json();
       if(rj.success){oEl.textContent='קישור נשלח לאימייל 📧 בדקי גם ספאם';oEl.style.display='block';}
@@ -2596,7 +2594,7 @@ function initTilt() {
     if(ix===-1){eEl.textContent='שגיאה — משתמש לא נמצא';eEl.style.display='block';return;}
     mems[ix].password=p1;
     localStorage.setItem('bysol_members',JSON.stringify(mems));
-    localStorage.removeItem('bysol_reset_'+(window._resetToken||''));
+    
     history.replaceState({},'',location.pathname);
     oEl.textContent='✅ הסיסמא עודכנה! מועבר לכניסה...';oEl.style.display='block';
     document.getElementById('forgot-newpass').value='';document.getElementById('forgot-newpass2').value='';
@@ -2605,10 +2603,8 @@ function initTilt() {
   (function(){
     var prms=new URLSearchParams(location.search);var tok=prms.get('reset');
     if(!tok)return;
-    var raw=localStorage.getItem('bysol_reset_'+tok);
-    if(!raw){history.replaceState({},'',location.pathname);return;}
-    var sd=JSON.parse(raw);
-    if(Date.now()>sd.expires){localStorage.removeItem('bysol_reset_'+tok);history.replaceState({},'',location.pathname);return;}
+    var sd;try{sd=JSON.parse(atob(decodeURIComponent(tok)));}catch(e2){history.replaceState({},'',location.pathname);return;}
+    if(!sd||!sd.email||!sd.expires||Date.now()>sd.expires){history.replaceState({},'',location.pathname);return;}
     window._resetToken=tok;window._resetEmail=sd.email;
     setTimeout(function(){
       openAuthModal('forgot');
