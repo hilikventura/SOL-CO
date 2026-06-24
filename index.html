@@ -1011,7 +1011,7 @@ body.is-member .vip-lock-overlay{display:none;}
     <!-- Category tabs -->
     <div class="tab-bar">
       <button class="tab-btn slime-tab active" id="pub-tab-slime" onclick="switchPubTab('slime')">
-        🫧 Slime <span class="tab-count" id="pub-slime-count">0</span>
+        🫧 Squishy <span class="tab-count" id="pub-slime-count">0</span>
       </button>
       <button class="tab-btn macrame-tab" id="pub-tab-macrame" onclick="switchPubTab('macrame')">
         🪢 Macramé <span class="tab-count" id="pub-macrame-count">0</span>
@@ -1082,7 +1082,7 @@ body.is-member .vip-lock-overlay{display:none;}
   <div class="admin-body">
 
     <div class="stats-bar">
-      <div class="stat-card"><div class="stat-num" id="stat-slime">0</div><div class="stat-lbl">🫧 Slimes</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-slime">0</div><div class="stat-lbl">🫧 Squishies</div></div>
       <div class="stat-card macrame"><div class="stat-num" id="stat-macrame">0</div><div class="stat-lbl">🪢 Macramé</div></div>
     </div>
 
@@ -1160,14 +1160,14 @@ body.is-member .vip-lock-overlay{display:none;}
     <!-- Upload zones -->
     <div class="upload-grid">
       <div class="upload-cat-wrap">
-        <div class="upload-cat-label">🫧 Slime Images</div>
+        <div class="upload-cat-label">🫧 Squishy Images</div>
         <div class="upload-zone" id="upload-zone-slime"
              onclick="document.getElementById('file-input-slime').click()"
              ondragover="onDragOver(event,'slime')" ondragleave="onDragLeave(event,'slime')" ondrop="onDrop(event,'slime')">
           <span class="upload-icon">📤</span>
           <h3>Drag or click to upload</h3>
           <p>JPG · PNG · WEBP · GIF</p>
-          <span class="upload-hint">+ Add Slime</span>
+          <span class="upload-hint">+ Add Squishy</span>
         </div>
         <input type="file" id="file-input-slime" accept="image/*" multiple onchange="handleUpload(this.files,'slime')" style="display:none"/ aria-label="Upload Slime images">
       </div>
@@ -1222,7 +1222,7 @@ body.is-member .vip-lock-overlay{display:none;}
     <!-- Admin category tabs -->
     <div class="admin-tab-bar">
       <button class="admin-tab-btn slime-tab active" id="admin-tab-slime" onclick="switchAdminTab('slime')">
-        🫧 Slime <span id="admin-slime-count">0</span>
+        🫧 Squishy <span id="admin-slime-count">0</span>
       </button>
       <button class="admin-tab-btn macrame-tab" id="admin-tab-macrame" onclick="switchAdminTab('macrame')">
         🪢 Macramé <span id="admin-macrame-count">0</span>
@@ -1845,7 +1845,7 @@ function buildMessage(ct) {
         : '  ' + (i+1) + '. ' + title);
     });
   }
-  addItems(slimeSel,   '🫧 Slimes:');
+  addItems(slimeSel,   '🫧 Squishies:');
   addItems(macrameSel, '🪢 Macramé:');
   return lines.join('\n');
 }
