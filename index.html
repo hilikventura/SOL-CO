@@ -594,6 +594,13 @@
     .admin-tab-btn:hover { border-color: var(--purple); background: #ddd6fe; color: var(--purple); }
     .admin-tab-btn.active.slime-tab   { background: var(--purple); color: #fff; border-color: var(--purple); }
     .admin-tab-btn.active.macrame-tab { background: var(--amber);  color: #fff; border-color: var(--amber); }
+.tab-btn.active.homemade-tab        { background: #16a34a; color: #fff; border-color: #16a34a; }
+.admin-tab-btn.active.homemade-tab  { background: #16a34a; color: #fff; border-color: #16a34a; }
+.stat-card.homemade-card { border-left-color: #16a34a; }
+.stat-card.homemade-card .stat-num  { color: #16a34a; }
+.upload-zone.homemade-zone { border-color: #86efac; background: #f0fdf4; }
+.upload-zone.homemade-zone:hover, .upload-zone.homemade-zone.dragging { border-color: #16a34a; background: #dcfce7; }
+.upload-zone.homemade-zone .upload-hint { background: #16a34a; }
 
     .admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(195px, 1fr)); gap: 20px; }
     .admin-card { background: var(--surface); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); transition: transform .2s, box-shadow .2s; }
@@ -1016,6 +1023,9 @@ body.is-member .vip-lock-overlay{display:none;}
       <button class="tab-btn macrame-tab" id="pub-tab-macrame" onclick="switchPubTab('macrame')">
         🪢 Macramé <span class="tab-count" id="pub-macrame-count">0</span>
       </button>
+      <button class="tab-btn homemade-tab" id="pub-tab-homemade" onclick="switchPubTab('homemade')">
+        🏠 Home Made <span class="tab-count" id="pub-homemade-count">0</span>
+      </button>
     </div>
 
     <div class="tab-pane active" id="pub-slime-section">
@@ -1023,6 +1033,9 @@ body.is-member .vip-lock-overlay{display:none;}
     </div>
     <div class="tab-pane" id="pub-macrame-section">
       <div class="img-grid" id="pub-grid-macrame"></div>
+    </div>
+    <div class="tab-pane" id="pub-homemade-section">
+      <div class="img-grid" id="pub-grid-homemade"></div>
     </div>
 
     </div> <!-- /gallery-inner -->
@@ -1084,6 +1097,7 @@ body.is-member .vip-lock-overlay{display:none;}
     <div class="stats-bar">
       <div class="stat-card"><div class="stat-num" id="stat-slime">0</div><div class="stat-lbl">🫧 Squishies</div></div>
       <div class="stat-card macrame"><div class="stat-num" id="stat-macrame">0</div><div class="stat-lbl">🪢 Macramé</div></div>
+      <div class="stat-card homemade-card"><div class="stat-num" id="stat-homemade">0</div><div class="stat-lbl">🏠 Home Made</div></div>
     </div>
 
     <div class="cloud-chips">
@@ -1183,6 +1197,18 @@ body.is-member .vip-lock-overlay{display:none;}
         </div>
         <input type="file" id="file-input-macrame" accept="image/*" multiple onchange="handleUpload(this.files,'macrame')" style="display:none"/ aria-label="Upload Macramé images">
       </div>
+      <div class="upload-cat-wrap">
+        <div class="upload-cat-label">🏠 Home Made Images</div>
+        <div class="upload-zone homemade-zone" id="upload-zone-homemade"
+             onclick="document.getElementById('file-input-homemade').click()"
+             ondragover="onDragOver(event,'homemade')" ondragleave="onDragLeave(event,'homemade')" ondrop="onDrop(event,'homemade')">
+          <span class="upload-icon">📤</span>
+          <h3>Drag or click to upload</h3>
+          <p>JPG · PNG · WEBP · GIF</p>
+          <span class="upload-hint">+ Add Home Made</span>
+        </div>
+        <input type="file" id="file-input-homemade" accept="image/*" multiple onchange="handleUpload(this.files,'homemade')" style="display:none"/ aria-label="Upload Home Made images">
+      </div>
     </div>
 
     <!-- Upload details modal -->
@@ -1227,6 +1253,9 @@ body.is-member .vip-lock-overlay{display:none;}
       <button class="admin-tab-btn macrame-tab" id="admin-tab-macrame" onclick="switchAdminTab('macrame')">
         🪢 Macramé <span id="admin-macrame-count">0</span>
       </button>
+      <button class="admin-tab-btn homemade-tab" id="admin-tab-homemade" onclick="switchAdminTab('homemade')">
+        🏠 Home Made <span id="admin-homemade-count">0</span>
+      </button>
     </div>
 
     <div class="tab-pane active" id="admin-slime-pane">
@@ -1234,6 +1263,9 @@ body.is-member .vip-lock-overlay{display:none;}
     </div>
     <div class="tab-pane" id="admin-macrame-pane">
       <div class="admin-grid" id="admin-grid-macrame"></div>
+    </div>
+    <div class="tab-pane" id="admin-homemade-pane">
+      <div class="admin-grid" id="admin-grid-homemade"></div>
     </div>
 
   </div>
@@ -1710,10 +1742,11 @@ function renderPublic() {
   selected.clear(); updateSelUI();
   renderPubSection('slime',   byCategory('slime'));
   renderPubSection('macrame', byCategory('macrame'));
+renderPubSection('homemade', byCategory('homemade'));
 }
 
 function switchPubTab(cat) {
-  ['slime','macrame'].forEach(c => {
+  ['slime','macrame','homemade'].forEach(c => {
     document.getElementById('pub-tab-' + c).classList.toggle('active', c === cat);
     document.getElementById('pub-' + c + '-section').classList.toggle('active', c === cat);
   });
@@ -1827,6 +1860,7 @@ function updateSelUI() { updateCartUI(); }
 function buildMessage(ct) {
   const slimeSel   = images.filter(img => selected.has(img.id) && img.category === 'slime');
   const macrameSel = images.filter(img => selected.has(img.id) && img.category === 'macrame');
+  const homemadeSel = images.filter(img => selected.has(img.id) && img.category === 'homemade');
   const lines = [];
   lines.push('👤 Customer Details:');
   lines.push('Name: '    + ct.name);
@@ -1847,6 +1881,7 @@ function buildMessage(ct) {
   }
   addItems(slimeSel,   '🫧 Squishies:');
   addItems(macrameSel, '🪢 Macramé:');
+addItems(homemadeSel, '🏠 Home Made:');
   return lines.join('\n');
 }
 
@@ -1950,10 +1985,13 @@ function renderAdmin() {
   const macrameImgs = byCategory('macrame');
   document.getElementById('stat-slime').textContent          = slimeImgs.length;
   document.getElementById('stat-macrame').textContent        = macrameImgs.length;
+  document.getElementById('stat-homemade').textContent        = homemadeImgs.length;
   document.getElementById('admin-slime-count').textContent   = slimeImgs.length;
   document.getElementById('admin-macrame-count').textContent = macrameImgs.length;
+  document.getElementById('admin-homemade-count').textContent = homemadeImgs.length;
   renderAdminGrid('admin-grid-slime',   slimeImgs,   '🫧 No slime images uploaded yet');
   renderAdminGrid('admin-grid-macrame', macrameImgs, '🪢 No macramé images uploaded yet');
+renderAdminGrid('admin-grid-homemade', homemadeImgs, '🏠 No home made images uploaded yet');
   updateSettingsUI();
 }
 
