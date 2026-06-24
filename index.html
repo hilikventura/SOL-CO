@@ -1684,7 +1684,8 @@ async function deleteFileFromGitHub(img) {
 /* ================================================================
    VIEW ROUTING
 ================================================================ */
-function showPublic() { document.body.className = ''; renderPublic(); }
+function showPublic() {
+  localStorage.removeItem('ventura_slime_session'); document.body.className = ''; renderPublic(); }
 
 function showLogin() {
   document.body.className = 'show-login';
@@ -1753,7 +1754,7 @@ function switchPubTab(cat) {
 }
 
 function switchAdminTab(cat) {
-  ['slime','macrame'].forEach(c => {
+  ['slime','macrame','homemade'].forEach(c => {
     document.getElementById('admin-tab-' + c).classList.toggle('active', c === cat);
     document.getElementById('admin-' + c + '-pane').classList.toggle('active', c === cat);
   });
@@ -1983,6 +1984,7 @@ function copyFallbackText() {
 function renderAdmin() {
   const slimeImgs   = byCategory('slime');
   const macrameImgs = byCategory('macrame');
+  const homemadeImgs = byCategory('homemade');
   document.getElementById('stat-slime').textContent          = slimeImgs.length;
   document.getElementById('stat-macrame').textContent        = macrameImgs.length;
   document.getElementById('stat-homemade').textContent        = homemadeImgs.length;
@@ -2425,7 +2427,7 @@ function initTilt() {
   }
 
   function applyMemberPrices(){
-    document.querySelectorAll('.prod-price').forEach(function(el){
+    document.querySelectorAll('.prod-price-val').forEach(function(el){
       if(el.dataset.mp) return;
       el.dataset.mp='1';
       var txt=el.textContent||'';
