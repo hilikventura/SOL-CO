@@ -965,6 +965,12 @@ body.is-member .vip-lock-overlay{display:none;}
 .vip-star{position:absolute;top:8px;right:8px;background:linear-gradient(135deg,#f59e0b,var(--pink));color:#fff;font-size:.68rem;font-weight:800;padding:3px 8px;border-radius:999px;z-index:2;letter-spacing:.3px;}
 
 @media(max-width:480px){.member-nav{top:12px;left:12px;}.member-btn{padding:7px 13px;font-size:.8rem;}}
+
+.auth-forgot-link{background:none;border:none;color:var(--muted);font-size:.82rem;cursor:pointer;font-family:inherit;margin-top:6px;display:block;width:100%;text-align:center;padding:4px;}
+.auth-forgot-link:hover{color:var(--purple);text-decoration:underline;}
+.auth-exists-hint{font-size:.82rem;color:var(--purple);margin-bottom:8px;padding:8px 12px;background:rgba(139,92,246,.08);border-radius:8px;}
+.auth-inline-link{background:none;border:none;color:var(--purple);font-weight:700;cursor:pointer;font-family:inherit;font-size:inherit;padding:0;text-decoration:underline;}
+.auth-success{color:#16a34a;font-size:.84rem;margin-bottom:8px;padding:8px 12px;background:rgba(22,163,74,.08);border-radius:8px;}
 </style>
 </head>
 <body>
@@ -2226,6 +2232,7 @@ function initTilt() {
       <input class="auth-input" id="login-pass" type="password" placeholder="סיסמה" autocomplete="current-password" />
       <div class="auth-err" id="login-err"></div>
       <button class="btn btn-primary auth-btn" onclick="doLogin()">כניסה לאזור החברות</button>
+      <button class="auth-forgot-link" onclick="switchAuthTab('forgot')">שכחתי סיסמה</button>
     </div>
 
     <!-- Register Panel -->
@@ -2237,10 +2244,23 @@ function initTilt() {
       <h2>הצטרפי למשפחה 🌸</h2>
       <p class="auth-sub">חברות מקבלות 10% הנחה ותוכן בלעדי</p>
       <input class="auth-input" id="reg-name" type="text" placeholder="שם פרטי" autocomplete="given-name" />
-      <input class="auth-input" id="reg-email" type="email" placeholder="אימייל" autocomplete="email" />
+      <input class="auth-input" id="reg-email" type="email" placeholder="אימייל" autocomplete="email" oninput="checkRegEmail(this.value)" />
+      <div id="reg-exists-hint" style="display:none" class="auth-exists-hint">כתובת זו כבר רשומה — <button class="auth-inline-link" onclick="switchAuthTab('login')">התחברי במקום</button></div>
       <input class="auth-input" id="reg-pass" type="password" placeholder="סיסמה (6+ תווים)" autocomplete="new-password" />
       <div class="auth-err" id="reg-err"></div>
       <button class="btn btn-primary auth-btn" onclick="doRegister()">הצטרפות חינם ✨</button>
+    </div>
+
+    <!-- Forgot Password Panel -->
+    <div id="panel-forgot" style="display:none">
+      <div class="auth-tabs"><button class="auth-tab" onclick="switchAuthTab('login')">כניסה</button><button class="auth-tab" onclick="switchAuthTab('register')">הצטרפות</button></div>
+      <h2>שחזור סיסמא 🔑</h2>
+      <p class="auth-sub">הכניסי את האימייל שלך ובחרי סיסמא חדשה</p>
+      <input class="auth-input" id="forgot-email" type="email" placeholder="אימייל רשום" autocomplete="email" />
+      <input class="auth-input" id="forgot-newpass" type="password" placeholder="סיסמא חדשה (6+ תווים)" autocomplete="new-password" />
+      <div class="auth-err" id="forgot-err"></div>
+      <div class="auth-success" id="forgot-ok" style="display:none">✅ הסיסמא עודכנה! כעת ניתן להתחבר</div>
+      <button class="btn btn-primary auth-btn" onclick="doResetPassword()">עדכון סיסמא</button>
     </div>
 
     <!-- Profile Panel -->
@@ -2456,5 +2476,70 @@ function initTilt() {
 })();
 </script>
 
+<script>
+  // Extend showPanel to include forgot
+  var _origShowPanel = window._showPanel || null;
+  window._showPanelFull = function(name){
+    ['login','register','profile','forgot'].forEach(function(p){
+      var el=document.getElementById('panel-'+p);
+      if(el) el.style.display=(p===name?'':'none');
+    });
+  };
+
+  // Override switchAuthTab to support forgot
+  window.switchAuthTab = function(tab){
+    window._showPanelFull(tab);
+  };
+
+  // Also patch openAuthModal to use full panel list
+  var _origOpen2 = window.openAuthModal;
+  window.openAuthModal = function(){
+    var modal=document.getElementById('auth-modal');
+    modal.style.display='flex';
+    modal.style.opacity='1';
+    modal.style.pointerEvents='all';
+    var s=JSON.parse(localStorage.getItem('bysol_session')||'null');
+    if(s){
+      window._showPanelFull('profile');
+      var g=document.getElementById('profile-greeting');
+      if(g) g.textContent='שלום, '+s.name+' 💜';
+    } else {
+      window._showPanelFull('login');
+    }
+  };
+
+  window.doResetPassword = function(){
+    var email=(document.getElementById('forgot-email')||{}).value||'';
+    var pass=(document.getElementById('forgot-newpass')||{}).value||'';
+    var errEl=document.getElementById('forgot-err');
+    var okEl=document.getElementById('forgot-ok');
+    errEl.style.display='none'; okEl.style.display='none';
+    email=email.trim().toLowerCase();
+    if(!email||!pass){errEl.textContent='אנא מלאי את כל השדות';errEl.style.display='';return;}
+    if(pass.length<6){errEl.textContent='הסיסמא חייבת להכיל לפחות 6 תווים';errEl.style.display='';return;}
+    var members=JSON.parse(localStorage.getItem('bysol_members')||'[]');
+    var found=false;
+    for(var i=0;i<members.length;i++){
+      if(members[i].email===email){
+        members[i].pw=btoa(unescape(encodeURIComponent(pass)));
+        found=true; break;
+      }
+    }
+    if(!found){errEl.textContent='כתובת אימייל לא מוכרת במערכת';errEl.style.display='';return;}
+    localStorage.setItem('bysol_members',JSON.stringify(members));
+    okEl.style.display='';
+    setTimeout(function(){ window.switchAuthTab('login'); },2200);
+  };
+
+  window.checkRegEmail = function(val){
+    var hint=document.getElementById('reg-exists-hint');
+    if(!hint) return;
+    var email=(val||'').trim().toLowerCase();
+    if(!email){hint.style.display='none';return;}
+    var members=JSON.parse(localStorage.getItem('bysol_members')||'[]');
+    var exists=members.some(function(m){return m.email===email;});
+    hint.style.display=exists?'':'none';
+  };
+</script>
 </body>
 </html>
