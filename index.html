@@ -2576,7 +2576,7 @@ function initTilt() {
     try{
       var rs=await fetch('https://api.web3forms.com/submit',{
         method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
-        body:JSON.stringify({access_key:rc.w3fKey,subject:'איפוס סיסמא — BySOL',from_name:'BySOL',
+        body:JSON.stringify({access_key:rc.w3fKey,subject:'איפוס סיסמא — BySOL',from_name:'BySOL',to:mem.email,
           message:'שלום '+(mem.name||'')+'!\n\nנשלחה בקשה לאיפוס סיסמא.\nלחצי על הקישור:\n\n'+rUrl+'\n\nתקף לשעה אחת.\n\nBySOL'})
       });
       var rj=await rs.json();
