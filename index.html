@@ -1064,7 +1064,7 @@ body.is-member .vip-lock-overlay{display:none;}
       <label for="inp-pass">Password</label>
       <input id="inp-pass" type="password" placeholder="••••••••" autocomplete="off" onkeydown="if(event.key==='Enter') doLogin()" / required>
     </div>
-    <button class="btn-login-submit" onclick="doLogin()">Login →</button>
+    <button class="btn-login-submit" onclick="doMemberLogin()">Login →</button>
     <p class="login-back-link"><a href="#" onclick="showPublic(); return false;">← Back to Gallery</a></p>
   </div>
 </div>
@@ -1075,7 +1075,7 @@ body.is-member .vip-lock-overlay{display:none;}
     <div class="brand">BySOL <em>| Admin</em> <span class="version-badge" style="margin-top:0;margin-left:8px">Sol Ventura · v1.7</span></div>
     <div class="admin-nav-right">
       <button class="btn btn-ghost" onclick="showPublic()" style="font-size:.85rem;padding:8px 16px">👁&nbsp; Public View</button>
-      <button class="btn btn-red" onclick="doLogout()" style="font-size:.85rem;padding:8px 16px">Logout</button>
+      <button class="btn btn-red" onclick="doMemberLogout()" style="font-size:.85rem;padding:8px 16px">Logout</button>
     </div>
   </nav>
 
@@ -2231,7 +2231,7 @@ function initTilt() {
       <input class="auth-input" id="login-email" type="email" placeholder="אימייל" autocomplete="email" />
       <input class="auth-input" id="login-pass" type="password" placeholder="סיסמה" autocomplete="current-password" />
       <div class="auth-err" id="login-err"></div>
-      <button class="btn btn-primary auth-btn" onclick="doLogin()">כניסה לאזור החברות</button>
+      <button class="btn btn-primary auth-btn" onclick="doMemberLogin()">כניסה לאזור החברות</button>
       <button class="auth-forgot-link" onclick="switchAuthTab('forgot')">שכחתי סיסמה</button>
     </div>
 
@@ -2248,7 +2248,7 @@ function initTilt() {
       <div id="reg-exists-hint" style="display:none" class="auth-exists-hint">כתובת זו כבר רשומה — <button class="auth-inline-link" onclick="switchAuthTab('login')">התחברי במקום</button></div>
       <input class="auth-input" id="reg-pass" type="password" placeholder="סיסמה (6+ תווים)" autocomplete="new-password" />
       <div class="auth-err" id="reg-err"></div>
-      <button class="btn btn-primary auth-btn" onclick="doRegister()">הצטרפות חינם ✨</button>
+      <button class="btn btn-primary auth-btn" onclick="doMemberRegister()">הצטרפות חינם ✨</button>
     </div>
 
     <!-- Forgot Password Panel -->
@@ -2273,7 +2273,7 @@ function initTilt() {
         <li>גישה לתוכן בלעדי</li>
         <li>עגלת קניות שמורה</li>
       </ul>
-      <button class="auth-logout" onclick="doLogout()">התנתקות</button>
+      <button class="auth-logout" onclick="doMemberLogout()">התנתקות</button>
     </div>
   </div>
 </div>
@@ -2324,7 +2324,7 @@ function initTilt() {
     showPanel(tab);
   };
 
-  window.doLogin = function(){
+  window.doMemberLogin = function(){
     var email=(document.getElementById('login-email')||{}).value||'';
     var pass=(document.getElementById('login-pass')||{}).value||'';
     var errEl=document.getElementById('login-err');
@@ -2341,7 +2341,7 @@ function initTilt() {
     closeAuthModal();
   };
 
-  window.doRegister = function(){
+  window.doMemberRegister = function(){
     var name=(document.getElementById('reg-name')||{}).value||'';
     var email=(document.getElementById('reg-email')||{}).value||'';
     var pass=(document.getElementById('reg-pass')||{}).value||'';
@@ -2362,7 +2362,7 @@ function initTilt() {
     closeAuthModal();
   };
 
-  window.doLogout = function(){
+  window.doMemberLogout = function(){
     clearSession();
     applyMemberState(false);
     closeAuthModal();
