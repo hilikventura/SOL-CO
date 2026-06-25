@@ -1164,6 +1164,18 @@ body.is-member .vip-lock-overlay{display:none;}
               <label>WEB3FORMS ACCESS KEY</label>
               <input id="s-w3f-key" type="text" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" / aria-label="Web3Forms Access Key" required>
             </div>
+            <div class="sfield">
+              <label>EMAILJS SERVICE ID</label>
+              <input id="s-ejs-service" type="text" placeholder="service_xxxxxxx" autocomplete="off" style="font-family:monospace"/>
+            </div>
+            <div class="sfield">
+              <label>EMAILJS TEMPLATE ID</label>
+              <input id="s-ejs-template" type="text" placeholder="template_xxxxxxx" autocomplete="off" style="font-family:monospace"/>
+            </div>
+            <div class="sfield">
+              <label>EMAILJS PUBLIC KEY</label>
+              <input id="s-ejs-pubkey" type="text" placeholder="xxxxxxxxxxxxxxxxxxxx" autocomplete="off" style="font-family:monospace"/>
+            </div>
           </div>
         </div>
 
@@ -1378,6 +1390,9 @@ async function saveSettings() {
   const tokenInput = (document.getElementById('s-gh-token').value || '').trim();
   if (tokenInput) cfg.ghToken = tokenInput;
   cfg.w3fKey = (document.getElementById('s-w3f-key').value || '').trim();
+  cfg.ejsServiceId = (document.getElementById('s-ejs-service').value || '').trim();
+  cfg.ejsTemplateId = (document.getElementById('s-ejs-template').value || '').trim();
+  cfg.ejsPubKey = (document.getElementById('s-ejs-pubkey').value || '').trim();
   cfg.customDomain = (document.getElementById('s-custom-domain').value || '').trim();
   localStorage.setItem(LS_CFG, JSON.stringify(cfg));
   updateSettingsUI();
@@ -1433,6 +1448,9 @@ function updateSettingsUI() {
     tokenEl.placeholder = cfg.ghToken ? '••••••••  (Saved — re-enter only to change)' : 'github_pat_...';
   }
   setVal('s-w3f-key', cfg.w3fKey);
+  setVal('s-ejs-service', cfg.ejsServiceId);
+  setVal('s-ejs-template', cfg.ejsTemplateId);
+  setVal('s-ejs-pubkey', cfg.ejsPubKey);
 }
 
 function setChip(id, ok, label, status) {
@@ -2571,16 +2589,20 @@ function initTilt() {
     var tok=btoa(JSON.stringify({email:mem.email,expires:Date.now()+3600000}));
     var rUrl=location.origin+'/?reset='+encodeURIComponent(tok);
     var rc=JSON.parse(localStorage.getItem('ventura_slime_cfg')||'{}');
-    if(!rc.w3fKey){eEl.textContent='שגיאה: Web3Forms לא מוגדר';eEl.style.display='block';return;}
+    if(!rc.ejsPubKey||!rc.ejsServiceId||!rc.ejsTemplateId){
+      if(eEl){eEl.textContent='שגיאה: EmailJS לא מוגדר — הגדירי ב-Admin';eEl.style.display='block';}return;
+    }
     try{
-      var rs=await fetch('https://api.web3forms.com/submit',{
-        method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
-        body:JSON.stringify({access_key:rc.w3fKey,subject:'[BySOL] Reset: '+mem.email,from_name:'BySOL',replyto:mem.email,message:'Password reset for member:\nName: '+(mem.name||'')+' \nEmail: '+mem.email+'\n\nSend this link to the member:\n'+rUrl+'\n\nExpires in 1 hour.\n\nBySOL'})
-      });
-      var rj=await rs.json();
-      if(rj.success){oEl.textContent='קישור נשלח לאימייל 📧 בדקי גם ספאם';oEl.style.display='block';}
-      else{eEl.textContent='שגיאה בשליחה, נסי שוב';eEl.style.display='block';}
-    }catch(e){eEl.textContent='שגיאה בשליחה, נסי שוב';eEl.style.display='block';}
+      await emailjs.send(rc.ejsServiceId,rc.ejsTemplateId,{
+        to_email:mem.email,
+        to_name:mem.name||'',
+        reset_link:rUrl,
+        from_name:'BySOL'
+      },{publicKey:rc.ejsPubKey});
+      if(oEl){oEl.textContent='✅ קישור נשלח לאימייל שלך 📧 בדקי גם ספאם';oEl.style.display='block';}
+    }catch(ex){
+      if(eEl){eEl.textContent='שגיאה בשליחה: '+(ex.text||ex.message||'נסי שוב');eEl.style.display='block';}
+    }
   };
   window.doSetNewPassword = function(){
     var p1=(document.getElementById('forgot-newpass')||{}).value||'';
@@ -2623,5 +2645,6 @@ function initTilt() {
     hint.style.display=exists?'':'none';
   };
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </body>
 </html>
