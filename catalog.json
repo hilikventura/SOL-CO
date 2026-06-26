@@ -138,5 +138,15 @@
     "dataUrl": "https://venturatrend.co.il/images/slime/1782496113309_IMG_0871.jpeg",
     "sha": "d4fc5ab2fd9f2122685c0b8b747bf0a133f8ede7",
     "path": "images/slime/1782496113309_IMG_0871.jpeg"
+  },
+  {
+    "id": "mqv88eb9fg4m9",
+    "name": "IMG_0866.jpeg",
+    "title": "Dumpling",
+    "price": "10",
+    "category": "slime",
+    "dataUrl": "https://venturatrend.co.il/images/slime/1782496226765_IMG_0866.jpeg",
+    "sha": "59e579f2def7eeef16d9c7e9f070c057047bc648",
+    "path": "images/slime/1782496226765_IMG_0866.jpeg"
   }
 ]
