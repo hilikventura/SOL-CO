@@ -90,16 +90,6 @@
     "path": "images/macrame/1782368742154_Colorful_stand.jpeg"
   },
   {
-    "id": "mq4s9ncqwyfwg",
-    "name": "slime1.jpeg",
-    "title": "1",
-    "price": "4",
-    "category": "slime",
-    "dataUrl": "https://hilikventura.github.io/SOL-CO/images/slime/1780897294014_slime1.jpeg",
-    "sha": "b74dbda0c73f950dbf0bfc8c73133f642029d785",
-    "path": "images/slime/1780897294014_slime1.jpeg"
-  },
-  {
     "id": "mqv83oym4veqv",
     "name": "IMG_0875.jpeg",
     "title": "Ice popsicle",
@@ -148,5 +138,15 @@
     "dataUrl": "https://venturatrend.co.il/images/slime/1782496290277_IMG_0869.jpeg",
     "sha": "381f8c897c832920fc1dbf4804ab285cf20f1908",
     "path": "images/slime/1782496290277_IMG_0869.jpeg"
+  },
+  {
+    "id": "mqv8cra3rj5ax",
+    "name": "IMG_0878.jpeg",
+    "title": "BUTTER",
+    "price": "15",
+    "category": "slime",
+    "dataUrl": "https://venturatrend.co.il/images/slime/1782496430067_IMG_0878.jpeg",
+    "sha": "f61401fc706d9abb53362ce77206e37b8ff5359b",
+    "path": "images/slime/1782496430067_IMG_0878.jpeg"
   }
 ]
