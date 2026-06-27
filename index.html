@@ -2659,7 +2659,7 @@ function initTilt() {
     var mems=JSON.parse(localStorage.getItem('bysol_members')||'[]');
     var ix=mems.findIndex(function(m){return m.email.toLowerCase()===(window._resetEmail||'').toLowerCase();});
     if(ix===-1){eEl.textContent='שגיאה — משתמש לא נמצא';eEl.style.display='block';return;}
-    mems[ix].password=p1;
+    mems[ix].pw=btoa(unescape(encodeURIComponent(p1)));
     localStorage.setItem('bysol_members',JSON.stringify(mems));
     
     history.replaceState({},'',location.pathname);
