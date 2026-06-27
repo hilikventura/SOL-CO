@@ -1800,7 +1800,7 @@ function renderPubSection(cat, imgs) {
         ${price ? '<div class="prod-badge">✦ Available</div>' : ''}
       </div>
       <div class="prod-info">
-        <div class="prod-title${hasTitle ? '' : ' untitled'}">${esc(title)}</div>
+        <div class="prod-title${hasTitle ? '' : ' untitled'}" data-en-title="${esc(title)}">${esc(title)}</div>
         <div class="prod-price-row">
           ${price ? `<span class="prod-price-val">${esc(price)}</span>` : '<span class="prod-price-tbd">Price on request</span>'}
         </div>
@@ -2385,7 +2385,7 @@ function initTilt() {
     if(s){
       showPanel('profile');
       var g=document.getElementById('profile-greeting');
-      if(g) g.textContent='שלום, '+s.name+' 💜';
+      if(g) g.textContent=(window.i18n ? window.i18n('greeting') : 'שלום, ')+s.name+' 💜';
     } else {
       showPanel('login');
     }
@@ -2701,7 +2701,25 @@ function initTilt() {
       loginError: 'אימייל או סיסמה שגויים',
       regErrorEmpty: 'אנא מלאי את כל השדות',
       regErrorShort: 'הסיסמה חייבת להכיל לפחות 6 תווים',
-      regErrorExists: 'האימייל כבר רשום'
+      regErrorExists: 'האימייל כבר רשום',
+      products: {
+        'Ice popsicle': 'ארטיק קרח',
+        'Peanut': 'בוטן',
+        'Rabbit': 'ארנב',
+        'Dumpling': 'כופתאה',
+        'ice cube': 'קוביית קרח',
+        'BUTTER': 'חמאה',
+        'Donag': 'דונאג',
+        'Sun': 'שמש',
+        'Small Basket': 'סל קטן',
+        'Large Basket': 'סל גדול',
+        'Green tree': 'עץ ירוק',
+        'Small owl': 'ינשוף קטן',
+        'Three plants': 'שלושה צמחים',
+        'Bat': 'עטלף',
+        'Colorful stand': 'מתלה צבעוני',
+        'Basket to many things': 'סל לכל דבר'
+      }
     },
     en: {
       heroSub: 'Pick what you love and send it to us — we\'ll get back to you soon! 💚',
@@ -2743,7 +2761,25 @@ function initTilt() {
       loginError: 'Incorrect email or password',
       regErrorEmpty: 'Please fill in all fields',
       regErrorShort: 'Password must be at least 6 characters',
-      regErrorExists: 'Email already registered'
+      regErrorExists: 'Email already registered',
+      products: {
+        'Ice popsicle': 'Ice Popsicle',
+        'Peanut': 'Peanut',
+        'Rabbit': 'Rabbit',
+        'Dumpling': 'Dumpling',
+        'ice cube': 'Ice Cube',
+        'BUTTER': 'Butter',
+        'Donag': 'Donag',
+        'Sun': 'Sun',
+        'Small Basket': 'Small Basket',
+        'Large Basket': 'Large Basket',
+        'Green tree': 'Green Tree',
+        'Small owl': 'Small Owl',
+        'Three plants': 'Three Plants',
+        'Bat': 'Bat',
+        'Colorful stand': 'Colorful Stand',
+        'Basket to many things': 'Basket for Everything'
+      }
     }
   };
 
@@ -2775,6 +2811,13 @@ function initTilt() {
     document.querySelectorAll('.auth-input').forEach(function(el) {
       el.style.direction = isHe ? 'rtl' : 'ltr';
       el.style.textAlign = isHe ? 'right' : 'left';
+    });
+
+    // Translate product titles
+    document.querySelectorAll('.prod-title[data-en-title]').forEach(function(el) {
+      var enTitle = el.getAttribute('data-en-title');
+      var translated = dict.products && dict.products[enTitle];
+      el.textContent = translated || enTitle;
     });
   }
 
