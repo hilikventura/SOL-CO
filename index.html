@@ -992,6 +992,12 @@ body.show-admin .lang-toggle, body.show-login .lang-toggle { display: none; }
 .wa-btn svg{width:30px;height:30px;fill:#fff;}
 body.show-admin .wa-btn,body.show-login .wa-btn{display:none;}
 @media(max-width:480px){.wa-btn{bottom:16px;right:16px;width:50px;height:50px;}.wa-btn svg{width:26px;height:26px;}}
+
+/* ── Reset link display box ── */
+.reset-link-box{background:#f0f4ff;border:2px solid #a78bfa;border-radius:12px;padding:14px;margin:12px 0;text-align:center;}
+.reset-link-box p{font-size:.82rem;color:#64748b;margin-bottom:8px;}
+.reset-link-btn{display:inline-block;background:linear-gradient(135deg,var(--purple),var(--pink));color:#fff;border:none;border-radius:10px;padding:10px 22px;font-weight:700;font-size:.9rem;cursor:pointer;font-family:inherit;text-decoration:none;width:100%;}
+.reset-link-btn:hover{opacity:.9;}
 </style>
 </head>
 <body>
@@ -2602,7 +2608,9 @@ function initTilt() {
     var eml=(document.getElementById('forgot-email')||{}).value||'';
     eml=eml.trim().toLowerCase();
     var eEl=document.getElementById('forgot-err');var oEl=document.getElementById('forgot-ok');
-    eEl.style.display='none';oEl.style.display='none';eEl.textContent='';oEl.textContent='';
+    var boxEl=document.getElementById('reset-link-box');var linkEl=document.getElementById('reset-link-anchor');
+    eEl.style.display='none';oEl.style.display='none';if(boxEl)boxEl.style.display='none';
+    eEl.textContent='';
     if(!eml){eEl.textContent='אנא הכניסי כתובת אימייל';eEl.style.display='block';return;}
     var mems=JSON.parse(localStorage.getItem('bysol_members')||'[]');
     var mem=mems.find(function(m){return m.email.toLowerCase()===eml;});
@@ -2622,15 +2630,24 @@ function initTilt() {
       }catch(ex){ /* fall through */ }
     }
 
-    // 2. Open native mail client addressed to the member's own email with the reset link
-    //    — the email lands directly in their inbox
-    var isHe=(!window.i18n)||(localStorage.getItem('bysol_lang')||'he')==='he';
-    var subj=isHe?'BySOL — איפוס סיסמה 🔑':'BySOL — Password Reset 🔑';
-    var bodyHe='שלום '+mem.name+',%0D%0A%0D%0Aלאיפוס סיסמתך לחצי כאן:%0D%0A'+encodeURIComponent(rUrl)+'%0D%0A%0D%0Aהקישור בתוקף לשעה אחת.%0D%0A%0D%0A- BySOL 💜';
-    var bodyEn='Hello '+mem.name+',%0D%0A%0D%0AClick the link below to reset your password:%0D%0A'+encodeURIComponent(rUrl)+'%0D%0A%0D%0AThis link expires in 1 hour.%0D%0A%0D%0A- BySOL 💜';
-    var mailtoUrl='mailto:'+encodeURIComponent(mem.email)+'?subject='+encodeURIComponent(subj)+'&body='+(isHe?bodyHe:bodyEn);
-    window.open(mailtoUrl,'_self');
-    if(oEl){oEl.textContent='✅ קישור האיפוס נשלח לאימייל שלך 📧 בדקי גם ספאם';oEl.style.display='block';}
+    // 2. Show the reset link directly on screen — member clicks it right here
+    if(boxEl&&linkEl){
+      linkEl.href=rUrl;
+      boxEl.style.display='block';
+    }
+
+    // 3. Also notify admin via Web3Forms so they can assist if needed
+    if(rc.w3fKey){
+      try{
+        var fd=new FormData();
+        fd.append('access_key',rc.w3fKey);
+        fd.append('subject','🔑 בקשת איפוס סיסמה - BySOL');
+        fd.append('from_name','BySOL Members');
+        fd.append('replyto',mem.email);
+        fd.append('message','חברה ביקשה איפוס סיסמה:\nשם: '+(mem.name||'—')+'\nאימייל: '+mem.email+'\nקישור: '+rUrl);
+        fetch('https://api.web3forms.com/submit',{method:'POST',body:fd});
+      }catch(e){}
+    }
   };
   window.doSetNewPassword = function(){
     var p1=(document.getElementById('forgot-newpass')||{}).value||'';
@@ -2709,6 +2726,8 @@ function initTilt() {
       passMinPh: 'סיסמה (6+ תווים)',
       joinFreeBtn: 'הצטרפות חינם ✨',
       resetTitle: 'שחזור סיסמא 🔑',
+      resetLinkReady: 'הקישור שלך מוכן — לחצי כאן כדי לאפס סיסמה:',
+      resetLinkBtn: '🔑 אפסי סיסמה עכשיו',
       resetSub: 'הכניסי את האימייל שלך ונשלח קישור לאיפוס הסיסמא',
       regEmailPh: 'אימייל רשום',
       sendResetBtn: 'שלח קישור לאיפוס 📧',
@@ -2774,6 +2793,8 @@ function initTilt() {
       passMinPh: 'Password (6+ chars)',
       joinFreeBtn: 'Join for Free ✨',
       resetTitle: 'Reset Password 🔑',
+      resetLinkReady: 'Your link is ready — click below to reset your password:',
+      resetLinkBtn: '🔑 Reset Password Now',
       resetSub: 'Enter your email and we\'ll send a reset link',
       regEmailPh: 'Registered email',
       sendResetBtn: 'Send Reset Link 📧',
