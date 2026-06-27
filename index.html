@@ -979,6 +979,11 @@ body.is-member .vip-lock-overlay{display:none;}
 .auth-exists-hint{font-size:.82rem;color:var(--purple);margin-bottom:8px;padding:8px 12px;background:rgba(139,92,246,.08);border-radius:8px;}
 .auth-inline-link{background:none;border:none;color:var(--purple);font-weight:700;cursor:pointer;font-family:inherit;font-size:inherit;padding:0;text-decoration:underline;}
 .auth-success{color:#16a34a;font-size:.84rem;margin-bottom:8px;padding:8px 12px;background:rgba(22,163,74,.08);border-radius:8px;}
+
+/* ── Language toggle ── */
+.lang-toggle{position:fixed;top:16px;right:72px;z-index:950;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border:1.5px solid rgba(139,92,246,.3);border-radius:999px;padding:8px 14px;font-size:.82rem;font-weight:700;color:var(--purple);cursor:pointer;transition:all .22s cubic-bezier(.34,1.56,.64,1);box-shadow:0 2px 14px rgba(139,92,246,.14);font-family:inherit;line-height:1;}
+.lang-toggle:hover{background:var(--purple);color:#fff;border-color:var(--purple);transform:translateY(-2px);}
+@media(max-width:480px){.lang-toggle{top:12px;right:60px;padding:7px 11px;font-size:.76rem;}}
 </style>
 </head>
 <body>
@@ -999,14 +1004,14 @@ body.is-member .vip-lock-overlay{display:none;}
     <span class="float-deco" style="font-size:2rem;top:30%;right:3%;--dur:6s;--delay:2s;--r1:6deg;--r2:-4deg;--r3:5deg">💜</span>
     <!-- Title -->
     <h1>BySOL</h1>
-    <p class="hero-sub">Pick what you love and send it to us — we'll get back to you soon! 💚</p>
+    <p class="hero-sub" data-i18n="heroSub">Pick what you love and send it to us — we'll get back to you soon! 💚</p>
     <div class="hero-cta">Browse the Collection ↓</div>
   </header>
 
   <main class="gallery-wrap">
     <div class="gallery-inner">
     <div class="action-bar">
-      <h2>Our Gallery</h2>
+      <h2 data-i18n="gallery">Our Gallery</h2>
       <div class="action-bar-right">
         <button class="btn btn-ghost" id="btn-clear-pub" onclick="clearSelection()" style="display:none;font-size:.82rem;padding:7px 14px">✕ Clear Cart</button>
         <button class="cart-icon-btn" id="cart-action-btn" onclick="sendMail()" style="display:none">
@@ -1055,7 +1060,7 @@ body.is-member .vip-lock-overlay{display:none;}
 <div class="send-panel" id="send-panel">
   <div class="send-panel-info">
     <span class="cart-panel-icon">🛒</span>
-    <div class="cart-panel-text"><span id="panel-count">0</span> items in your cart</div>
+    <div class="cart-panel-text"><span id="panel-count">0</span> <span data-i18n="cartItems">items in your cart</span></div>
   </div>
   <div class="send-panel-btns">
     <button class="btn btn-ghost" onclick="clearSelection()">Clear Cart</button>
@@ -1078,7 +1083,7 @@ body.is-member .vip-lock-overlay{display:none;}
       <label for="inp-pass">Password</label>
       <input id="inp-pass" type="password" placeholder="••••••••" autocomplete="off" onkeydown="if(event.key==='Enter') doLogin()" / required>
     </div>
-    <button class="btn-login-submit" onclick="doMemberLogin()">Login →</button>
+    <button class="btn-login-submit" onclick="doLogin()">Login →</button>
     <p class="login-back-link"><a href="#" onclick="showPublic(); return false;">← Back to Gallery</a></p>
   </div>
 </div>
@@ -2269,9 +2274,12 @@ function initTilt() {
 <div class="member-nav">
   <button class="member-btn" id="member-btn" onclick="openAuthModal()">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-    <span id="member-label">הצטרפי</span>
+    <span id="member-label" data-i18n="join">הצטרפי</span>
   </button>
 </div>
+
+<!-- Language toggle -->
+<button class="lang-toggle" id="lang-toggle" onclick="toggleLang()" title="Switch language / החלף שפה">🌐 EN</button>
 
 <!-- ══ AUTH MODAL ══ -->
 <div id="auth-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeAuthModal()">
@@ -2281,53 +2289,53 @@ function initTilt() {
     <!-- Login Panel -->
     <div id="panel-login">
       <div class="auth-tabs">
-        <button class="auth-tab active" onclick="switchAuthTab('login')">כניסה</button>
-        <button class="auth-tab" onclick="switchAuthTab('register')">הצטרפות</button>
+        <button class="auth-tab active" onclick="switchAuthTab('login')" data-i18n="loginTab">כניסה</button>
+        <button class="auth-tab" onclick="switchAuthTab('register')" data-i18n="registerTab">הצטרפות</button>
       </div>
-      <h2>ברוכה הבאה 💜</h2>
-      <p class="auth-sub">הכניסי את הפרטים שלך</p>
-      <input class="auth-input" id="login-email" type="email" placeholder="אימייל" autocomplete="email" />
-      <input class="auth-input" id="login-pass" type="password" placeholder="סיסמה" autocomplete="current-password" />
+      <h2 data-i18n="welcomeTitle">ברוכה הבאה 💜</h2>
+      <p class="auth-sub" data-i18n="enterDetails">הכניסי את הפרטים שלך</p>
+      <input class="auth-input" id="login-email" type="email" placeholder="אימייל" data-i18n-placeholder="emailPh" autocomplete="email" />
+      <input class="auth-input" id="login-pass" type="password" placeholder="סיסמה" data-i18n-placeholder="passPh" autocomplete="current-password" />
       <div class="auth-err" id="login-err"></div>
-      <button class="btn btn-primary auth-btn" onclick="doMemberLogin()">כניסה לאזור החברות</button>
-      <button class="auth-forgot-link" onclick="switchAuthTab('forgot')">שכחתי סיסמה</button>
+      <button class="btn btn-primary auth-btn" onclick="doMemberLogin()" data-i18n="loginBtn">כניסה לאזור החברות</button>
+      <button class="auth-forgot-link" onclick="switchAuthTab('forgot')" data-i18n="forgotLink">שכחתי סיסמה</button>
     </div>
 
     <!-- Register Panel -->
     <div id="panel-register" style="display:none">
       <div class="auth-tabs">
-        <button class="auth-tab" onclick="switchAuthTab('login')">כניסה</button>
-        <button class="auth-tab active" onclick="switchAuthTab('register')">הצטרפות</button>
+        <button class="auth-tab" onclick="switchAuthTab('login')" data-i18n="loginTab">כניסה</button>
+        <button class="auth-tab active" onclick="switchAuthTab('register')" data-i18n="registerTab">הצטרפות</button>
       </div>
-      <h2>הצטרפי למשפחה 🌸</h2>
-      <p class="auth-sub">חברות מקבלות 10% הנחה ותוכן בלעדי</p>
-      <input class="auth-input" id="reg-name" type="text" placeholder="שם פרטי" autocomplete="given-name" />
-      <input class="auth-input" id="reg-email" type="email" placeholder="אימייל" autocomplete="email" oninput="checkRegEmail(this.value)" />
-      <div id="reg-exists-hint" style="display:none" class="auth-exists-hint">כתובת זו כבר רשומה — <button class="auth-inline-link" onclick="switchAuthTab('login')">התחברי במקום</button></div>
-      <input class="auth-input" id="reg-pass" type="password" placeholder="סיסמה (6+ תווים)" autocomplete="new-password" />
+      <h2 data-i18n="joinTitle">הצטרפי למשפחה 🌸</h2>
+      <p class="auth-sub" data-i18n="joinSub">חברות מקבלות 10% הנחה ותוכן בלעדי</p>
+      <input class="auth-input" id="reg-name" type="text" placeholder="שם פרטי" data-i18n-placeholder="firstNamePh" autocomplete="given-name" />
+      <input class="auth-input" id="reg-email" type="email" placeholder="אימייל" data-i18n-placeholder="emailPh" autocomplete="email" oninput="checkRegEmail(this.value)" />
+      <div id="reg-exists-hint" style="display:none" class="auth-exists-hint" data-i18n-html="existsHint"><span data-i18n="existsHintText">כתובת זו כבר רשומה — </span><button class="auth-inline-link" onclick="switchAuthTab('login')" data-i18n="loginInstead">התחברי במקום</button></div>
+      <input class="auth-input" id="reg-pass" type="password" placeholder="סיסמה (6+ תווים)" data-i18n-placeholder="passMinPh" autocomplete="new-password" />
       <div class="auth-err" id="reg-err"></div>
-      <button class="btn btn-primary auth-btn" onclick="doMemberRegister()">הצטרפות חינם ✨</button>
+      <button class="btn btn-primary auth-btn" onclick="doMemberRegister()" data-i18n="joinFreeBtn">הצטרפות חינם ✨</button>
     </div>
 
     <!-- Forgot Password Panel -->
     <div id="panel-forgot" style="display:none">
-      <div class="auth-tabs"><button class="auth-tab" onclick="switchAuthTab('login')">כניסה</button><button class="auth-tab" onclick="switchAuthTab('register')">הצטרפות</button></div>
-      <h2>שחזור סיסמא 🔑</h2>
+      <div class="auth-tabs"><button class="auth-tab" onclick="switchAuthTab('login')" data-i18n="loginTab">כניסה</button><button class="auth-tab" onclick="switchAuthTab('register')" data-i18n="registerTab">הצטרפות</button></div>
+      <h2 data-i18n="resetTitle">שחזור סיסמא 🔑</h2>
       <div id="forgot-step1">
-        <p class="auth-sub">הכניסי את האימייל שלך ונשלח קישור לאיפוס הסיסמא</p>
-        <input class="auth-input" id="forgot-email" type="email" placeholder="אימייל רשום" autocomplete="email" />
+        <p class="auth-sub" data-i18n="resetSub">הכניסי את האימייל שלך ונשלח קישור לאיפוס הסיסמא</p>
+        <input class="auth-input" id="forgot-email" type="email" placeholder="אימייל רשום" data-i18n-placeholder="regEmailPh" autocomplete="email" />
         <div class="auth-err" id="forgot-err"></div>
         <div class="auth-success" id="forgot-ok" style="display:none"></div>
-        <button class="btn btn-primary auth-btn" onclick="doSendResetLink()">שלח קישור לאיפוס 📧</button>
-        <button class="btn btn-ghost" style="width:100%;margin-top:8px" onclick="switchAuthTab('login')">← חזרה לכניסה</button>
+        <button class="btn btn-primary auth-btn" onclick="doSendResetLink()" data-i18n="sendResetBtn">שלח קישור לאיפוס 📧</button>
+        <button class="btn btn-ghost" style="width:100%;margin-top:8px" onclick="switchAuthTab('login')" data-i18n="backToLogin">← חזרה לכניסה</button>
       </div>
       <div id="forgot-step2" style="display:none">
-        <p class="auth-sub">הכניסי סיסמא חדשה</p>
-        <input class="auth-input" id="forgot-newpass" type="password" placeholder="סיסמא חדשה (6+ תווים)" autocomplete="new-password" />
-        <input class="auth-input" id="forgot-newpass2" type="password" placeholder="אימות סיסמא" autocomplete="new-password" />
+        <p class="auth-sub" data-i18n="enterNewPass">הכניסי סיסמא חדשה</p>
+        <input class="auth-input" id="forgot-newpass" type="password" placeholder="סיסמא חדשה (6+ תווים)" data-i18n-placeholder="newPassPh" autocomplete="new-password" />
+        <input class="auth-input" id="forgot-newpass2" type="password" placeholder="אימות סיסמא" data-i18n-placeholder="confirmPassPh" autocomplete="new-password" />
         <div class="auth-err" id="forgot-err2"></div>
         <div class="auth-success" id="forgot-ok2" style="display:none"></div>
-        <button class="btn btn-primary auth-btn" onclick="doSetNewPassword()">שמירת סיסמא חדשה ✅</button>
+        <button class="btn btn-primary auth-btn" onclick="doSetNewPassword()" data-i18n="savePassBtn">שמירת סיסמא חדשה ✅</button>
       </div>
     </div>
 
@@ -2335,13 +2343,13 @@ function initTilt() {
     <div id="panel-profile" style="display:none">
       <div class="member-avatar">💜</div>
       <h2 id="profile-greeting">שלום!</h2>
-      <div class="member-vip-badge">✨ חברה VIP</div>
+      <div class="member-vip-badge" data-i18n="vipBadge">✨ חברה VIP</div>
       <ul class="member-perks">
-        <li>10% הנחה על כל המוצרים</li>
-        <li>גישה לתוכן בלעדי</li>
-        <li>עגלת קניות שמורה</li>
+        <li data-i18n="perk1">10% הנחה על כל המוצרים</li>
+        <li data-i18n="perk2">גישה לתוכן בלעדי</li>
+        <li data-i18n="perk3">עגלת קניות שמורה</li>
       </ul>
-      <button class="auth-logout" onclick="doMemberLogout()">התנתקות</button>
+      <button class="auth-logout" onclick="doMemberLogout()" data-i18n="logout">התנתקות</button>
     </div>
   </div>
 </div>
@@ -2403,7 +2411,7 @@ function initTilt() {
     for(var i=0;i<members.length;i++){
       if(members[i].email===email && members[i].pw===btoa(unescape(encodeURIComponent(pass)))){member=members[i];break;}
     }
-    if(!member){errEl.textContent='אימייל או סיסמה שגויים';errEl.style.display='';return;}
+    if(!member){errEl.textContent=window.i18n('loginError');errEl.style.display='';return;}
     saveSession({id:member.id,name:member.name,email:member.email});
     applyMemberState(true);
     closeAuthModal();
@@ -2646,5 +2654,142 @@ function initTilt() {
   };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+<script>
+/* ══ I18N — Language Toggle ══ */
+(function(){
+  var LANG_KEY = 'bysol_lang';
+
+  var T = {
+    he: {
+      heroSub: 'בחרי מה שאת אוהבת ושלחי לנו — נחזור אליך בהקדם! 💚',
+      gallery: 'הגלריה שלנו',
+      cartItems: 'פריטים בעגלה',
+      clearCart: 'נקה עגלה',
+      sendToSol: '✉️  שלחי לסול',
+      join: 'הצטרפי',
+      loginTab: 'כניסה',
+      registerTab: 'הצטרפות',
+      welcomeTitle: 'ברוכה הבאה 💜',
+      enterDetails: 'הכניסי את הפרטים שלך',
+      emailPh: 'אימייל',
+      passPh: 'סיסמה',
+      loginBtn: 'כניסה לאזור החברות',
+      forgotLink: 'שכחתי סיסמה',
+      joinTitle: 'הצטרפי למשפחה 🌸',
+      joinSub: 'חברות מקבלות 10% הנחה ותוכן בלעדי',
+      firstNamePh: 'שם פרטי',
+      existsHintText: 'כתובת זו כבר רשומה — ',
+      loginInstead: 'התחברי במקום',
+      passMinPh: 'סיסמה (6+ תווים)',
+      joinFreeBtn: 'הצטרפות חינם ✨',
+      resetTitle: 'שחזור סיסמא 🔑',
+      resetSub: 'הכניסי את האימייל שלך ונשלח קישור לאיפוס הסיסמא',
+      regEmailPh: 'אימייל רשום',
+      sendResetBtn: 'שלח קישור לאיפוס 📧',
+      backToLogin: '← חזרה לכניסה',
+      enterNewPass: 'הכניסי סיסמא חדשה',
+      newPassPh: 'סיסמא חדשה (6+ תווים)',
+      confirmPassPh: 'אימות סיסמא',
+      savePassBtn: 'שמירת סיסמא חדשה ✅',
+      vipBadge: '✨ חברה VIP',
+      perk1: '10% הנחה על כל המוצרים',
+      perk2: 'גישה לתוכן בלעדי',
+      perk3: 'עגלת קניות שמורה',
+      logout: 'התנתקות',
+      greeting: 'שלום, ',
+      loginError: 'אימייל או סיסמה שגויים',
+      regErrorEmpty: 'אנא מלאי את כל השדות',
+      regErrorShort: 'הסיסמה חייבת להכיל לפחות 6 תווים',
+      regErrorExists: 'האימייל כבר רשום'
+    },
+    en: {
+      heroSub: 'Pick what you love and send it to us — we\'ll get back to you soon! 💚',
+      gallery: 'Our Gallery',
+      cartItems: 'items in your cart',
+      clearCart: 'Clear Cart',
+      sendToSol: '✉️  Send to Sol',
+      join: 'Join',
+      loginTab: 'Login',
+      registerTab: 'Register',
+      welcomeTitle: 'Welcome 💜',
+      enterDetails: 'Enter your details',
+      emailPh: 'Email',
+      passPh: 'Password',
+      loginBtn: 'Login to Members Area',
+      forgotLink: 'Forgot password',
+      joinTitle: 'Join the Family 🌸',
+      joinSub: 'Members get 10% off & exclusive content',
+      firstNamePh: 'First Name',
+      existsHintText: 'This email is already registered — ',
+      loginInstead: 'Login instead',
+      passMinPh: 'Password (6+ chars)',
+      joinFreeBtn: 'Join for Free ✨',
+      resetTitle: 'Reset Password 🔑',
+      resetSub: 'Enter your email and we\'ll send a reset link',
+      regEmailPh: 'Registered email',
+      sendResetBtn: 'Send Reset Link 📧',
+      backToLogin: '← Back to Login',
+      enterNewPass: 'Enter new password',
+      newPassPh: 'New password (6+ chars)',
+      confirmPassPh: 'Confirm password',
+      savePassBtn: 'Save New Password ✅',
+      vipBadge: '✨ VIP Member',
+      perk1: '10% off all products',
+      perk2: 'Access to exclusive content',
+      perk3: 'Saved shopping cart',
+      logout: 'Logout',
+      greeting: 'Hello, ',
+      loginError: 'Incorrect email or password',
+      regErrorEmpty: 'Please fill in all fields',
+      regErrorShort: 'Password must be at least 6 characters',
+      regErrorExists: 'Email already registered'
+    }
+  };
+
+  var currentLang = localStorage.getItem(LANG_KEY) || 'he';
+
+  function applyLang(lang) {
+    currentLang = lang;
+    localStorage.setItem(LANG_KEY, lang);
+    var dict = T[lang];
+    var isHe = lang === 'he';
+
+    // Update toggle button label
+    var btn = document.getElementById('lang-toggle');
+    if (btn) btn.textContent = isHe ? '🌐 EN' : '🌐 עב';
+
+    // Update text content elements
+    document.querySelectorAll('[data-i18n]').forEach(function(el) {
+      var key = el.getAttribute('data-i18n');
+      if (dict[key] !== undefined) el.textContent = dict[key];
+    });
+
+    // Update placeholders
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
+      var key = el.getAttribute('data-i18n-placeholder');
+      if (dict[key] !== undefined) el.placeholder = dict[key];
+    });
+
+    // Update input direction
+    document.querySelectorAll('.auth-input').forEach(function(el) {
+      el.style.direction = isHe ? 'rtl' : 'ltr';
+      el.style.textAlign = isHe ? 'right' : 'left';
+    });
+  }
+
+  window.toggleLang = function() {
+    applyLang(currentLang === 'he' ? 'en' : 'he');
+  };
+
+  // Expose translation helper for JS-generated strings
+  window.i18n = function(key) {
+    return (T[currentLang] && T[currentLang][key]) || (T['en'] && T['en'][key]) || key;
+  };
+
+  // Apply on load
+  applyLang(currentLang);
+})();
+</script>
 </body>
 </html>
