@@ -985,6 +985,13 @@ body.is-member .vip-lock-overlay{display:none;}
 .lang-toggle:hover{background:var(--purple);color:#fff;border-color:var(--purple);transform:translateY(-2px);}
 @media(max-width:480px){.lang-toggle{top:12px;right:60px;padding:7px 11px;font-size:.76rem;}}
 body.show-admin .lang-toggle, body.show-login .lang-toggle { display: none; }
+
+/* ── WhatsApp float button ── */
+.wa-btn{position:fixed;bottom:24px;right:24px;z-index:960;width:56px;height:56px;border-radius:50%;background:#25d366;box-shadow:0 4px 20px rgba(37,211,102,.45);display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;transition:transform .22s cubic-bezier(.34,1.56,.64,1),box-shadow .22s;text-decoration:none;}
+.wa-btn:hover{transform:scale(1.12);box-shadow:0 8px 30px rgba(37,211,102,.6);}
+.wa-btn svg{width:30px;height:30px;fill:#fff;}
+body.show-admin .wa-btn,body.show-login .wa-btn{display:none;}
+@media(max-width:480px){.wa-btn{bottom:16px;right:16px;width:50px;height:50px;}.wa-btn svg{width:26px;height:26px;}}
 </style>
 </head>
 <body>
@@ -2282,6 +2289,12 @@ function initTilt() {
 <!-- Language toggle -->
 <button class="lang-toggle" id="lang-toggle" onclick="toggleLang()" title="Switch language / החלף שפה">🌐 EN</button>
 
+<!-- WhatsApp contact button -->
+<a class="wa-btn" id="wa-btn" title="Chat on WhatsApp" onclick="(function(){var p=['972','586','456','557'];window.open('https://wa.me/'+p.join('')+'?text='+encodeURIComponent(document.getElementById('wa-msg')?document.getElementById('wa-msg').dataset.he||'היי סול! 👋':'היי סול! 👋'),'_blank');return false;})()" href="#" aria-label="WhatsApp">
+  <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M16 .5C7.44.5.5 7.44.5 16c0 2.83.74 5.49 2.04 7.8L.5 31.5l7.93-2.08A15.45 15.45 0 0016 31.5C24.56 31.5 31.5 24.56 31.5 16S24.56.5 16 .5zm0 28.3a13.28 13.28 0 01-6.77-1.85l-.49-.29-5.07 1.33 1.35-4.93-.32-.51A13.3 13.3 0 1116 28.8zm7.3-9.97c-.4-.2-2.36-1.16-2.73-1.3-.37-.13-.63-.2-.9.2s-1.03 1.3-1.26 1.57c-.23.27-.47.3-.87.1-.4-.2-1.69-.62-3.22-1.98-1.19-1.06-1.99-2.37-2.22-2.77-.23-.4-.02-.61.17-.81.18-.18.4-.47.6-.7.2-.23.27-.4.4-.67.13-.27.07-.5-.03-.7-.1-.2-.9-2.16-1.23-2.96-.32-.78-.65-.67-.9-.68h-.77c-.27 0-.7.1-1.06.5s-1.4 1.37-1.4 3.33 1.44 3.87 1.64 4.13c.2.27 2.83 4.32 6.86 6.06.96.41 1.7.66 2.29.85.96.3 1.84.26 2.53.16.77-.12 2.36-.97 2.7-1.9.33-.93.33-1.73.23-1.9-.1-.17-.37-.27-.77-.47z"/></svg>
+</a>
+<span id="wa-msg" data-he="היי סול! 👋 ראיתי את החנות שלך ורציתי לשאול..." data-en="Hey Sol! 👋 I saw your shop and wanted to ask..." style="display:none"></span>
+
 <!-- ══ AUTH MODAL ══ -->
 <div id="auth-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeAuthModal()">
   <div class="auth-box">
@@ -2668,6 +2681,7 @@ function initTilt() {
       cartItems: 'פריטים בעגלה',
       clearCart: 'נקה עגלה',
       sendToSol: '✉️  שלחי לסול',
+      waMsg: 'היי סול! 👋 ראיתי את החנות שלך ורציתי לשאול...',
       available: 'זמין',
       tabSquishy: '🫧 סקווש',
       tabMacrame: '🪢 מקרמה',
@@ -2732,6 +2746,7 @@ function initTilt() {
       cartItems: 'items in your cart',
       clearCart: 'Clear Cart',
       sendToSol: '✉️  Send to Sol',
+      waMsg: 'Hey Sol! 👋 I saw your shop and wanted to ask...',
       available: 'Available',
       tabSquishy: '🫧 Squishy',
       tabMacrame: '🪢 Macramé',
