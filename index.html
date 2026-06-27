@@ -2674,7 +2674,7 @@ function initTilt() {
     if(!sd||!sd.email||!sd.expires||Date.now()>sd.expires){history.replaceState({},'',location.pathname);return;}
     window._resetToken=tok;window._resetEmail=sd.email;
     setTimeout(function(){
-      var modal=document.getElementById('auth-modal');if(modal){modal.style.display='flex';modal.style.opacity='1';modal.style.pointerEvents='all';}if(window._showPanelFull)window._showPanelFull('forgot');
+      openAuthModal('forgot');
       var s1=document.getElementById('forgot-step1');var s2=document.getElementById('forgot-step2');
       if(s1)s1.style.display='none';if(s2)s2.style.display='block';
     },600);
