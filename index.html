@@ -1797,7 +1797,7 @@ function renderPubSection(cat, imgs) {
       <div class="prod-img" onclick="openLightbox('${esc(img.dataUrl)}','${esc(title)}')">
         <img src="${img.dataUrl}" alt="${esc(title)}" loading="lazy" decoding="async" />
         <div class="prod-in-cart-badge">✓</div>
-        ${price ? '<div class="prod-badge">✦ Available</div>' : ''}
+        ${price ? '<div class="prod-badge" data-i18n="available">✦ ' + (window.i18n ? window.i18n('available') : 'Available') + '</div>' : ''}
       </div>
       <div class="prod-info">
         <div class="prod-title${hasTitle ? '' : ' untitled'}" data-en-title="${esc(title)}">${esc(title)}</div>
@@ -2667,6 +2667,7 @@ function initTilt() {
       cartItems: 'פריטים בעגלה',
       clearCart: 'נקה עגלה',
       sendToSol: '✉️  שלחי לסול',
+      available: 'זמין',
       tabSquishy: '🫧 סקווש',
       tabMacrame: '🪢 מקרמה',
       tabHomemade: '🏠 עבודת יד',
@@ -2730,6 +2731,7 @@ function initTilt() {
       cartItems: 'items in your cart',
       clearCart: 'Clear Cart',
       sendToSol: '✉️  Send to Sol',
+      available: 'Available',
       tabSquishy: '🫧 Squishy',
       tabMacrame: '🪢 Macramé',
       tabHomemade: '🏠 Home Made',
@@ -2835,6 +2837,10 @@ function initTilt() {
   window.i18n = function(key) {
     return (T[currentLang] && T[currentLang][key]) || (T['en'] && T['en'][key]) || key;
   };
+
+  // Re-apply after product cards render
+  var _origRP = window.renderPublic;
+  if (_origRP) { window.renderPublic = function(){ _origRP.apply(this,arguments); applyLang(currentLang); }; }
 
   // Apply on load
   applyLang(currentLang);
