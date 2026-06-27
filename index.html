@@ -2607,23 +2607,46 @@ function initTilt() {
     var mems=JSON.parse(localStorage.getItem('bysol_members')||'[]');
     var mem=mems.find(function(m){return m.email.toLowerCase()===eml;});
     if(!mem){oEl.textContent='אם האימייל קיים במערכת, יישלח קישור לאיפוס 📧';oEl.style.display='block';return;}
-    var tb=new Uint8Array(24);crypto.getRandomValues(tb);
     var tok=btoa(JSON.stringify({email:mem.email,expires:Date.now()+3600000}));
     var rUrl=location.origin+'/?reset='+encodeURIComponent(tok);
     var rc=JSON.parse(localStorage.getItem('ventura_slime_cfg')||'{}');
-    if(!rc.ejsPubKey||!rc.ejsServiceId||!rc.ejsTemplateId){
-      if(eEl){eEl.textContent='שגיאה: EmailJS לא מוגדר — הגדירי ב-Admin';eEl.style.display='block';}return;
+    // Try EmailJS first if configured
+    if(rc.ejsPubKey&&rc.ejsServiceId&&rc.ejsTemplateId){
+      try{
+        await emailjs.send(rc.ejsServiceId,rc.ejsTemplateId,{
+          to_email:mem.email,to_name:mem.name||'',reset_link:rUrl,from_name:'BySOL'
+        },{publicKey:rc.ejsPubKey});
+        if(oEl){oEl.textContent='✅ קישור נשלח לאימייל שלך 📧 בדקי גם ספאם';oEl.style.display='block';}
+        return;
+      }catch(ex){ /* fall through to Web3Forms */ }
     }
-    try{
-      await emailjs.send(rc.ejsServiceId,rc.ejsTemplateId,{
-        to_email:mem.email,
-        to_name:mem.name||'',
-        reset_link:rUrl,
-        from_name:'BySOL'
-      },{publicKey:rc.ejsPubKey});
-      if(oEl){oEl.textContent='✅ קישור נשלח לאימייל שלך 📧 בדקי גם ספאם';oEl.style.display='block';}
-    }catch(ex){
-      if(eEl){eEl.textContent='שגיאה בשליחה: '+(ex.text||ex.message||'נסי שוב');eEl.style.display='block';}
+    // Fallback: send via Web3Forms to admin with member's email + reset link
+    if(rc.w3fKey){
+      try{
+        var body=new FormData();
+        body.append('access_key', rc.w3fKey);
+        body.append('subject', '🔑 בקשת איפוס סיסמה - BySOL');
+        body.append('from_name', 'BySOL Members');
+        body.append('replyto', mem.email);
+        body.append('message',
+          'חברה ביקשה איפוס סיסמה:\n\n' +
+          'שם: ' + (mem.name||'—') + '\n' +
+          'אימייל: ' + mem.email + '\n\n' +
+          'קישור לאיפוס (שלחי לחברה):\n' + rUrl + '\n\n' +
+          'הקישור בתוקף לשעה אחת.'
+        );
+        var res=await fetch('https://api.web3forms.com/submit',{method:'POST',body:body});
+        var json=await res.json();
+        if(json.success){
+          if(oEl){oEl.textContent='✅ הבקשה התקבלה! Sol תיצור איתך קשר עם הקישור לאיפוס בקרוב 📧';oEl.style.display='block';}
+        } else {
+          if(eEl){eEl.textContent='שגיאה בשליחה — נסי שוב';eEl.style.display='block';}
+        }
+      }catch(ex2){
+        if(eEl){eEl.textContent='שגיאה בשליחה: '+(ex2.message||'נסי שוב');eEl.style.display='block';}
+      }
+    } else {
+      if(eEl){eEl.textContent='שגיאה: שירות האימייל לא מוגדר';eEl.style.display='block';}
     }
   };
   window.doSetNewPassword = function(){
