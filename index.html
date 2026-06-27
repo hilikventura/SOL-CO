@@ -2589,7 +2589,7 @@ function initTilt() {
 
   // Also patch openAuthModal to use full panel list
   var _origOpen2 = window.openAuthModal;
-  window.openAuthModal = function(){
+  window.openAuthModal = function(tab){
     var modal=document.getElementById('auth-modal');
     modal.style.display='flex';
     modal.style.opacity='1';
