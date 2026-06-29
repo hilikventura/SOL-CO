@@ -143,9 +143,18 @@
       animation-delay: var(--delay,0s); will-change: transform;
     }
     @keyframes floatDeco {
-      0%,100% { transform: translateY(0)    rotate(var(--r1,-6deg)) scale(1); }
-      40%     { transform: translateY(-22px) rotate(var(--r2, 8deg)) scale(1.06); }
-      70%     { transform: translateY(-10px) rotate(var(--r3,-3deg)) scale(0.97); }
+      0%,100% { transform: translate(var(--px,0px),calc(0px   + var(--py,0px))) rotate(var(--r1,-6deg)) scale(1); }
+      40%     { transform: translate(var(--px,0px),calc(-22px  + var(--py,0px))) rotate(var(--r2, 8deg)) scale(1.06); }
+      70%     { transform: translate(var(--px,0px),calc(-10px  + var(--py,0px))) rotate(var(--r3,-3deg)) scale(0.97); }
+    }
+    .hero-img-deco {
+      position: absolute; pointer-events: none; border-radius: 50%;
+      object-fit: cover; will-change: transform;
+      animation: floatDeco var(--dur,5s) ease-in-out infinite;
+      animation-delay: var(--delay,0s);
+      border: 3px solid rgba(255,255,255,.85);
+      box-shadow: 0 4px 16px rgba(168,85,200,.22);
+      opacity: .9;
     }
 
     /* ── Hero ── */
@@ -1020,6 +1029,12 @@ body.show-admin .wa-btn,body.show-login .wa-btn{display:none;}
     <h1>BySOL</h1>
     <p class="hero-sub" data-i18n="heroSub">Pick what you love and send it to us — we'll get back to you soon! 💚</p>
     <div class="hero-cta">Browse the Collection ↓</div>
+      <img class="hero-img-deco" src="https://venturatrend.co.il/images/slime/1782496007569_IMG_0875.jpeg" alt="" style="width:68px;height:68px;top:8%;left:3%;--dur:4.8s;--delay:.3s;--r1:-6deg;--r2:4deg;--r3:-3deg">
+    <img class="hero-img-deco" src="https://venturatrend.co.il/images/slime/1782496113309_IMG_0871.jpeg" alt="" style="width:54px;height:54px;top:16%;right:5%;--dur:5.6s;--delay:1.1s;--r1:5deg;--r2:-6deg;--r3:3deg">
+    <img class="hero-img-deco" src="https://venturatrend.co.il/images/slime/1782496290277_IMG_0869.jpeg" alt="" style="width:74px;height:74px;top:52%;left:1.5%;--dur:4.2s;--delay:.7s;--r1:-4deg;--r2:7deg;--r3:-5deg">
+    <img class="hero-img-deco" src="https://venturatrend.co.il/images/slime/1782496226765_IMG_0866.jpeg" alt="" style="width:62px;height:62px;top:42%;right:2.5%;--dur:5.2s;--delay:1.5s;--r1:6deg;--r2:-5deg;--r3:4deg">
+    <img class="hero-img-deco" src="https://venturatrend.co.il/images/slime/1782496430067_IMG_0878.jpeg" alt="" style="width:50px;height:50px;bottom:22%;left:7%;--dur:6.1s;--delay:.2s;--r1:-5deg;--r2:4deg;--r3:-6deg">
+    <img class="hero-img-deco" src="https://venturatrend.co.il/images/slime/1782496071304_IMG_0868.jpeg" alt="" style="width:66px;height:66px;bottom:14%;right:6%;--dur:4.6s;--delay:2.1s;--r1:4deg;--r2:-8deg;--r3:5deg">
   </header>
 
   <main class="gallery-wrap">
@@ -2892,5 +2907,6 @@ function initTilt() {
 })();
 </script>
 <script>(function(){var heMode=false;function applyLang(l){document.querySelectorAll('.btn-cart').forEach(function(b){var ic=b.textContent.trim().charCodeAt(0)===10003;b.textContent=ic?(l==='he'?'✓ בעגלה':'✓ In Cart'):(l==='he'?'🛒 הוסף לעגלה':'🛒 Add to Cart');});document.querySelectorAll('.btn-buy').forEach(function(b){b.textContent=l==='he'?'קנה עכשיו':'Buy Now';});document.querySelectorAll('[data-he][data-en]').forEach(function(e){e.textContent=l==='he'?e.getAttribute('data-he'):e.getAttribute('data-en');});}var origTL=window.toggleLang;window.toggleLang=function(){origTL&&origTL();heMode=!heMode;applyLang(heMode?'he':'en');};})();</script>
+<script>(function(){var hero=document.querySelector('.hero');if(!hero)return;function onMove(e){var r=hero.getBoundingClientRect();var cx=(e.clientX-r.left-r.width/2)/r.width;var cy=(e.clientY-r.top-r.height/2)/r.height;document.querySelectorAll('.float-deco').forEach(function(el,i){var d=(i%3+1)*16;el.style.setProperty('--px',(cx*d).toFixed(1)+'px');el.style.setProperty('--py',(cy*d*0.55).toFixed(1)+'px');});document.querySelectorAll('.hero-img-deco').forEach(function(el,i){var d=(i%4+2)*20;el.style.setProperty('--px',(cx*d).toFixed(1)+'px');el.style.setProperty('--py',(cy*d*0.55).toFixed(1)+'px');});document.querySelectorAll('.hero-ring').forEach(function(el,i){var d=(i+1)*7;el.style.transform='translate('+(cx*d).toFixed(1)+'px,'+(cy*d*0.55).toFixed(1)+'px)';});}function onLeave(){document.querySelectorAll('.float-deco,.hero-img-deco').forEach(function(el){el.style.setProperty('--px','0px');el.style.setProperty('--py','0px');});document.querySelectorAll('.hero-ring').forEach(function(el){el.style.transform='';});}hero.addEventListener('mousemove',onMove);hero.addEventListener('mouseleave',onLeave);})();</script>
 </body>
 </html>
