@@ -766,6 +766,8 @@
 
       /* Lightbox */
       .lightbox-img     { max-width: 94vw; max-height: 70vh; }
+    
+      .hero-img-deco { width: 38px !important; height: 38px !important; }
     }
 
     /* ── 480px: Small phone ─────────────────────────────────────────── */
@@ -793,6 +795,8 @@
       /* Touch-friendly minimum tap targets */
       .btn   { min-height: 44px; }
       .tab-btn { min-height: 40px; }
+    
+      .hero-img-deco { display: none; }
     }
 
     /* ── 360px: Very small phone ────────────────────────────────────── */
@@ -2907,6 +2911,6 @@ function initTilt() {
 })();
 </script>
 <script>(function(){var heMode=false;function applyLang(l){document.querySelectorAll('.btn-cart').forEach(function(b){var ic=b.textContent.trim().charCodeAt(0)===10003;b.textContent=ic?(l==='he'?'✓ בעגלה':'✓ In Cart'):(l==='he'?'🛒 הוסף לעגלה':'🛒 Add to Cart');});document.querySelectorAll('.btn-buy').forEach(function(b){b.textContent=l==='he'?'קנה עכשיו':'Buy Now';});document.querySelectorAll('[data-he][data-en]').forEach(function(e){e.textContent=l==='he'?e.getAttribute('data-he'):e.getAttribute('data-en');});}var origTL=window.toggleLang;window.toggleLang=function(){origTL&&origTL();heMode=!heMode;applyLang(heMode?'he':'en');};})();</script>
-<script>(function(){var hero=document.querySelector('.hero');if(!hero)return;var elems=Array.from(document.querySelectorAll('.float-deco,.hero-img-deco'));var states=elems.map(function(el){return{el:el,dx:0,dy:0,vx:0,vy:0};});var mx=0,my=0,inHero=false;hero.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;inHero=true;});hero.addEventListener('mouseleave',function(){inHero=false;});function tick(){var hRect=hero.getBoundingClientRect();states.forEach(function(s){s.vx+=-0.065*s.dx;s.vy+=-0.065*s.dy;if(inHero){var er=s.el.getBoundingClientRect();var ecx=er.left+er.width/2;var ecy=er.top+er.height/2;var ddx=ecx-mx,ddy=ecy-my;var dist=Math.sqrt(ddx*ddx+ddy*ddy)||1;var R=150;if(dist<R){var force=((R-dist)/R)*12;s.vx+=(ddx/dist)*force;s.vy+=(ddy/dist)*force;}}s.vx*=0.82;s.vy*=0.82;s.dx+=s.vx;s.dy+=s.vy;var cap=80;s.dx=Math.max(-cap,Math.min(cap,s.dx));s.dy=Math.max(-cap,Math.min(cap,s.dy));s.el.style.setProperty('--px',s.dx.toFixed(1)+'px');s.el.style.setProperty('--py',s.dy.toFixed(1)+'px');});if(inHero){var cx=(mx-hRect.left-hRect.width/2)/hRect.width;var cy=(my-hRect.top-hRect.height/2)/hRect.height;document.querySelectorAll('.hero-ring').forEach(function(el,i){var d=(i+1)*9;el.style.transform='translate('+(cx*d).toFixed(1)+'px,'+(cy*d*0.6).toFixed(1)+'px)';});}requestAnimationFrame(tick);}requestAnimationFrame(tick);})();</script>
+<script>(function(){var hero=document.querySelector('.hero');if(!hero)return;var elems=Array.from(document.querySelectorAll('.float-deco,.hero-img-deco'));var states=elems.map(function(el){return{el:el,dx:0,dy:0,vx:0,vy:0};});var mx=0,my=0,inHero=false;hero.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;inHero=true;});hero.addEventListener('mouseleave',function(){inHero=false;});hero.addEventListener('touchstart',function(e){if(e.touches.length>0){mx=e.touches[0].clientX;my=e.touches[0].clientY;inHero=true;}},{passive:true});hero.addEventListener('touchmove',function(e){if(e.touches.length>0){mx=e.touches[0].clientX;my=e.touches[0].clientY;inHero=true;}},{passive:true});hero.addEventListener('touchend',function(){inHero=false;});hero.addEventListener('touchcancel',function(){inHero=false;});function tick(){var hRect=hero.getBoundingClientRect();states.forEach(function(s){s.vx+=-0.065*s.dx;s.vy+=-0.065*s.dy;if(inHero){var er=s.el.getBoundingClientRect();var ecx=er.left+er.width/2;var ecy=er.top+er.height/2;var ddx=ecx-mx,ddy=ecy-my;var dist=Math.sqrt(ddx*ddx+ddy*ddy)||1;var R=150;if(dist<R){var force=((R-dist)/R)*12;s.vx+=(ddx/dist)*force;s.vy+=(ddy/dist)*force;}}s.vx*=0.82;s.vy*=0.82;s.dx+=s.vx;s.dy+=s.vy;var cap=80;s.dx=Math.max(-cap,Math.min(cap,s.dx));s.dy=Math.max(-cap,Math.min(cap,s.dy));s.el.style.setProperty('--px',s.dx.toFixed(1)+'px');s.el.style.setProperty('--py',s.dy.toFixed(1)+'px');});if(inHero){var cx=(mx-hRect.left-hRect.width/2)/hRect.width;var cy=(my-hRect.top-hRect.height/2)/hRect.height;document.querySelectorAll('.hero-ring').forEach(function(el,i){var d=(i+1)*9;el.style.transform='translate('+(cx*d).toFixed(1)+'px,'+(cy*d*0.6).toFixed(1)+'px)';});}requestAnimationFrame(tick);}requestAnimationFrame(tick);})();</script>
 </body>
 </html>
