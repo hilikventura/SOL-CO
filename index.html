@@ -1820,7 +1820,7 @@ function renderPubSection(cat, imgs) {
         </div>
         <div class="prod-btns">
           <button class="btn-cart" onclick="addToCart('${img.id}')">
-            ${inCart ? 'â In Cart' : 'ð Add to Cart'}
+            ${inCart ? (document.documentElement.lang==='he' ? '✓ בעגלה' : '✓ In Cart') : (document.documentElement.lang==='he' ? '🛒 הוסף לעגלה' : '🛒 Add to Cart')}
           </button>
           <button class="btn-buy" onclick="buyNow('${img.id}')">${document.documentElement.lang==='he' ? 'קנה עכשיו' : 'Buy Now'}</button>
         </div>
