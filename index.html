@@ -1312,13 +1312,13 @@ body.show-admin .wa-btn,body.show-login .wa-btn{display:none;}
 <!-- Contact modal -->
 <div class="modal-overlay" id="contact-modal" onclick="closeContactModal(event)">
   <div class="modal-box">
-    <div class="contact-modal-title"><span style="font-size:1.6rem">📋</span><h3>Your Details</h3></div>
-    <p class="contact-modal-sub">Fill in your details and we'll get back to you soon 💚</p>
+    <div class="contact-modal-title"><span style="font-size:1.6rem">📋</span><h3 data-he="הפרטים שלך" data-en="Your Details">Your Details</h3></div>
+    <p class="contact-modal-sub" data-he="מלאו את הפרטים שלכם ונחזור אלייכם בקרוב 💚" data-en="Fill in your details and we'll get back to you soon 💚">Fill in your details and we'll get back to you soon 💚</p>
     <div class="contact-modal-grid">
-      <div class="cfield"><label for="c-name">Full Name *</label><input id="c-name" type="text" placeholder="Jane Smith" / required></div>
-      <div class="cfield"><label for="c-phone">Phone *</label><input id="c-phone" type="tel" placeholder="+1-555-0000" / required></div>
-      <div class="cfield"><label for="c-email">Email</label><input id="c-email" type="email" placeholder="jane@gmail.com" /></div>
-      <div class="cfield"><label for="c-address">Address</label><input id="c-address" type="text" placeholder="Street, City" /></div>
+      <div class="cfield"><label for="c-name" data-he="שם מלא *" data-en="Full Name *">Full Name *</label><input id="c-name" type="text" placeholder="Jane Smith" / required></div>
+      <div class="cfield"><label for="c-phone" data-he="טלפון *" data-en="Phone *">Phone *</label><input id="c-phone" type="tel" placeholder="+1-555-0000" / required></div>
+      <div class="cfield"><label for="c-email" data-he="אימייל" data-en="Email">Email</label><input id="c-email" type="email" placeholder="jane@gmail.com" /></div>
+      <div class="cfield"><label for="c-address" data-he="כתובת" data-en="Address">Address</label><input id="c-address" type="text" placeholder="Street, City" /></div>
     </div>
     <div class="contact-err" id="contact-err">Please fill in name and phone ❌</div>
     <div class="modal-footer">
@@ -1820,9 +1820,9 @@ function renderPubSection(cat, imgs) {
         </div>
         <div class="prod-btns">
           <button class="btn-cart" onclick="addToCart('${img.id}')">
-            ${inCart ? '✓ In Cart' : '🛒 Add to Cart'}
+            ${inCart ? (document.documentElement.lang==='he' ? '✓ בעגלה' : '✓ In Cart') : (document.documentElement.lang==='he' ? '🛒 הוסף לעגלה' : '🛒 Add to Cart')}
           </button>
-          <button class="btn-buy" onclick="buyNow('${img.id}')">Buy Now</button>
+          <button class="btn-buy" onclick="buyNow('${img.id}')">${document.documentElement.lang==='he' ? 'קנה עכשיו' : 'Buy Now'}</button>
         </div>
       </div>
     </div>`;
@@ -2891,5 +2891,6 @@ function initTilt() {
   applyLang(currentLang);
 })();
 </script>
+<script>(function(){function applyLang(){var l=document.documentElement.lang;document.querySelectorAll('.btn-cart').forEach(function(b){var ic=b.textContent.trim().charCodeAt(0)===10003;b.textContent=ic?(l==='he'?'✓ בעגלה':'✓ In Cart'):(l==='he'?'🛒 הוסף לעגלה':'🛒 Add to Cart');});document.querySelectorAll('.btn-buy').forEach(function(b){b.textContent=l==='he'?'קנה עכשיו':'Buy Now';});document.querySelectorAll('[data-he][data-en]').forEach(function(e){e.textContent=l==='he'?e.getAttribute('data-he'):e.getAttribute('data-en');});}var o=window.toggleLang;window.toggleLang=function(){o&&o();applyLang();};})();</script>
 </body>
 </html>
