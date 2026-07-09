@@ -936,7 +936,7 @@ body.show-admin .wa-btn,body.show-login .wa-btn{display:none;}
     
 /* DK popup */
 #dk-popup{position:fixed;bottom:0;right:20px;z-index:9999;display:flex;flex-direction:column;align-items:center;pointer-events:none;opacity:0;transform:translateY(160px);}
-#dk-popup.dk-run{animation:dk-spring .4s cubic-bezier(.34,1.56,.64,1) forwards,dk-shake 1.8s .4s ease-in-out,dk-exit .45s 2.2s ease-in forwards;}
+#dk-popup.dk-run{animation:dk-spring .4s cubic-bezier(.34,1.56,.64,1) forwards,dk-shake 1.8s .4s ease-in-out,dk-exit .45s 9.55s ease-in forwards;}
 #dk-bbl{background:#fff;border:2px solid #a78bfa;border-radius:18px 18px 18px 4px;padding:10px 16px;font-size:1rem;font-weight:700;color:#4f3b8c;box-shadow:0 4px 18px rgba(0,0,0,.18);margin-bottom:8px;white-space:nowrap;}
 #dk-img{width:120px;filter:drop-shadow(0 4px 12px rgba(0,0,0,.35));}
 @keyframes dk-spring{from{opacity:0;transform:translateY(160px)}to{opacity:1;transform:translateY(0)}}
