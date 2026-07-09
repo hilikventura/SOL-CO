@@ -952,3 +952,17 @@ body.show-admin .wa-btn,body.show-login .wa-btn{display:none;}
       .tab-bar { overflow-x: auto; -webkit-overflow-scrolling: touch; flex-wrap: nowrap; scrollbar-width: none; padding-bottom: 4px; }
       .tab-bar::-webkit-scrollbar { display: none; }
     }
+/* === Mobile: iOS auto-zoom fix + touch improvements === */
+@media (max-width: 768px) {
+  input, textarea, select { font-size: 16px !important; }
+  .hero { overflow: hidden; }
+  .wa-btn { width: 52px; height: 52px; }
+  .tab-bar { overflow-x: auto; -webkit-overflow-scrolling: touch; flex-wrap: nowrap; }
+  .tab-bar::-webkit-scrollbar { display: none; }
+  .tab-bar { scrollbar-width: none; }
+}
+@media (max-width: 480px) {
+  .prod-btns { flex-direction: column; gap: 6px; }
+  .prod-btns .btn-cart,
+  .prod-btns .btn-buy { width: 100%; justify-content: center; min-height: 44px; font-size: .85rem; }
+}
