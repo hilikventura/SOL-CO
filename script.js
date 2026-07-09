@@ -41,7 +41,7 @@ async function loadSettings() {
     const saved = JSON.parse(localStorage.getItem(LS_CFG) || '{}');
     Object.keys(saved).forEach(k => { if (saved[k]) cfg[k] = saved[k]; });
   } catch {}
-  // 3. If still missing token â€” fetch _config.json from public repo (works on any device, no auth needed)
+  // 3. If still missing token — fetch _config.json from public repo (works on any device, no auth needed)
   if (!cfg.ghToken) {
     try {
       const r = await fetch('https://raw.githubusercontent.com/' + GH_REPO_DEFAULT + '/main/_config.json?t=' + Date.now());
@@ -70,14 +70,14 @@ async function saveSettings() {
   cfg.customDomain = (document.getElementById('s-custom-domain').value || '').trim();
   localStorage.setItem(LS_CFG, JSON.stringify(cfg));
   updateSettingsUI();
-  showToast('ðŸ’¾ Saving settingsâ€¦');
+  showToast('💾 Saving settings…');
   await bakeSettingsToGitHub();
 }
 
 async function bakeSettingsToGitHub() {
-  if (!cfg.ghRepo || !cfg.ghToken) { showToast('âœ… Settings saved (locally only â€” enter a GitHub token to sync across devices)'); return; }
+  if (!cfg.ghRepo || !cfg.ghToken) { showToast('✅ Settings saved (locally only — enter a GitHub token to sync across devices)'); return; }
   try {
-    // Write credentials to _config.json â€” short keys + reversed base64 to bypass secret scanning
+    // Write credentials to _config.json — short keys + reversed base64 to bypass secret scanning
     const configData = {
       t:            obfuscate(cfg.ghToken),
       w:            obfuscate(cfg.w3fKey || ''),
@@ -93,11 +93,11 @@ async function bakeSettingsToGitHub() {
     const body = { message: 'Update config', content };
     if (sha) body.sha = sha;
     const putRes = await ghApi('PUT', 'contents/_config.json', body);
-    if (putRes.ok) showToast('âœ… Settings saved & synced â€” auto-loads on every device!');
-    else { const e = await putRes.json().catch(()=>({})); showToast('âš ï¸ Saved locally; GitHub sync failed: ' + (e.message||putRes.status)); }
+    if (putRes.ok) showToast('✅ Settings saved & synced — auto-loads on every device!');
+    else { const e = await putRes.json().catch(()=>({})); showToast('⚠️ Saved locally; GitHub sync failed: ' + (e.message||putRes.status)); }
   } catch (err) {
     console.warn('bakeSettingsToGitHub error', err);
-    showToast('âœ… Settings saved locally (' + err.message + ')');
+    showToast('✅ Settings saved locally (' + err.message + ')');
   }
 }
 
@@ -108,18 +108,18 @@ function updateSettingsUI() {
 
   const statusEl = document.getElementById('settings-status');
   if (statusEl) {
-    statusEl.textContent = allOk ? 'All Set âœ“' : (ghOk || w3fOk ? 'Partial Setup' : 'Not Configured');
+    statusEl.textContent = allOk ? 'All Set ✓' : (ghOk || w3fOk ? 'Partial Setup' : 'Not Configured');
     statusEl.className   = 's-status ' + (allOk ? 'ok' : 'bad');
   }
-  setChip('chip-github', ghOk,  'ðŸ™ GitHub',    ghOk  ? 'Active' : 'Not Set');
-  setChip('chip-w3f',    w3fOk, 'âœ‰ï¸ Web3Forms',  w3fOk ? 'Active' : 'Not Set');
+  setChip('chip-github', ghOk,  '🐙 GitHub',    ghOk  ? 'Active' : 'Not Set');
+  setChip('chip-w3f',    w3fOk, '✉️ Web3Forms',  w3fOk ? 'Active' : 'Not Set');
   setVal('s-gh-repo', cfg.ghRepo);
   setVal('s-custom-domain', cfg.customDomain);
   // Show masked token so user knows it's saved
   const tokenEl = document.getElementById('s-gh-token');
   if (tokenEl) {
     tokenEl.value       = '';
-    tokenEl.placeholder = cfg.ghToken ? 'â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢  (Saved â€” re-enter only to change)' : 'github_pat_...';
+    tokenEl.placeholder = cfg.ghToken ? '••••••••  (Saved — re-enter only to change)' : 'github_pat_...';
   }
   setVal('s-w3f-key', cfg.w3fKey);
   setVal('s-ejs-service', cfg.ejsServiceId);
@@ -164,7 +164,7 @@ function ghApi(method, path, body) {
 }
 
 /* ================================================================
-   GITHUB â€” Test connection
+   GITHUB — Test connection
 ================================================================ */
 async function testGithubConnection() {
   // Pull token from field if user just typed a new one
@@ -173,10 +173,10 @@ async function testGithubConnection() {
   const resultEl = document.getElementById('gh-test-result');
   resultEl.style.display = 'block';
   resultEl.style.color = '#64748b';
-  resultEl.textContent = 'â³ Testingâ€¦';
+  resultEl.textContent = '⏳ Testing…';
   if (!token) {
     resultEl.style.color = '#ef4444';
-    resultEl.textContent = 'âŒ No token entered â€” paste your GitHub Personal Access Token above first.';
+    resultEl.textContent = '❌ No token entered — paste your GitHub Personal Access Token above first.';
     return;
   }
   try {
@@ -189,26 +189,26 @@ async function testGithubConnection() {
     });
     if (res.ok || res.status === 404) {
       resultEl.style.color = '#16a34a';
-      resultEl.textContent = 'âœ… Token valid! GitHub connection OK.';
+      resultEl.textContent = '✅ Token valid! GitHub connection OK.';
       if (tokenInput) { cfg.ghToken = token; }
     } else if (res.status === 401) {
       resultEl.style.color = '#ef4444';
-      resultEl.textContent = 'âŒ Unauthorized (401) â€” token is invalid or expired. Generate a new one.';
+      resultEl.textContent = '❌ Unauthorized (401) — token is invalid or expired. Generate a new one.';
     } else if (res.status === 403) {
       resultEl.style.color = '#ef4444';
-      resultEl.textContent = 'âŒ Forbidden (403) â€” token exists but lacks "Contents: Read & Write" permission.';
+      resultEl.textContent = '❌ Forbidden (403) — token exists but lacks "Contents: Read & Write" permission.';
     } else {
       resultEl.style.color = '#ef4444';
-      resultEl.textContent = 'âŒ Error ' + res.status + ' â€” check repo name in settings.';
+      resultEl.textContent = '❌ Error ' + res.status + ' — check repo name in settings.';
     }
   } catch (err) {
     resultEl.style.color = '#ef4444';
-    resultEl.textContent = 'âŒ Network error: ' + err.message;
+    resultEl.textContent = '❌ Network error: ' + err.message;
   }
 }
 
 /* ================================================================
-   CATALOG â€” GitHub + localStorage fallback
+   CATALOG — GitHub + localStorage fallback
 ================================================================ */
 function getDeletedIds() {
   try { return new Set(JSON.parse(localStorage.getItem(LS_DELETED) || '[]')); }
@@ -226,7 +226,7 @@ async function loadCatalog() {
   // Only trust GitHub if we have a token (meaning we also SAVE there)
   if (cfg.ghToken) {
     try {
-      // Use GitHub API (not raw CDN) â€” always returns latest, not cached
+      // Use GitHub API (not raw CDN) — always returns latest, not cached
       const r = await ghApi('GET', 'contents/catalog.json');
       if (r.ok) {
         const d = await r.json();
@@ -245,7 +245,7 @@ async function loadCatalog() {
     } catch (err) { console.warn('GitHub catalog load failed', err); }
   }
 
-  // No token or GitHub failed â€” use localStorage, filter out deleted IDs
+  // No token or GitHub failed — use localStorage, filter out deleted IDs
   images = local.filter(i => !deletedIds.has(i.id));
 }
 
@@ -270,28 +270,28 @@ async function saveCatalog() {
     try {
       const r = await ghApi('GET', 'contents/catalog.json');
       if (r.ok) { const d = await r.json(); sha = d.sha; }
-      else if (r.status === 401) { showToast('âŒ GitHub token invalid or expired â€” update in Settings'); return; }
-      else if (r.status === 403) { showToast('âŒ GitHub token lacks write permission â€” check repo access in Settings'); return; }
+      else if (r.status === 401) { showToast('❌ GitHub token invalid or expired — update in Settings'); return; }
+      else if (r.status === 403) { showToast('❌ GitHub token lacks write permission — check repo access in Settings'); return; }
     } catch {}
     const body = { message: 'Update catalog', content };
     if (sha) body.sha = sha;
     const saveRes = await ghApi('PUT', 'contents/catalog.json', body);
     if (saveRes.ok) {
-      // Prune LS_DELETED â€” catalog is now authoritative, no need to keep stale deleted IDs
+      // Prune LS_DELETED — catalog is now authoritative, no need to keep stale deleted IDs
       localStorage.removeItem(LS_DELETED);
     } else {
       const errData = await saveRes.json().catch(() => ({}));
       const msg = errData.message || ('HTTP ' + saveRes.status);
-      if (saveRes.status === 401) showToast('âŒ GitHub: Unauthorized â€” re-enter your token in Settings');
-      else if (saveRes.status === 403) showToast('âŒ GitHub: Forbidden â€” token missing "Contents: Read & Write" permission');
-      else if (saveRes.status === 409) showToast('âš ï¸ GitHub: Conflict â€” refresh and try again');
-      else if (saveRes.status === 422) showToast('âš ï¸ GitHub: ' + msg);
-      else showToast('âš ï¸ GitHub save failed (' + saveRes.status + '): ' + msg);
+      if (saveRes.status === 401) showToast('❌ GitHub: Unauthorized — re-enter your token in Settings');
+      else if (saveRes.status === 403) showToast('❌ GitHub: Forbidden — token missing "Contents: Read & Write" permission');
+      else if (saveRes.status === 409) showToast('⚠️ GitHub: Conflict — refresh and try again');
+      else if (saveRes.status === 422) showToast('⚠️ GitHub: ' + msg);
+      else showToast('⚠️ GitHub save failed (' + saveRes.status + '): ' + msg);
       console.warn('GitHub catalog save failed', saveRes.status, errData);
     }
   } catch (err) {
     console.warn('GitHub catalog save failed', err);
-    showToast('âš ï¸ GitHub: Save error (saved locally) â€” ' + (err.message || ''));
+    showToast('⚠️ GitHub: Save error (saved locally) — ' + (err.message || ''));
   }
 }
 
@@ -322,7 +322,7 @@ async function uploadFile(file, category) {
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
         console.warn('GitHub upload failed (' + (errData.message || res.status) + '), using local fallback');
-        showToast('âš ï¸ GitHub upload failed â€” saved locally');
+        showToast('⚠️ GitHub upload failed — saved locally');
         // Fall through to base64 fallback below
       } else {
         const data = await res.json();
@@ -337,7 +337,7 @@ async function uploadFile(file, category) {
       }
     } catch (err) {
       console.warn('GitHub upload error, using local fallback:', err);
-      showToast('âš ï¸ GitHub error â€” saved locally');
+      showToast('⚠️ GitHub error — saved locally');
     }
   }
   // Fallback: base64
@@ -348,7 +348,7 @@ async function uploadFile(file, category) {
 async function deleteFileFromGitHub(img) {
   if (!cfg.ghRepo || !cfg.ghToken || !img.path) return;
   try {
-    // Always fetch the current SHA â€” stored SHA may be stale
+    // Always fetch the current SHA — stored SHA may be stale
     let sha = img.sha;
     const check = await ghApi('GET', 'contents/' + img.path);
     if (check.ok) {
@@ -366,11 +366,11 @@ async function deleteFileFromGitHub(img) {
     if (!res.ok) {
       const errData = await res.json().catch(() => ({}));
       console.warn('GitHub delete failed:', errData.message || res.status);
-      showToast('âš ï¸ GitHub delete failed: ' + (errData.message || res.status));
+      showToast('⚠️ GitHub delete failed: ' + (errData.message || res.status));
     }
   } catch (err) {
     console.warn('GitHub delete error', err);
-    showToast('âš ï¸ GitHub delete error â€” file may still exist on GitHub');
+    showToast('⚠️ GitHub delete error — file may still exist on GitHub');
   }
 }
 
@@ -406,17 +406,17 @@ async function doLogin() {
   const btn   = document.querySelector('.btn-login-submit');
   if (u === CREDS.user && p === CREDS.pass) {
     errEl.classList.remove('show');
-    if (btn) { btn.disabled = true; btn.textContent = 'â³ Loading...'; }
+    if (btn) { btn.disabled = true; btn.textContent = '⏳ Loading...'; }
     localStorage.setItem(LS_SESSION, '1');
     try {
       await showAdmin();
     } catch (err) {
       console.error('showAdmin failed:', err);
-      showToast('âŒ Error loading admin panel');
-      if (btn) { btn.disabled = false; btn.textContent = 'Login â†’'; }
+      showToast('❌ Error loading admin panel');
+      if (btn) { btn.disabled = false; btn.textContent = 'Login →'; }
     }
   } else {
-    errEl.textContent = u === CREDS.user ? 'âŒ Wrong password' : 'âŒ Wrong username or password';
+    errEl.textContent = u === CREDS.user ? '❌ Wrong password' : '❌ Wrong username or password';
     errEl.classList.add('show');
     document.getElementById('inp-pass').value = '';
     document.getElementById('inp-pass').focus();
@@ -460,14 +460,14 @@ function renderPubSection(cat, imgs) {
   gridEl.innerHTML = imgs.map(img => {
     const title    = img.title || img.name;
     const hasTitle = !!img.title;
-    const price    = img.price ? 'â‚ª' + img.price : '';
+    const price    = img.price ? '₪' + img.price : '';
     const inCart   = selected.has(img.id);
     return `
     <div class="prod-card${inCart ? ' in-cart' : ''}" id="card-${img.id}">
       <div class="prod-img" onclick="openLightbox('${esc(img.dataUrl)}','${esc(title)}')">
         <img src="${img.dataUrl}" alt="${esc(title)}" loading="lazy" decoding="async" />
-        <div class="prod-in-cart-badge">âœ“</div>
-        ${price ? '<div class="prod-badge" data-i18n="available">âœ¦ ' + (window.i18n ? window.i18n('available') : 'Available') + '</div>' : ''}
+        <div class="prod-in-cart-badge">✓</div>
+        ${price ? '<div class="prod-badge" data-i18n="available">✦ ' + (window.i18n ? window.i18n('available') : 'Available') + '</div>' : ''}
       </div>
       <div class="prod-info">
         <div class="prod-title${hasTitle ? '' : ' untitled'}" data-en-title="${esc(title)}">${esc(title)}</div>
@@ -476,9 +476,9 @@ function renderPubSection(cat, imgs) {
         </div>
         <div class="prod-btns">
           <button class="btn-cart" onclick="addToCart('${img.id}')">
-            ${inCart ? (document.documentElement.lang==='he' ? 'âœ“ ×‘×¢×’×œ×”' : 'âœ“ In Cart') : (document.documentElement.lang==='he' ? 'ðŸ›’ ×”×•×¡×£ ×œ×¢×’×œ×”' : 'ðŸ›’ Add to Cart')}
+            ${inCart ? (document.documentElement.lang==='he' ? '✓ בעגלה' : '✓ In Cart') : (document.documentElement.lang==='he' ? '🛒 הוסף לעגלה' : '🛒 Add to Cart')}
           </button>
-          <button class="btn-buy" onclick="buyNow('${img.id}')">${document.documentElement.lang==='he' ? '×§× ×” ×¢×›×©×™×•' : 'Buy Now'}</button>
+          <button class="btn-buy" onclick="buyNow('${img.id}')">${document.documentElement.lang==='he' ? 'קנה עכשיו' : 'Buy Now'}</button>
         </div>
       </div>
     </div>`;
@@ -502,10 +502,10 @@ function addToCart(id) {
     const inCart = selected.has(id);
     card.classList.toggle('in-cart', inCart);
     const btn = card.querySelector('.btn-cart');
-    if (btn) btn.textContent = inCart ? (document.documentElement.lang==='he'?'âœ“ ×‘×¢×’×œ×”':'âœ“ In Cart') : (document.documentElement.lang==='he'?'ðŸ›’ ×”×•×¡×£ ×œ×¢×’×œ×”':'ðŸ›’ Add to Cart');
+    if (btn) btn.textContent = inCart ? (document.documentElement.lang==='he'?'✓ בעגלה':'✓ In Cart') : (document.documentElement.lang==='he'?'🛒 הוסף לעגלה':'🛒 Add to Cart');
     if (inCart) {
       if (btn) btn.style.background = '#16a34a';
-      showToast(document.documentElement.lang==='he'?'ðŸ›’ × ×•×¡×£ ×œ×¢×’×œ×”!':'ðŸ›’ Added to cart!')
+      showToast(document.documentElement.lang==='he'?'🛒 נוסף לעגלה!':'🛒 Added to cart!')
         if(window._showDonkey) window._showDonkey();;
     } else {
       if (btn) btn.style.background = '';
@@ -528,7 +528,7 @@ function clearSelection() {
     if (card) {
       card.classList.remove('in-cart');
       const btn = card.querySelector('.btn-cart');
-      if (btn) { btn.textContent = 'ðŸ›’ Add to Cart'; btn.style.background = ''; }
+      if (btn) { btn.textContent = '🛒 Add to Cart'; btn.style.background = ''; }
     }
   });
   selected.clear();
@@ -557,7 +557,7 @@ function buildMessage(ct) {
   const macrameSel = images.filter(img => selected.has(img.id) && img.category === 'macrame');
   const homemadeSel = images.filter(img => selected.has(img.id) && img.category === 'homemade');
   const lines = [];
-  lines.push('ðŸ‘¤ Customer Details:');
+  lines.push('👤 Customer Details:');
   lines.push('Name: '    + ct.name);
   lines.push('Phone: '   + ct.phone);
   if (ct.email)   lines.push('Email: '   + ct.email);
@@ -570,18 +570,18 @@ function buildMessage(ct) {
       const title = (img.title || img.name).trim();
       const price = (img.price || '').trim();
       lines.push(price
-        ? '  ' + (i+1) + '. ' + title + '  |  Price: â‚ª' + price
+        ? '  ' + (i+1) + '. ' + title + '  |  Price: ₪' + price
         : '  ' + (i+1) + '. ' + title);
     });
   }
-  addItems(slimeSel,   'ðŸ«§ Squishies:');
-  addItems(macrameSel, 'ðŸª¢ MacramÃ©:');
-addItems(homemadeSel, 'ðŸ  Home Made:');
+  addItems(slimeSel,   '🫧 Squishies:');
+  addItems(macrameSel, '🪢 Macramé:');
+addItems(homemadeSel, '🏠 Home Made:');
   return lines.join('\n');
 }
 
 /* ================================================================
-   SEND â€” step 1: open contact modal
+   SEND — step 1: open contact modal
 ================================================================ */
 function sendMail() {
   if (!selected.size) return;
@@ -600,7 +600,7 @@ function closeContactModal(event) {
 }
 
 /* ================================================================
-   SEND â€” step 2: validate + send
+   SEND — step 2: validate + send
 ================================================================ */
 async function submitWithContact() {
   const name    = document.getElementById('c-name').value.trim();
@@ -620,15 +620,15 @@ async function submitWithContact() {
   saveContact();
 
   const _ms = JSON.parse(localStorage.getItem('bysol_session')||'null');
-  const _mn = _ms ? '\n\nðŸ‘¤ ×©× ×—×‘×¨: ' + _ms.name + ' | ' + _ms.email : '';
-  const message = 'Hi Sol!\n\n' + buildMessage(contact) + _mn + '\n\nThank you! ðŸ«§';
+  const _mn = _ms ? '\n\n👤 שם חבר: ' + _ms.name + ' | ' + _ms.email : '';
+  const message = 'Hi Sol!\n\n' + buildMessage(contact) + _mn + '\n\nThank you! 🫧';
   document.getElementById('contact-modal').classList.remove('open');
 
   const sendBtn = document.querySelector('#send-panel .btn-primary');
-  if (sendBtn) { sendBtn.disabled = true; sendBtn.textContent = 'â³ Sending...'; }
+  if (sendBtn) { sendBtn.disabled = true; sendBtn.textContent = '⏳ Sending...'; }
 
   if (!cfg.w3fKey) {
-    if (sendBtn) { sendBtn.disabled = false; sendBtn.innerHTML = 'âœ‰ï¸&nbsp; Send to Sol'; }
+    if (sendBtn) { sendBtn.disabled = false; sendBtn.innerHTML = '✉️&nbsp; Send to Sol'; }
     openFallbackModal(message); return;
   }
 
@@ -645,14 +645,14 @@ async function submitWithContact() {
       })
     });
     const json = await res.json();
-    if (json.success) { showToast('âœ… Email sent to Sol!'); clearSelection(); }
+    if (json.success) { showToast('✅ Email sent to Sol!'); clearSelection(); }
     else throw new Error(json.message || 'Error');
   } catch (err) {
     console.error('Web3Forms error:', err);
-    showToast('âŒ Send error â€” please try again');
+    showToast('❌ Send error — please try again');
     openFallbackModal(message);
   } finally {
-    if (sendBtn) { sendBtn.disabled = false; sendBtn.innerHTML = 'âœ‰ï¸&nbsp; Send to Sol'; }
+    if (sendBtn) { sendBtn.disabled = false; sendBtn.innerHTML = '✉️&nbsp; Send to Sol'; }
   }
 }
 
@@ -669,7 +669,7 @@ function copyFallbackText() {
   ta.select();
   try { navigator.clipboard.writeText(ta.value).catch(() => document.execCommand('copy')); }
   catch { document.execCommand('copy'); }
-  showToast('âœ… Text copied!');
+  showToast('✅ Text copied!');
 }
 
 /* ================================================================
@@ -685,16 +685,16 @@ function renderAdmin() {
   document.getElementById('admin-slime-count').textContent   = slimeImgs.length;
   document.getElementById('admin-macrame-count').textContent = macrameImgs.length;
   document.getElementById('admin-homemade-count').textContent = homemadeImgs.length;
-  renderAdminGrid('admin-grid-slime',   slimeImgs,   'ðŸ«§ No slime images uploaded yet');
-  renderAdminGrid('admin-grid-macrame', macrameImgs, 'ðŸª¢ No macramÃ© images uploaded yet');
-renderAdminGrid('admin-grid-homemade', homemadeImgs, 'ðŸ  No home made images uploaded yet');
+  renderAdminGrid('admin-grid-slime',   slimeImgs,   '🫧 No slime images uploaded yet');
+  renderAdminGrid('admin-grid-macrame', macrameImgs, '🪢 No macramé images uploaded yet');
+renderAdminGrid('admin-grid-homemade', homemadeImgs, '🏠 No home made images uploaded yet');
   updateSettingsUI();
 }
 
 function renderAdminGrid(gridId, imgs, emptyMsg) {
   const grid = document.getElementById(gridId);
   if (!imgs.length) {
-    grid.innerHTML = `<div class="admin-empty"><span class="ico">ðŸ“­</span><p>${emptyMsg}</p></div>`;
+    grid.innerHTML = `<div class="admin-empty"><span class="ico">📭</span><p>${emptyMsg}</p></div>`;
     return;
   }
   grid.innerHTML = imgs.map(img => `
@@ -707,18 +707,18 @@ function renderAdminGrid(gridId, imgs, emptyMsg) {
                  oninput="updateField('${img.id}','title',this.value)" onblur="saveCatalog()" />
         </div>
         <div class="card-field">
-          <label>Price (â‚ª)</label>
+          <label>Price (₪)</label>
           <input type="number" min="0" step="0.5" class="price-input"
                  value="${esc(img.price || '')}" placeholder="0"
                  oninput="updateField('${img.id}','price',this.value)" onblur="saveCatalog()" />
         </div>
         <div class="card-del-row">
           <span class="fname" title="${esc(img.name)}">${esc(img.name)}</span>
-          <button class="btn-del" onclick="deleteImage('${img.id}')">ðŸ—‘ Delete</button>
+          <button class="btn-del" onclick="deleteImage('${img.id}')">🗑 Delete</button>
           <div class="ai-btns">
-            <button class="btn-ai" onclick="aiEnhance('${img.id}')" title="Enhance with Gemini AI">âœ¨</button>
-            <button class="btn-ai" onclick="aiRemoveBg('${img.id}')" title="Remove Background">âœ‚ï¸</button>
-            <button class="btn-ai" onclick="aiGenerate('${img.id}')" title="Generate new image">ðŸŒ</button>
+            <button class="btn-ai" onclick="aiEnhance('${img.id}')" title="Enhance with Gemini AI">✨</button>
+            <button class="btn-ai" onclick="aiRemoveBg('${img.id}')" title="Remove Background">✂️</button>
+            <button class="btn-ai" onclick="aiGenerate('${img.id}')" title="Generate new image">🍌</button>
           </div>
         </div>
       </div>
@@ -729,7 +729,7 @@ function renderAdminGrid(gridId, imgs, emptyMsg) {
 /* ================================================================
    UPLOAD
 ================================================================ */
-/* â”€â”€ Upload details modal â”€â”€ */
+/* ── Upload details modal ── */
 function promptUploadDetails(filename) {
   return new Promise(resolve => {
     document.getElementById('udm-filename').textContent = filename;
@@ -765,7 +765,7 @@ function udmCancel() {
 
 async function handleUpload(fileList, category) {
   const files = Array.from(fileList).filter(f => f.type.startsWith('image/'));
-  if (!files.length) { showToast('âš ï¸ No image files selected'); return; }
+  if (!files.length) { showToast('⚠️ No image files selected'); return; }
 
   // Collect name + price for each file before uploading
   const fileDetails = [];
@@ -808,9 +808,9 @@ async function handleUpload(fileList, category) {
   await saveCatalog();
   setTimeout(() => { progressEl.classList.remove('show'); progFill.style.width = '0%'; }, 600);
 
-  const catLabel = category === 'slime' ? 'slime' : 'macramÃ©';
-  if (errors.length) showToast('âš ï¸ ' + (done - errors.length) + ' uploaded, ' + errors.length + ' failed');
-  else showToast('âœ… ' + done + ' ' + catLabel + ' images uploaded');
+  const catLabel = category === 'slime' ? 'slime' : 'macramé';
+  if (errors.length) showToast('⚠️ ' + (done - errors.length) + ' uploaded, ' + errors.length + ' failed');
+  else showToast('✅ ' + done + ' ' + catLabel + ' images uploaded');
   document.getElementById('file-input-' + category).value = '';
 }
 
@@ -833,7 +833,7 @@ async function deleteImage(id) {
   images = images.filter(i => i.id !== id);
   addDeletedId(id); // remember deletion even if GitHub CDN is cached
   await Promise.all([saveCatalog(), deleteFileFromGitHub(img)]);
-  renderAdmin(); showToast('ðŸ—‘ Image deleted');
+  renderAdmin(); showToast('🗑 Image deleted');
 }
 
 async function deleteAll() {
@@ -844,7 +844,7 @@ async function deleteAll() {
   images = [];
   await saveCatalog();
   await Promise.all(toDelete.map(img => deleteFileFromGitHub(img)));
-  renderAdmin(); showToast('ðŸ—‘ All images deleted');
+  renderAdmin(); showToast('🗑 All images deleted');
 }
 
 /* ================================================================
@@ -944,7 +944,7 @@ function initTilt() {
     }
   })();
 
-/* â•â• MEMBER SYSTEM JS v1.0 â•â• */
+/* ══ MEMBER SYSTEM JS v1.0 ══ */
 (function(){
   var MK = 'bysol_members';
   var SK = 'bysol_session';
@@ -973,7 +973,7 @@ function initTilt() {
     if(s){
       showPanel('profile');
       var g=document.getElementById('profile-greeting');
-      if(g) g.textContent=(window.i18n ? window.i18n('greeting') : '×©×œ×•×, ')+s.name+' ðŸ’œ';
+      if(g) g.textContent=(window.i18n ? window.i18n('greeting') : 'שלום, ')+s.name+' 💜';
     } else {
       showPanel('login');
     }
@@ -1012,11 +1012,11 @@ function initTilt() {
     var errEl=document.getElementById('reg-err');
     errEl.style.display='none';
     name=name.trim(); email=email.trim().toLowerCase();
-    if(!name||!email||!pass){errEl.textContent='×× × ×ž×œ××™ ××ª ×›×œ ×”×©×“×•×ª';errEl.style.display='';return;}
-    if(pass.length<6){errEl.textContent='×”×¡×™×¡×ž×” ×—×™×™×‘×ª ×œ×”×›×™×œ ×œ×¤×—×•×ª 6 ×ª×•×•×™×';errEl.style.display='';return;}
+    if(!name||!email||!pass){errEl.textContent='אנא מלאי את כל השדות';errEl.style.display='';return;}
+    if(pass.length<6){errEl.textContent='הסיסמה חייבת להכיל לפחות 6 תווים';errEl.style.display='';return;}
     var members=getMembers();
     for(var i=0;i<members.length;i++){
-      if(members[i].email===email){errEl.textContent='×›×ª×•×‘×ª ×”××™×ž×™×™×œ ×›×‘×¨ ×¨×©×•×ž×”';errEl.style.display='';return;}
+      if(members[i].email===email){errEl.textContent='כתובת האימייל כבר רשומה';errEl.style.display='';return;}
     }
     var member={id:Date.now(),name:name,email:email,pw:btoa(unescape(encodeURIComponent(pass))),joined:new Date().toISOString()};
     members.push(member);
@@ -1045,7 +1045,7 @@ function initTilt() {
     } else {
       document.body.classList.remove('is-member');
       if(btn) btn.classList.remove('logged-in');
-      if(lbl) lbl.textContent='×”×¦×˜×¨×¤×™';
+      if(lbl) lbl.textContent='הצטרפי';
       revertPrices();
     }
   }
@@ -1055,12 +1055,12 @@ function initTilt() {
       if(el.dataset.mp) return;
       el.dataset.mp='1';
       var txt=el.textContent||'';
-      var m=txt.match(/[â‚ªâ‚ª]\s*([\d.]+)/);
+      var m=txt.match(/[₪₪]\s*([\d.]+)/);
       if(!m) return;
       var orig=parseFloat(m[1]);
       var disc=Math.round(orig*DISC);
       el.dataset.origPrice=txt.trim();
-      el.innerHTML='<span class="guest-price">'+txt.trim()+'</span> <span class="member-price-tag">×—×‘×¨×” â‚ª'+disc+'</span>';
+      el.innerHTML='<span class="guest-price">'+txt.trim()+'</span> <span class="member-price-tag">חברה ₪'+disc+'</span>';
     });
   }
 
@@ -1114,7 +1114,7 @@ function initTilt() {
       if(card.querySelector('.vip-lock-overlay')) return;
       var overlay=document.createElement('div');
       overlay.className='vip-lock-overlay';
-      overlay.innerHTML='<span class="lock-icon">ðŸ”’</span><span class="lock-label">×œ×—×‘×¨×•×ª ×‘×œ×‘×“</span>';
+      overlay.innerHTML='<span class="lock-icon">🔒</span><span class="lock-label">לחברות בלבד</span>';
       overlay.onclick=function(){ openAuthModal(); };
       card.appendChild(overlay);
     });
@@ -1160,7 +1160,7 @@ function initTilt() {
     if(s){
       window._showPanelFull('profile');
       var g=document.getElementById('profile-greeting');
-      if(g) g.textContent='×©×œ×•×, '+s.name+' ðŸ’œ';
+      if(g) g.textContent='שלום, '+s.name+' 💜';
     } else {
       window._showPanelFull(tab||'register');
     }
@@ -1173,10 +1173,10 @@ function initTilt() {
     var boxEl=document.getElementById('reset-link-box');var linkEl=document.getElementById('reset-link-anchor');
     eEl.style.display='none';oEl.style.display='none';if(boxEl)boxEl.style.display='none';
     eEl.textContent='';
-    if(!eml){eEl.textContent='×× × ×”×›× ×™×¡×™ ×›×ª×•×‘×ª ××™×ž×™×™×œ';eEl.style.display='block';return;}
+    if(!eml){eEl.textContent='אנא הכניסי כתובת אימייל';eEl.style.display='block';return;}
     var mems=JSON.parse(localStorage.getItem('bysol_members')||'[]');
     var mem=mems.find(function(m){return m.email.toLowerCase()===eml;});
-    if(!mem){oEl.textContent='×× ×”××™×ž×™×™×œ ×§×™×™× ×‘×ž×¢×¨×›×ª, ×™×™×©×œ×— ×§×™×©×•×¨ ×œ××™×¤×•×¡ ðŸ“§';oEl.style.display='block';return;}
+    if(!mem){oEl.textContent='אם האימייל קיים במערכת, יישלח קישור לאיפוס 📧';oEl.style.display='block';return;}
     var tok=btoa(JSON.stringify({email:mem.email,expires:Date.now()+3600000}));
     var rUrl=location.origin+'/?reset='+encodeURIComponent(tok);
     var rc=JSON.parse(localStorage.getItem('ventura_slime_cfg')||'{}');
@@ -1187,12 +1187,12 @@ function initTilt() {
         await emailjs.send(rc.ejsServiceId,rc.ejsTemplateId,{
           to_email:mem.email,to_name:mem.name||'',reset_link:rUrl,from_name:'BySOL'
         },{publicKey:rc.ejsPubKey});
-        if(oEl){oEl.textContent='âœ… ×§×™×©×•×¨ × ×©×œ×— ×œ××™×ž×™×™×œ ×©×œ×š ðŸ“§ ×‘×“×§×™ ×’× ×¡×¤××';oEl.style.display='block';}
+        if(oEl){oEl.textContent='✅ קישור נשלח לאימייל שלך 📧 בדקי גם ספאם';oEl.style.display='block';}
         return;
       }catch(ex){ /* fall through */ }
     }
 
-    // 2. Show the reset link directly on screen â€” member clicks it right here
+    // 2. Show the reset link directly on screen — member clicks it right here
     if(boxEl&&linkEl){
       linkEl.href=rUrl;
       boxEl.style.display='block';
@@ -1203,10 +1203,10 @@ function initTilt() {
       try{
         var fd=new FormData();
         fd.append('access_key',rc.w3fKey);
-        fd.append('subject','ðŸ”‘ ×‘×§×©×ª ××™×¤×•×¡ ×¡×™×¡×ž×” - BySOL');
+        fd.append('subject','🔑 בקשת איפוס סיסמה - BySOL');
         fd.append('from_name','BySOL Members');
         fd.append('replyto',mem.email);
-        fd.append('message','×—×‘×¨×” ×‘×™×§×©×” ××™×¤×•×¡ ×¡×™×¡×ž×”:\n×©×: '+(mem.name||'â€”')+'\n××™×ž×™×™×œ: '+mem.email+'\n×§×™×©×•×¨: '+rUrl);
+        fd.append('message','חברה ביקשה איפוס סיסמה:\nשם: '+(mem.name||'—')+'\nאימייל: '+mem.email+'\nקישור: '+rUrl);
         fetch('https://api.web3forms.com/submit',{method:'POST',body:fd});
       }catch(e){}
     }
@@ -1216,16 +1216,16 @@ function initTilt() {
     var p2=(document.getElementById('forgot-newpass2')||{}).value||'';
     var eEl=document.getElementById('forgot-err2');var oEl=document.getElementById('forgot-ok2');
     eEl.style.display='none';oEl.style.display='none';
-    if(p1.length<6){eEl.textContent='×¡×™×¡×ž× ×—×™×™×‘×ª ×œ×”×›×™×œ ×œ×¤×—×•×ª 6 ×ª×•×•×™×';eEl.style.display='block';return;}
-    if(p1!==p2){eEl.textContent='×”×¡×™×¡×ž××•×ª ××™× ×Ÿ ×ª×•××ž×•×ª';eEl.style.display='block';return;}
+    if(p1.length<6){eEl.textContent='סיסמא חייבת להכיל לפחות 6 תווים';eEl.style.display='block';return;}
+    if(p1!==p2){eEl.textContent='הסיסמאות אינן תואמות';eEl.style.display='block';return;}
     var mems=JSON.parse(localStorage.getItem('bysol_members')||'[]');
     var ix=mems.findIndex(function(m){return m.email.toLowerCase()===(window._resetEmail||'').toLowerCase();});
-    if(ix===-1){eEl.textContent='×©×’×™××” â€” ×ž×©×ª×ž×© ×œ× × ×ž×¦×';eEl.style.display='block';return;}
+    if(ix===-1){eEl.textContent='שגיאה — משתמש לא נמצא';eEl.style.display='block';return;}
     mems[ix].pw=btoa(unescape(encodeURIComponent(p1)));
     localStorage.setItem('bysol_members',JSON.stringify(mems));
     
     history.replaceState({},'',location.pathname);
-    oEl.textContent='âœ… ×”×¡×™×¡×ž× ×¢×•×“×›× ×”! ×ž×•×¢×‘×¨ ×œ×›× ×™×¡×”...';oEl.style.display='block';
+    oEl.textContent='✅ הסיסמא עודכנה! מועבר לכניסה...';oEl.style.display='block';
     document.getElementById('forgot-newpass').value='';document.getElementById('forgot-newpass2').value='';
     setTimeout(function(){switchAuthTab('login');},2500);
   };
@@ -1252,119 +1252,119 @@ function initTilt() {
     hint.style.display=exists?'':'none';
   };
 
-/* â•â• I18N â€” Language Toggle â•â• */
+/* ══ I18N — Language Toggle ══ */
 (function(){
   var LANG_KEY = 'bysol_lang';
 
   var T = {
     he: {
-      heroSub: '×‘×—×¨×™ ×ž×” ×©××ª ××•×”×‘×ª ×•×©×œ×—×™ ×œ× ×• â€” × ×—×–×•×¨ ××œ×™×š ×‘×”×§×“×! ðŸ’š',
-      gallery: '×”×’×œ×¨×™×” ×©×œ× ×•',
-      cartItems: '×¤×¨×™×˜×™× ×‘×¢×’×œ×”',
-      clearCart: '× ×§×” ×¢×’×œ×”',
-      sendToSol: 'âœ‰ï¸Â  ×©×œ×—×™ ×œ×¡×•×œ',
-      waMsg: '×”×™×™ ×¡×•×œ! ðŸ‘‹ ×¨××™×ª×™ ××ª ×”×—× ×•×ª ×©×œ×š ×•×¨×¦×™×ª×™ ×œ×©××•×œ...',
-      available: '×–×ž×™×Ÿ',
-      tabSquishy: 'ðŸ«§ ×¡×§×•×•×©',
-      tabMacrame: 'ðŸª¢ ×ž×§×¨×ž×”',
-      tabHomemade: 'â™»ï¸ ×™×“ ×©× ×™×”',
-      join: '×”×¦×˜×¨×¤×™',
-      loginTab: '×›× ×™×¡×”',
-      registerTab: '×”×¦×˜×¨×¤×•×ª',
-      welcomeTitle: '×‘×¨×•×›×” ×”×‘××” ðŸ’œ',
-      enterDetails: '×”×›× ×™×¡×™ ××ª ×”×¤×¨×˜×™× ×©×œ×š',
-      emailPh: '××™×ž×™×™×œ',
-      passPh: '×¡×™×¡×ž×”',
-      loginBtn: '×›× ×™×¡×” ×œ××–×•×¨ ×”×—×‘×¨×•×ª',
-      forgotLink: '×©×›×—×ª×™ ×¡×™×¡×ž×”',
-      joinTitle: '×”×¦×˜×¨×¤×™ ×œ×ž×©×¤×—×” ðŸŒ¸',
-      joinSub: '×—×‘×¨×•×ª ×ž×§×‘×œ×•×ª 10% ×”× ×—×” ×•×ª×•×›×Ÿ ×‘×œ×¢×“×™',
-      firstNamePh: '×©× ×¤×¨×˜×™',
-      existsHintText: '×›×ª×•×‘×ª ×–×• ×›×‘×¨ ×¨×©×•×ž×” â€” ',
-      loginInstead: '×”×ª×—×‘×¨×™ ×‘×ž×§×•×',
-      passMinPh: '×¡×™×¡×ž×” (6+ ×ª×•×•×™×)',
-      joinFreeBtn: '×”×¦×˜×¨×¤×•×ª ×—×™× × âœ¨',
-      resetTitle: '×©×—×–×•×¨ ×¡×™×¡×ž× ðŸ”‘',
-      resetLinkReady: '×”×§×™×©×•×¨ ×©×œ×š ×ž×•×›×Ÿ â€” ×œ×—×¦×™ ×›××Ÿ ×›×“×™ ×œ××¤×¡ ×¡×™×¡×ž×”:',
-      resetLinkBtn: 'ðŸ”‘ ××¤×¡×™ ×¡×™×¡×ž×” ×¢×›×©×™×•',
-      resetSub: '×”×›× ×™×¡×™ ××ª ×”××™×ž×™×™×œ ×©×œ×š ×•× ×©×œ×— ×§×™×©×•×¨ ×œ××™×¤×•×¡ ×”×¡×™×¡×ž×',
-      regEmailPh: '××™×ž×™×™×œ ×¨×©×•×',
-      sendResetBtn: '×©×œ×— ×§×™×©×•×¨ ×œ××™×¤×•×¡ ðŸ“§',
-      backToLogin: 'â† ×—×–×¨×” ×œ×›× ×™×¡×”',
-      enterNewPass: '×”×›× ×™×¡×™ ×¡×™×¡×ž× ×—×“×©×”',
-      newPassPh: '×¡×™×¡×ž× ×—×“×©×” (6+ ×ª×•×•×™×)',
-      confirmPassPh: '××™×ž×•×ª ×¡×™×¡×ž×',
-      savePassBtn: '×©×ž×™×¨×ª ×¡×™×¡×ž× ×—×“×©×” âœ…',
-      vipBadge: 'âœ¨ ×—×‘×¨×” VIP',
-      perk1: '10% ×”× ×—×” ×¢×œ ×›×œ ×”×ž×•×¦×¨×™×',
-      perk2: '×’×™×©×” ×œ×ª×•×›×Ÿ ×‘×œ×¢×“×™',
-      perk3: '×¢×’×œ×ª ×§× ×™×•×ª ×©×ž×•×¨×”',
-      logout: '×”×ª× ×ª×§×•×ª',
-      greeting: '×©×œ×•×, ',
-      loginError: '××™×ž×™×™×œ ××• ×¡×™×¡×ž×” ×©×’×•×™×™×',
-      regErrorEmpty: '×× × ×ž×œ××™ ××ª ×›×œ ×”×©×“×•×ª',
-      regErrorShort: '×”×¡×™×¡×ž×” ×—×™×™×‘×ª ×œ×”×›×™×œ ×œ×¤×—×•×ª 6 ×ª×•×•×™×',
-      regErrorExists: '×”××™×ž×™×™×œ ×›×‘×¨ ×¨×©×•×',
+      heroSub: 'בחרי מה שאת אוהבת ושלחי לנו — נחזור אליך בהקדם! 💚',
+      gallery: 'הגלריה שלנו',
+      cartItems: 'פריטים בעגלה',
+      clearCart: 'נקה עגלה',
+      sendToSol: '✉️  שלחי לסול',
+      waMsg: 'היי סול! 👋 ראיתי את החנות שלך ורציתי לשאול...',
+      available: 'זמין',
+      tabSquishy: '🫧 סקווש',
+      tabMacrame: '🪢 מקרמה',
+      tabHomemade: '♻️ יד שניה',
+      join: 'הצטרפי',
+      loginTab: 'כניסה',
+      registerTab: 'הצטרפות',
+      welcomeTitle: 'ברוכה הבאה 💜',
+      enterDetails: 'הכניסי את הפרטים שלך',
+      emailPh: 'אימייל',
+      passPh: 'סיסמה',
+      loginBtn: 'כניסה לאזור החברות',
+      forgotLink: 'שכחתי סיסמה',
+      joinTitle: 'הצטרפי למשפחה 🌸',
+      joinSub: 'חברות מקבלות 10% הנחה ותוכן בלעדי',
+      firstNamePh: 'שם פרטי',
+      existsHintText: 'כתובת זו כבר רשומה — ',
+      loginInstead: 'התחברי במקום',
+      passMinPh: 'סיסמה (6+ תווים)',
+      joinFreeBtn: 'הצטרפות חינם ✨',
+      resetTitle: 'שחזור סיסמא 🔑',
+      resetLinkReady: 'הקישור שלך מוכן — לחצי כאן כדי לאפס סיסמה:',
+      resetLinkBtn: '🔑 אפסי סיסמה עכשיו',
+      resetSub: 'הכניסי את האימייל שלך ונשלח קישור לאיפוס הסיסמא',
+      regEmailPh: 'אימייל רשום',
+      sendResetBtn: 'שלח קישור לאיפוס 📧',
+      backToLogin: '← חזרה לכניסה',
+      enterNewPass: 'הכניסי סיסמא חדשה',
+      newPassPh: 'סיסמא חדשה (6+ תווים)',
+      confirmPassPh: 'אימות סיסמא',
+      savePassBtn: 'שמירת סיסמא חדשה ✅',
+      vipBadge: '✨ חברה VIP',
+      perk1: '10% הנחה על כל המוצרים',
+      perk2: 'גישה לתוכן בלעדי',
+      perk3: 'עגלת קניות שמורה',
+      logout: 'התנתקות',
+      greeting: 'שלום, ',
+      loginError: 'אימייל או סיסמה שגויים',
+      regErrorEmpty: 'אנא מלאי את כל השדות',
+      regErrorShort: 'הסיסמה חייבת להכיל לפחות 6 תווים',
+      regErrorExists: 'האימייל כבר רשום',
       products: {
-        'Ice popsicle': '××¨×˜×™×§ ×§×¨×—',
-        'Peanut': '×‘×•×˜×Ÿ',
-        'Rabbit': '××¨× ×‘',
-        'Dumpling': '×›×•×¤×ª××”',
-        'ice cube': '×§×•×‘×™×™×ª ×§×¨×—',
-        'BUTTER': '×—×ž××”',
-        'Donag': '×“×•× ××’',
-        'Sun': '×©×ž×©',
-        'Small Basket': '×¡×œ ×§×˜×Ÿ',
-        'Large Basket': '×¡×œ ×’×“×•×œ',
-        'Green tree': '×¢×¥ ×™×¨×•×§',
-        'Small owl': '×™× ×©×•×£ ×§×˜×Ÿ',
-        'Three plants': '×©×œ×•×©×” ×¦×ž×—×™×',
-        'Bat': '×¢×˜×œ×£',
-        'Colorful stand': '×ž×ª×œ×” ×¦×‘×¢×•× ×™',
-        'Basket to many things': '×¡×œ ×œ×›×œ ×“×‘×¨',
-        'Big owl': '×™× ×©×•×£ ×’×“×•×œ',
-        'Moon': '×™×¨×—'
+        'Ice popsicle': 'ארטיק קרח',
+        'Peanut': 'בוטן',
+        'Rabbit': 'ארנב',
+        'Dumpling': 'כופתאה',
+        'ice cube': 'קוביית קרח',
+        'BUTTER': 'חמאה',
+        'Donag': 'דונאג',
+        'Sun': 'שמש',
+        'Small Basket': 'סל קטן',
+        'Large Basket': 'סל גדול',
+        'Green tree': 'עץ ירוק',
+        'Small owl': 'ינשוף קטן',
+        'Three plants': 'שלושה צמחים',
+        'Bat': 'עטלף',
+        'Colorful stand': 'מתלה צבעוני',
+        'Basket to many things': 'סל לכל דבר',
+        'Big owl': 'ינשוף גדול',
+        'Moon': 'ירח'
       }
     },
     en: {
-      heroSub: 'Pick what you love and send it to us â€” we\'ll get back to you soon! ðŸ’š',
+      heroSub: 'Pick what you love and send it to us — we\'ll get back to you soon! 💚',
       gallery: 'Our Gallery',
       cartItems: 'items in your cart',
       clearCart: 'Clear Cart',
-      sendToSol: 'âœ‰ï¸Â  Send to Sol',
-      waMsg: 'Hey Sol! ðŸ‘‹ I saw your shop and wanted to ask...',
+      sendToSol: '✉️  Send to Sol',
+      waMsg: 'Hey Sol! 👋 I saw your shop and wanted to ask...',
       available: 'Available',
-      tabSquishy: 'ðŸ«§ Squishy',
-      tabMacrame: 'ðŸª¢ MacramÃ©',
-      tabHomemade: 'â™»ï¸ Second Hand',
+      tabSquishy: '🫧 Squishy',
+      tabMacrame: '🪢 Macramé',
+      tabHomemade: '♻️ Second Hand',
       join: 'Join',
       loginTab: 'Login',
       registerTab: 'Register',
-      welcomeTitle: 'Welcome ðŸ’œ',
+      welcomeTitle: 'Welcome 💜',
       enterDetails: 'Enter your details',
       emailPh: 'Email',
       passPh: 'Password',
       loginBtn: 'Login to Members Area',
       forgotLink: 'Forgot password',
-      joinTitle: 'Join the Family ðŸŒ¸',
+      joinTitle: 'Join the Family 🌸',
       joinSub: 'Members get 10% off & exclusive content',
       firstNamePh: 'First Name',
-      existsHintText: 'This email is already registered â€” ',
+      existsHintText: 'This email is already registered — ',
       loginInstead: 'Login instead',
       passMinPh: 'Password (6+ chars)',
-      joinFreeBtn: 'Join for Free âœ¨',
-      resetTitle: 'Reset Password ðŸ”‘',
-      resetLinkReady: 'Your link is ready â€” click below to reset your password:',
-      resetLinkBtn: 'ðŸ”‘ Reset Password Now',
+      joinFreeBtn: 'Join for Free ✨',
+      resetTitle: 'Reset Password 🔑',
+      resetLinkReady: 'Your link is ready — click below to reset your password:',
+      resetLinkBtn: '🔑 Reset Password Now',
       resetSub: 'Enter your email and we\'ll send a reset link',
       regEmailPh: 'Registered email',
-      sendResetBtn: 'Send Reset Link ðŸ“§',
-      backToLogin: 'â† Back to Login',
+      sendResetBtn: 'Send Reset Link 📧',
+      backToLogin: '← Back to Login',
       enterNewPass: 'Enter new password',
       newPassPh: 'New password (6+ chars)',
       confirmPassPh: 'Confirm password',
-      savePassBtn: 'Save New Password âœ…',
-      vipBadge: 'âœ¨ VIP Member',
+      savePassBtn: 'Save New Password ✅',
+      vipBadge: '✨ VIP Member',
       perk1: '10% off all products',
       perk2: 'Access to exclusive content',
       perk3: 'Saved shopping cart',
@@ -1405,7 +1405,7 @@ function initTilt() {
 
     // Update toggle button label
     var btn = document.getElementById('lang-toggle');
-    if (btn) btn.textContent = isHe ? 'ðŸŒ EN' : 'ðŸŒ ×¢×‘';
+    if (btn) btn.textContent = isHe ? '🌐 EN' : '🌐 עב';
 
     // Update text content elements
     document.querySelectorAll('[data-i18n]').forEach(function(el) {
@@ -1450,7 +1450,7 @@ function initTilt() {
   applyLang(currentLang);
 })();
 
-(function(){var heMode=false;function applyLang(l){document.querySelectorAll('.btn-cart').forEach(function(b){var ic=b.textContent.trim().charCodeAt(0)===10003;b.textContent=ic?(l==='he'?'âœ“ ×‘×¢×’×œ×”':'âœ“ In Cart'):(l==='he'?'ðŸ›’ ×”×•×¡×£ ×œ×¢×’×œ×”':'ðŸ›’ Add to Cart');});document.querySelectorAll('.btn-buy').forEach(function(b){b.textContent=l==='he'?'×§× ×” ×¢×›×©×™×•':'Buy Now';});document.querySelectorAll('[data-he][data-en]').forEach(function(e){e.textContent=l==='he'?e.getAttribute('data-he'):e.getAttribute('data-en');});}var origTL=window.toggleLang;window.toggleLang=function(){origTL&&origTL();heMode=!heMode;applyLang(heMode?'he':'en');};})();
+(function(){var heMode=false;function applyLang(l){document.querySelectorAll('.btn-cart').forEach(function(b){var ic=b.textContent.trim().charCodeAt(0)===10003;b.textContent=ic?(l==='he'?'✓ בעגלה':'✓ In Cart'):(l==='he'?'🛒 הוסף לעגלה':'🛒 Add to Cart');});document.querySelectorAll('.btn-buy').forEach(function(b){b.textContent=l==='he'?'קנה עכשיו':'Buy Now';});document.querySelectorAll('[data-he][data-en]').forEach(function(e){e.textContent=l==='he'?e.getAttribute('data-he'):e.getAttribute('data-en');});}var origTL=window.toggleLang;window.toggleLang=function(){origTL&&origTL();heMode=!heMode;applyLang(heMode?'he':'en');};})();
 window._showDonkey=function(){
   var el=document.getElementById('dk-popup');
   if(!el)return;
@@ -1481,7 +1481,7 @@ window.batchOptimizeImages = async function(){
     if(total===0){status.textContent='No JPEG/PNG files found';btn.disabled=false;return;}
     for(var i=0;i<imgs.length;i++){
       var fi=imgs[i];
-      status.textContent=(i+1)+'/'+total+' scanning · '+compressed+' compressed';
+      status.textContent=(i+1)+'/'+total+' scanning � '+compressed+' compressed';
       try{
         var dlR=await fetch(fi.download_url);
         var origBlob=await dlR.blob();
