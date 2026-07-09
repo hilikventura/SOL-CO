@@ -1868,10 +1868,10 @@ function addToCart(id) {
     const inCart = selected.has(id);
     card.classList.toggle('in-cart', inCart);
     const btn = card.querySelector('.btn-cart');
-    if (btn) btn.textContent = inCart ? '✓ In Cart' : '🛒 Add to Cart';
+    if (btn) btn.textContent = inCart ? (document.documentElement.lang==='he'?'✓ בעגלה':'✓ In Cart') : (document.documentElement.lang==='he'?'🛒 הוסף לעגלה':'🛒 Add to Cart');
     if (inCart) {
       if (btn) btn.style.background = '#16a34a';
-      showToast('🛒 Added to cart!');
+      showToast(document.documentElement.lang==='he'?'🛒 נוסף לעגלה!':'🛒 Added to cart!');
     } else {
       if (btn) btn.style.background = '';
       showToast('Removed from cart');
@@ -2524,19 +2524,16 @@ function initTilt() {
   }
 
   function revertPrices(){
-    document.querySelectorAll('.prod-price[data-mp]').forEach(function(el){
+    document.querySelectorAll('.prod-price-val[data-mp]').forEach(function(el){
       if(el.dataset.origPrice) el.textContent=el.dataset.origPrice;
       delete el.dataset.mp;
     });
   }
 
-  // Save cart when items change
-  function saveCart(){
+  // Save cart when items changfunction saveCart(){
     if(!getSession()) return;
-    var cartData=window.cart||window._cart;
-    if(cartData) {
-      try{ localStorage.setItem(CK+'_'+getSession().id, JSON.stringify(cartData)); }catch(e){}
-    }
+    try{ localStorage.setItem(CK+'_'+getSession().id, JSON.stringify([...selected])); }catch(e){}
+  }
   }
 
   function restoreCart(){
@@ -2544,10 +2541,9 @@ function initTilt() {
     if(!s) return;
     try{
       var saved=JSON.parse(localStorage.getItem(CK+'_'+s.id)||'null');
-      if(saved && Array.isArray(saved) && saved.length>0 && window.cart!==undefined){
-        window.cart=saved;
-        if(typeof window.updateCartUI==='function') window.updateCartUI();
-        if(typeof window.renderCart==='function') window.renderCart();
+      if(saved && Array.isArray(saved) && saved.length>0){
+        saved.forEach(function(id){ selected.add(id); });
+        updateCartUI();
       }
     }catch(e){}
   }
