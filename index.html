@@ -5,10 +5,15 @@
   Updated : 2026-06-08
 -->
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <!-- Performance: preconnect to external origins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://api.emailjs.com" crossorigin>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0"/>
   <meta name="google-site-verification" content="s1tEIJts6XBBEKmQ_a1joGA5UiMg9QSO_iau49RVkS8" />
   <title>BySOL — סליים ומקרמה בעבודת יד | Sol Ventura</title>
   <meta name="description" content="BySOL — חנות סליים ומקרמה בעבודת יד של Sol Ventura. מגוון צבעים, טקסטורות וסגנונות. קנו אונליין ממש עכשיו!" />
@@ -535,21 +540,14 @@
 
 
 
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-  
-
-
-
-
-
 <!-- DK popup -->
 <div id="dk-popup">
   <div id="dk-bbl" data-i18n="dkBbl">Great choice! Thanks ��💜</div>
-  <video id="dk-img" src="images/donky.mp4" playsinline style="display:block"></video>
+  <video id="dk-img" src="images/donky.mp4" playsinline webkit-playsinline muted preload="auto" style="display:block"></video>
 </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script src="script.js?v=10"></script>
+  <script defer src="script.js?v=10"></script>
 </body>
 </html>
