@@ -1106,11 +1106,11 @@ body.show-admin .wa-btn,body.show-login .wa-btn{display:none;}
     <div class="login-error" id="login-error">Incorrect username or password ❌</div>
     <div class="form-field">
       <label for="inp-user">Username</label>
-      <input id="inp-user" type="text" placeholder="admin" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter') focusPass()" / required>
+      <input id="inp-user" type="text" placeholder="admin" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter') focusPass()" required>
     </div>
     <div class="form-field">
       <label for="inp-pass">Password</label>
-      <input id="inp-pass" type="password" placeholder="••••••••" autocomplete="off" onkeydown="if(event.key==='Enter') doLogin()" / required>
+      <input id="inp-pass" type="password" placeholder="••••••••" autocomplete="off" onkeydown="if(event.key==='Enter') doLogin()" required>
     </div>
     <button class="btn-login-submit" onclick="doLogin()">Login →</button>
     <p class="login-back-link"><a href="#" onclick="showPublic(); return false;">← Back to Gallery</a></p>
@@ -1165,19 +1165,19 @@ body.show-admin .wa-btn,body.show-login .wa-btn{display:none;}
             </div>
             <div class="sfield">
               <label>GITHUB REPO</label>
-              <input id="s-gh-repo" type="text" value="hilikventura/SOL-CO" readonly style="background:#f1f5f9;color:#64748b;cursor:default" / aria-label="GitHub Repository" required>
+              <input id="s-gh-repo" type="text" value="hilikventura/SOL-CO" readonly style="background:#f1f5f9;color:#64748b;cursor:default" aria-label="GitHub Repository" required>
             </div>
             <div class="sfield">
               <label>PERSONAL ACCESS TOKEN</label>
               <div style="display:flex;gap:8px;align-items:center;">
-                <input id="s-gh-token" type="password" placeholder="github_pat_..." style="flex:1" / aria-label="Personal Access Token">
+                <input id="s-gh-token" type="password" placeholder="github_pat_..." style="flex:1" aria-label="Personal Access Token">
                 <button onclick="testGithubConnection()" style="white-space:nowrap;padding:8px 14px;border:none;border-radius:10px;background:#8b5cf6;color:#fff;font-weight:700;cursor:pointer;font-size:13px;">🔗 Test</button>
               </div>
               <div id="gh-test-result" style="margin-top:6px;font-size:13px;display:none;"></div>
             </div>
             <div class="sfield">
               <label>CUSTOM DOMAIN (optional — leave blank to use GitHub Pages URL)</label>
-              <input id="s-custom-domain" type="text" placeholder="bysolco.com" / aria-label="Custom Domain (optional)">
+              <input id="s-custom-domain" type="text" placeholder="bysolco.com" aria-label="Custom Domain (optional)">
             </div>
           </div>
         </div>
@@ -1196,7 +1196,7 @@ body.show-admin .wa-btn,body.show-login .wa-btn{display:none;}
             </div>
             <div class="sfield">
               <label>WEB3FORMS ACCESS KEY</label>
-              <input id="s-w3f-key" type="text" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" / aria-label="Web3Forms Access Key" required>
+              <input id="s-w3f-key" type="text" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" aria-label="Web3Forms Access Key" required>
             </div>
             <div class="sfield">
               <label>EMAILJS SERVICE ID</label>
@@ -1271,13 +1271,13 @@ body.show-admin .wa-btn,body.show-login .wa-btn{display:none;}
         <label for="udm-name">Product Name</label>
           <input class="udm-input" id="udm-name" type="text" placeholder="e.g. Pink Cloud Slime"
                oninput="this.classList.remove('err'); document.getElementById('udm-name-err').classList.remove('show')"
-               onkeydown="if(event.key==='Enter') udmConfirm()" / required>
+               onkeydown="if(event.key==='Enter') udmConfirm()" required>
         <div class="udm-err-msg" id="udm-name-err">Please enter a product name</div>
         <label class="udm-label">Price (₪) <span class="udm-required">*</span></label>
         <label for="udm-price">Price (₪)</label>
           <input class="udm-input" id="udm-price" type="number" min="1" step="1" placeholder="e.g. 45"
                oninput="this.classList.remove('err'); document.getElementById('udm-price-err').classList.remove('show')"
-               onkeydown="if(event.key==='Enter') udmConfirm()" / required min="0">
+               onkeydown="if(event.key==='Enter') udmConfirm()" required min="0">
         <div class="udm-err-msg" id="udm-price-err">Please enter a valid price</div>
         <div class="udm-btns">
           <button class="udm-btn-cancel" onclick="udmCancel()">Cancel</button>
@@ -1335,8 +1335,8 @@ body.show-admin .wa-btn,body.show-login .wa-btn{display:none;}
     <div class="contact-modal-title"><span style="font-size:1.6rem">📋</span><h3 data-he="הפרטים שלך" data-en="Your Details">Your Details</h3></div>
     <p class="contact-modal-sub" data-he="מלאו את הפרטים שלכם ונחזור אלייכם בקרוב 💚" data-en="Fill in your details and we'll get back to you soon 💚">Fill in your details and we'll get back to you soon 💚</p>
     <div class="contact-modal-grid">
-      <div class="cfield"><label for="c-name" data-he="שם מלא *" data-en="Full Name *">Full Name *</label><input id="c-name" type="text" placeholder="Jane Smith" / required></div>
-      <div class="cfield"><label for="c-phone" data-he="טלפון *" data-en="Phone *">Phone *</label><input id="c-phone" type="tel" placeholder="+1-555-0000" / required></div>
+      <div class="cfield"><label for="c-name" data-he="שם מלא *" data-en="Full Name *">Full Name *</label><input id="c-name" type="text" placeholder="Jane Smith" required></div>
+      <div class="cfield"><label for="c-phone" data-he="טלפון *" data-en="Phone *">Phone *</label><input id="c-phone" type="tel" placeholder="+1-555-0000" required></div>
       <div class="cfield"><label for="c-email" data-he="אימייל" data-en="Email">Email</label><input id="c-email" type="email" placeholder="jane@gmail.com" /></div>
       <div class="cfield"><label for="c-address" data-he="כתובת" data-en="Address">Address</label><input id="c-address" type="text" placeholder="Street, City" /></div>
     </div>
