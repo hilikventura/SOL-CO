@@ -1402,6 +1402,8 @@ function initTilt() {
   function applyLang(lang) {
     currentLang = lang;
     localStorage.setItem(LANG_KEY, lang);
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
     var dict = T[lang];
     var isHe = lang === 'he';
 
