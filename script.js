@@ -1500,4 +1500,4 @@ window.batchOptimizeImages = async function(){
   }catch(eOuter){status.textContent='Error: '+eOuter.message;}
   btn.disabled=false;
 };
-document.addEventListener('click',function(e){if(!e.target.closest('.btn-cart'))return;var p=document.getElementById('dk-popup');if(!p||!p.classList.contains('dk-run'))return;e.stopImmediatePropagation();var v=document.getElementById('dk-img');if(v){v.pause();v.currentTime=0;}p.style.animation='dk-exit 0.45s ease-in forwards';setTimeout(function(){p.classList.remove('dk-run');p.style.animation='';},450);},true);
+document.addEventListener('click',function(e){var isDk=!!e.target.closest('.btn-cart');var isCl=!!e.target.closest('[onclick="clearSelection()"]');if(!isDk&&!isCl)return;var p=document.getElementById('dk-popup');if(!p||!p.classList.contains('dk-run'))return;if(isDk)e.stopImmediatePropagation();var v=document.getElementById('dk-img');if(v){v.pause();v.currentTime=0;}p.style.animation='dk-exit 0.45s ease-in forwards';setTimeout(function(){p.classList.remove('dk-run');p.style.animation='';},450);},true);
