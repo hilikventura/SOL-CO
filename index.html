@@ -849,7 +849,149 @@ body.show-admin .wa-btn,body.show-login .wa-btn{display:none;}
 .reset-link-box{background:#f0f4ff;border:2px solid #a78bfa;border-radius:12px;padding:14px;margin:12px 0;text-align:center;}
 .reset-link-box p{font-size:.82rem;color:#64748b;margin-bottom:8px;}
 .reset-link-btn{display:inline-block;background:linear-gradient(135deg,var(--purple),var(--pink));color:#fff;border:none;border-radius:10px;padding:10px 22px;font-weight:700;font-size:.9rem;cursor:pointer;font-family:inherit;text-decoration:none;width:100%;}
-.reset-link-btn:hover{opacity:.9;}</style>
+.reset-link-btn:hover{opacity:.9;}
+
+    /* ===== THEME UPGRADE v2 — More vibrant, animated, squishy (2026-07) ===== */
+    :root {
+      --purple:  #9333ea;
+      --purple2: #c026d3;
+      --pink:    #ec4899;
+      --teal:    #06b6d4;
+    }
+
+    /* Gallery bg gradient */
+    #public-view {
+      background: linear-gradient(180deg,#FDF0FA 0%,#f3e8ff 35%,#fce7f3 70%,#e0f2fe 100%);
+    }
+
+    /* Animated rainbow top bar on cards */
+    .prod-card {
+      transition: box-shadow .35s cubic-bezier(.34,1.56,.64,1),
+                  transform .35s cubic-bezier(.34,1.56,.64,1),
+                  border-color .2s !important;
+      position: relative; overflow: hidden;
+    }
+    .prod-card::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:3px;
+      background: linear-gradient(90deg,#9333ea,#ec4899,#06b6d4,#22c55e,#f59e0b,#ec4899,#9333ea);
+      background-size:300% auto; animation: rainbow-bar 3s linear infinite;
+      z-index:2; opacity:0; transition:opacity .3s;
+    }
+    .prod-card:hover::before { opacity:1; }
+    @keyframes rainbow-bar {
+      0%  { background-position: 0% center; }
+      100%{ background-position: 300% center; }
+    }
+
+    /* Springy hover */
+    .prod-card:hover {
+      transform: translateY(-12px) scale(1.03) !important;
+      box-shadow: 0 28px 70px rgba(147,51,234,.3), 0 0 0 2px rgba(147,51,234,.2) !important;
+      border-color: #9333ea !important;
+    }
+    .prod-card:hover .prod-img img {
+      transform: scale(1.12) !important;
+      transition: transform .5s cubic-bezier(.34,1.56,.64,1) !important;
+    }
+
+    /* Card entrance animation */
+    @keyframes card-pop-in {
+      0%  { opacity:0; transform:translateY(28px) scale(.94); }
+      70% { transform:translateY(-4px) scale(1.02); }
+      100%{ opacity:1; transform:translateY(0) scale(1); }
+    }
+    .prod-card { animation: card-pop-in .55s cubic-bezier(.34,1.56,.64,1) both; }
+    .prod-card:nth-child(1){animation-delay:.05s} .prod-card:nth-child(2){animation-delay:.12s}
+    .prod-card:nth-child(3){animation-delay:.19s} .prod-card:nth-child(4){animation-delay:.26s}
+    .prod-card:nth-child(5){animation-delay:.33s} .prod-card:nth-child(6){animation-delay:.40s}
+    .prod-card:nth-child(7){animation-delay:.47s} .prod-card:nth-child(8){animation-delay:.54s}
+    .prod-card:nth-child(9){animation-delay:.61s} .prod-card:nth-child(10){animation-delay:.68s}
+    .prod-card:nth-child(11){animation-delay:.75s}.prod-card:nth-child(12){animation-delay:.82s}
+
+    /* Available badge — gradient + pulsing glow */
+    .prod-badge {
+      background: linear-gradient(135deg,#9333ea,#ec4899) !important;
+      animation: badge-pulse 2.5s ease-in-out infinite !important;
+    }
+    @keyframes badge-pulse {
+      0%,100%{ box-shadow: 0 0 0 0 rgba(147,51,234,.55); }
+      50%    { box-shadow: 0 0 0 7px rgba(147,51,234,0); }
+    }
+
+    /* Category tab colors */
+    .tab-btn { transition: all .3s cubic-bezier(.34,1.56,.64,1) !important; font-weight:700 !important; }
+    .tab-btn.slime-tab.active   { background: linear-gradient(135deg,#9333ea,#c026d3) !important; box-shadow: 0 6px 20px rgba(147,51,234,.45) !important; }
+    .tab-btn.macrame-tab.active  { background: linear-gradient(135deg,#0ea5e9,#06b6d4) !important; box-shadow: 0 6px 20px rgba(6,182,212,.45) !important; }
+    .tab-btn.homemade-tab.active { background: linear-gradient(135deg,#22c55e,#16a34a) !important; box-shadow: 0 6px 20px rgba(34,197,94,.45) !important; }
+    .tab-btn:hover:not(.active)  { transform: translateY(-3px) scale(1.06) !important; }
+
+    /* Price — gradient text */
+    .prod-price-val {
+      background: linear-gradient(135deg,#9333ea,#ec4899) !important;
+      -webkit-background-clip: text !important; background-clip: text !important;
+      -webkit-text-fill-color: transparent !important;
+      font-size: 1.35rem !important; font-weight: 800 !important;
+    }
+
+    /* Buttons */
+    .btn-cart {
+      background: linear-gradient(135deg,#9333ea,#ec4899) !important;
+      color: #fff !important; border: none !important;
+      box-shadow: 0 4px 15px rgba(147,51,234,.35) !important;
+      transition: all .3s cubic-bezier(.34,1.56,.64,1) !important;
+    }
+    .btn-cart:hover {
+      transform: translateY(-3px) scale(1.07) !important;
+      box-shadow: 0 8px 28px rgba(147,51,234,.55) !important;
+    }
+    .btn-buy {
+      border: 2px solid #9333ea !important; color: #9333ea !important;
+      background: transparent !important;
+      transition: all .3s cubic-bezier(.34,1.56,.64,1) !important;
+    }
+    .btn-buy:hover {
+      background: linear-gradient(135deg,#9333ea,#ec4899) !important;
+      color: #fff !important; border-color: transparent !important;
+      transform: translateY(-3px) scale(1.07) !important;
+      box-shadow: 0 8px 25px rgba(147,51,234,.4) !important;
+    }
+
+    /* Hero — more vivid gradient + spinning rings */
+    .hero { background: linear-gradient(160deg,#ede9fe 0%,#fce7f3 50%,#e0f2fe 100%) !important; }
+    .hero-ring-1 { animation: spin-slow 25s linear infinite; border-color: rgba(147,51,234,.25) !important; }
+    .hero-ring-2 { animation: spin-slow 18s linear infinite reverse; border-color: rgba(236,72,153,.3) !important; }
+    .hero-ring-3 { animation: spin-slow 30s linear infinite; border-color: rgba(6,182,212,.25) !important; }
+    @keyframes spin-slow {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    /* Hero deco images — float animation */
+    .hero-img-deco { animation: deco-float 4s ease-in-out infinite !important; }
+    .hero-img-deco:nth-child(even) { animation-delay: -2s !important; }
+    @keyframes deco-float {
+      0%,100%{ transform: translateY(0) rotate(-2deg); }
+      50%    { transform: translateY(-14px) rotate(2deg); }
+    }
+
+    /* Section title — gradient */
+    h2[data-i18n="gallery"] {
+      background: linear-gradient(90deg,#9333ea,#ec4899,#06b6d4) !important;
+      -webkit-background-clip: text !important; background-clip: text !important;
+      -webkit-text-fill-color: transparent !important; font-size: 2rem !important;
+    }
+
+    /* Product title hover */
+    .prod-card:hover .prod-title { color: #9333ea !important; }
+
+    /* WhatsApp FAB pulse */
+    #whatsapp-fab { animation: fab-pulse 2s ease-in-out infinite !important; }
+    @keyframes fab-pulse {
+      0%,100%{ box-shadow: 0 4px 16px rgba(37,211,102,.4); }
+      50%    { box-shadow: 0 4px 28px rgba(37,211,102,.7); }
+    }
+    /* ===== END THEME UPGRADE v2 ===== */
+</style>
 </head>
 <body>
 
