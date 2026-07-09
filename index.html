@@ -991,6 +991,21 @@ body.show-admin .wa-btn,body.show-login .wa-btn{display:none;}
       50%    { box-shadow: 0 4px 28px rgba(37,211,102,.7); }
     }
     /* ===== END THEME UPGRADE v2 ===== */
+
+    /* ===== GEMINI AI TOOLS CSS ===== */
+    .ai-btns{display:flex;gap:5px;margin-top:8px;}
+    .btn-ai{flex:1;padding:7px 4px;border:none;border-radius:10px;cursor:pointer;font-size:15px;transition:transform .15s,box-shadow .15s;background:rgba(147,51,234,.1);}
+    .btn-ai:hover{transform:scale(1.15);box-shadow:0 4px 14px rgba(147,51,234,.35);}
+    .ai-busy{opacity:.5;pointer-events:none;}
+    #ai-modal{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;display:flex;align-items:center;justify-content:center;}
+    #ai-modal .ai-box{background:#fff;border-radius:20px;padding:24px;width:340px;box-shadow:0 24px 60px rgba(0,0,0,.22);}
+    #ai-modal h3{margin:0 0 14px;font-size:17px;}
+    #ai-modal textarea{width:100%;box-sizing:border-box;padding:10px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:13px;height:72px;resize:vertical;font-family:inherit;margin:6px 0;}
+    #ai-modal select{width:100%;padding:9px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:13px;margin:6px 0;}
+    #ai-modal .ai-row{display:flex;gap:8px;margin-top:14px;}
+    #ai-modal .btn-gen{flex:1;padding:11px;background:linear-gradient(135deg,#9333ea,#ec4899);color:#fff;border:none;border-radius:12px;font-weight:700;cursor:pointer;font-size:14px;}
+    #ai-modal .btn-cancel{padding:11px 14px;background:#f3f4f6;border:none;border-radius:12px;cursor:pointer;font-size:14px;}
+    /* ===== END GEMINI AI CSS ===== */
 </style>
 </head>
 <body>
@@ -1193,6 +1208,11 @@ body.show-admin .wa-btn,body.show-login .wa-btn{display:none;}
             <div class="sfield">
               <label>EMAILJS PUBLIC KEY</label>
               <input id="s-ejs-pubkey" type="text" placeholder="xxxxxxxxxxxxxxxxxxxx" autocomplete="off" style="font-family:monospace"/>
+            </div>
+            <div class="sfield">
+              <label>🍌 GEMINI AI KEY</label>
+              <input id="s-gemini-key" type="text" placeholder="AIzaSy..." autocomplete="off" style="font-family:monospace">
+              <small style="color:var(--muted);font-size:11px;display:block;margin-top:4px">→ aistudio.google.com › Get API Key (free)</small>
             </div>
           </div>
         </div>
@@ -1411,6 +1431,7 @@ async function saveSettings() {
   cfg.ejsServiceId = (document.getElementById('s-ejs-service').value || '').trim();
   cfg.ejsTemplateId = (document.getElementById('s-ejs-template').value || '').trim();
   cfg.ejsPubKey = (document.getElementById('s-ejs-pubkey').value || '').trim();
+  cfg.geminiKey = (document.getElementById('s-gemini-key')?.value || '').trim();
   cfg.customDomain = (document.getElementById('s-custom-domain').value || '').trim();
   localStorage.setItem(LS_CFG, JSON.stringify(cfg));
   updateSettingsUI();
@@ -1469,6 +1490,7 @@ function updateSettingsUI() {
   setVal('s-ejs-service', cfg.ejsServiceId);
   setVal('s-ejs-template', cfg.ejsTemplateId);
   setVal('s-ejs-pubkey', cfg.ejsPubKey);
+  setVal('s-gemini-key', cfg.geminiKey || '');
 }
 
 function setChip(id, ok, label, status) {
@@ -2057,6 +2079,11 @@ function renderAdminGrid(gridId, imgs, emptyMsg) {
         <div class="card-del-row">
           <span class="fname" title="${esc(img.name)}">${esc(img.name)}</span>
           <button class="btn-del" onclick="deleteImage('${img.id}')">🗑 Delete</button>
+          <div class="ai-btns">
+            <button class="btn-ai" onclick="aiEnhance('${img.id}')" title="Enhance with Gemini AI">✨</button>
+            <button class="btn-ai" onclick="aiRemoveBg('${img.id}')" title="Remove Background">✂️</button>
+            <button class="btn-ai" onclick="aiGenerate('${img.id}')" title="Generate new image">🍌</button>
+          </div>
         </div>
       </div>
     </div>
@@ -2892,6 +2919,118 @@ function initTilt() {
 })();
 </script>
 <script>(function(){var heMode=false;function applyLang(l){document.querySelectorAll('.btn-cart').forEach(function(b){var ic=b.textContent.trim().charCodeAt(0)===10003;b.textContent=ic?(l==='he'?'✓ בעגלה':'✓ In Cart'):(l==='he'?'🛒 הוסף לעגלה':'🛒 Add to Cart');});document.querySelectorAll('.btn-buy').forEach(function(b){b.textContent=l==='he'?'קנה עכשיו':'Buy Now';});document.querySelectorAll('[data-he][data-en]').forEach(function(e){e.textContent=l==='he'?e.getAttribute('data-he'):e.getAttribute('data-en');});}var origTL=window.toggleLang;window.toggleLang=function(){origTL&&origTL();heMode=!heMode;applyLang(heMode?'he':'en');};})();</script>
-<script>(function(){var hero=document.querySelector('.hero');if(!hero)return;var elems=Array.from(document.querySelectorAll('.float-deco,.hero-img-deco'));var states=elems.map(function(el){return{el:el,dx:0,dy:0,vx:0,vy:0};});var mx=0,my=0,inHero=false,heroVis=true,rafRun=false;function startRaf(){if(!rafRun){rafRun=true;requestAnimationFrame(tick);}}new IntersectionObserver(function(e){heroVis=e[0].isIntersecting;if(heroVis)startRaf();},{threshold:0}).observe(hero);hero.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;inHero=true;});hero.addEventListener('mouseleave',function(){inHero=false;});hero.addEventListener('touchstart',function(e){if(e.touches.length>0){mx=e.touches[0].clientX;my=e.touches[0].clientY;inHero=true;}},{passive:true});hero.addEventListener('touchmove',function(e){if(e.touches.length>0){mx=e.touches[0].clientX;my=e.touches[0].clientY;inHero=true;}},{passive:true});hero.addEventListener('touchend',function(){inHero=false;});hero.addEventListener('touchcancel',function(){inHero=false;});function tick(){rafRun=false;if(!heroVis)return;var hRect=hero.getBoundingClientRect();states.forEach(function(s){s.vx+=-0.065*s.dx;s.vy+=-0.065*s.dy;if(inHero){var er=s.el.getBoundingClientRect();var ecx=er.left+er.width/2;var ecy=er.top+er.height/2;var ddx=ecx-mx,ddy=ecy-my;var dist=Math.sqrt(ddx*ddx+ddy*ddy)||1;var R=150;if(dist<R){var force=((R-dist)/R)*12;s.vx+=(ddx/dist)*force;s.vy+=(ddy/dist)*force;}}s.vx*=0.82;s.vy*=0.82;s.dx+=s.vx;s.dy+=s.vy;var cap=80;s.dx=Math.max(-cap,Math.min(cap,s.dx));s.dy=Math.max(-cap,Math.min(cap,s.dy));s.el.style.setProperty('--px',s.dx.toFixed(1)+'px');s.el.style.setProperty('--py',s.dy.toFixed(1)+'px');});if(inHero){var cx=(mx-hRect.left-hRect.width/2)/hRect.width;var cy=(my-hRect.top-hRect.height/2)/hRect.height;document.querySelectorAll('.hero-ring').forEach(function(el,i){var d=(i+1)*9;el.style.transform='translate('+(cx*d).toFixed(1)+'px,'+(cy*d*0.6).toFixed(1)+'px)';});}rafRun=true;requestAnimationFrame(tick);}startRaf();})();</script>
+<script>(function(){var hero=document.querySelector('.hero');if(!hero)return;var elems=Array.from(document.querySelectorAll('.float-deco,.hero-img-deco'));var states=elems.map(function(el){return{el:el,dx:0,dy:0,vx:0,vy:0};});var mx=0,my=0,inHero=false,heroVis=true,rafRun=false;function startRaf(){if(!rafRun){rafRun=true;requestAnimationFrame(tick);}}new IntersectionObserver(function(e){heroVis=e[0].isIntersecting;if(heroVis)startRaf();},{threshold:0}).observe(hero);hero.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;inHero=true;});hero.addEventListener('mouseleave',function(){inHero=false;});hero.addEventListener('touchstart',function(e){if(e.touches.length>0){mx=e.touches[0].clientX;my=e.touches[0].clientY;inHero=true;}},{passive:true});hero.addEventListener('touchmove',function(e){if(e.touches.length>0){mx=e.touches[0].clientX;my=e.touches[0].clientY;inHero=true;}},{passive:true});hero.addEventListener('touchend',function(){inHero=false;});hero.addEventListener('touchcancel',function(){inHero=false;});function tick(){rafRun=false;if(!heroVis)return;var hRect=hero.getBoundingClientRect();states.forEach(function(s){s.vx+=-0.065*s.dx;s.vy+=-0.065*s.dy;if(inHero){var er=s.el.getBoundingClientRect();var ecx=er.left+er.width/2;var ecy=er.top+er.height/2;var ddx=ecx-mx,ddy=ecy-my;var dist=Math.sqrt(ddx*ddx+ddy*ddy)||1;var R=150;if(dist<R){var force=((R-dist)/R)*12;s.vx+=(ddx/dist)*force;s.vy+=(ddy/dist)*force;}}s.vx*=0.82;s.vy*=0.82;s.dx+=s.vx;s.dy+=s.vy;var cap=80;s.dx=Math.max(-cap,Math.min(cap,s.dx));s.dy=Math.max(-cap,Math.min(cap,s.dy));s.el.style.setProperty('--px',s.dx.toFixed(1)+'px');s.el.style.setProperty('--py',s.dy.toFixed(1)+'px');});if(inHero){var cx=(mx-hRect.left-hRect.width/2)/hRect.width;var cy=(my-hRect.top-hRect.height/2)/hRect.height;document.querySelectorAll('.hero-ring').forEach(function(el,i){var d=(i+1)*9;el.style.transform='translate('+(cx*d).toFixed(1)+'px,'+(cy*d*0.6).toFixed(1)+'px)';});}rafRun=true;requestAnimationFrame(tick);}startRaf();})();
+
+/* ===== GEMINI AI TOOLS ===== */
+async function _geminiReq(apiKey, parts, isImage) {
+  const model = 'gemini-2.0-flash-preview-image-generation';
+  const mods = isImage ? ['TEXT','IMAGE'] : ['IMAGE'];
+  const resp = await fetch(
+    'https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent?key='+apiKey,
+    { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ contents:[{parts}], generationConfig:{responseModalities:mods} }) }
+  );
+  const data = await resp.json();
+  if (data.error) throw new Error(data.error.message);
+  const parts2 = data?.candidates?.[0]?.content?.parts || [];
+  const imgPart = parts2.find(p => p.inlineData);
+  if (!imgPart) throw new Error('Gemini returned no image. ' + JSON.stringify(data).slice(0,120));
+  return imgPart.inlineData;
+}
+
+async function _img2b64(url) {
+  const r = await fetch(url);
+  const buf = await r.arrayBuffer();
+  const bytes = new Uint8Array(buf);
+  let bin = '';
+  for (let i=0;i<bytes.length;i++) bin += String.fromCharCode(bytes[i]);
+  return { b64: btoa(bin), mime: r.headers.get('content-type') || 'image/jpeg' };
+}
+
+async function _aiUpload(id, b64data, mime) {
+  const prod = products.find(p=>p.id===id);
+  if (!prod) throw new Error('Product not found');
+  const ext = mime.includes('png') ? 'png' : 'jpeg';
+  const byteChars = atob(b64data);
+  const arr = new Uint8Array(byteChars.length);
+  for (let i=0;i<byteChars.length;i++) arr[i]=byteChars.charCodeAt(i);
+  const blob = new Blob([arr],{type:mime});
+  const fname = prod.path.split('/').pop().replace(/\.[^.]+$/,'.'+ext);
+  const file = new File([blob],fname,{type:mime});
+  await uploadImageFile(file, prod.category, id);
+}
+
+async function aiEnhance(id) {
+  const key = cfg.geminiKey;
+  if (!key) return alert('⚠️ Add your Gemini API Key in Settings first.');
+  const prod = products.find(p=>p.id===id);
+  if (!prod) return;
+  const card = document.getElementById('card-'+id);
+  if (card) card.classList.add('ai-busy');
+  try {
+    const {b64,mime} = await _img2b64(prod.dataUrl);
+    const inlineData = await _geminiReq(key, [
+      {text:'Enhance this product photo: boost vibrance and saturation, sharpen edges and details, improve lighting. Keep the subject identical. Return the enhanced image only.'},
+      {inlineData:{mimeType:mime,data:b64}}
+    ], false);
+    if (!confirm('✨ Enhancement ready! Replace the current image?')) return;
+    await _aiUpload(id, inlineData.data, inlineData.mimeType);
+    alert('✅ Image enhanced and uploaded!');
+  } catch(e) { alert('Error: '+e.message); }
+  finally { if(card) card.classList.remove('ai-busy'); }
+}
+
+async function aiRemoveBg(id) {
+  const key = cfg.geminiKey;
+  if (!key) return alert('⚠️ Add your Gemini API Key in Settings first.');
+  const prod = products.find(p=>p.id===id);
+  if (!prod) return;
+  const card = document.getElementById('card-'+id);
+  if (card) card.classList.add('ai-busy');
+  try {
+    const {b64,mime} = await _img2b64(prod.dataUrl);
+    const inlineData = await _geminiReq(key, [
+      {text:'Remove the background from this product image and replace it with a pure white background. Keep the product itself completely unchanged. Return the edited image only.'},
+      {inlineData:{mimeType:mime,data:b64}}
+    ], false);
+    if (!confirm('✂️ Background removed! Replace the current image?')) return;
+    await _aiUpload(id, inlineData.data, inlineData.mimeType);
+    alert('✅ Background removed and uploaded!');
+  } catch(e) { alert('Error: '+e.message); }
+  finally { if(card) card.classList.remove('ai-busy'); }
+}
+
+function aiGenerate(id) {
+  const key = cfg.geminiKey;
+  if (!key) return alert('⚠️ Add your Gemini API Key in Settings first.');
+  const modal = document.createElement('div');
+  modal.id = 'ai-modal';
+  modal.innerHTML = '<div class="ai-box"><h3>🍌 Generate product image with AI</h3><label style="font-size:13px;font-weight:600">Describe the product:</label><textarea id="ai-prompt" placeholder="e.g. pink slime squishy shaped like a strawberry, on white background"></textarea><label style="font-size:13px;font-weight:600">Style:</label><select id="ai-style"><option value="realistic">📸 Realistic product photo</option><option value="cute">🎀 Kawaii / cute</option><option value="minimal">⬜ Minimal clean</option></select><div class="ai-row"><button class="btn-gen" onclick="aiGenerateRun(\''+id+'\')">✨ Generate</button><button class="btn-cancel" onclick="document.getElementById(\'ai-modal\').remove()">Cancel</button></div></div>';
+  document.body.appendChild(modal);
+}
+
+async function aiGenerateRun(id) {
+  const key = cfg.geminiKey;
+  const prompt = document.getElementById('ai-prompt')?.value?.trim();
+  const style = document.getElementById('ai-style')?.value || 'realistic';
+  if (!prompt) return alert('Please describe the product first.');
+  document.getElementById('ai-modal')?.remove();
+  const styleMap = {
+    realistic:'high-resolution e-commerce product photo, white background, studio lighting, photorealistic',
+    cute:'cute kawaii squishy toy, soft pastel colors, clean white background',
+    minimal:'minimal product shot, pure white background, simple and clean'
+  };
+  const card = document.getElementById('card-'+id);
+  if (card) card.classList.add('ai-busy');
+  try {
+    const inlineData = await _geminiReq(key,[{text:prompt+'. '+styleMap[style]}],false);
+    if (!confirm('🍌 Image generated! Replace the current image?')) return;
+    await _aiUpload(id, inlineData.data, inlineData.mimeType);
+    alert('✅ New image generated and uploaded!');
+  } catch(e) { alert('Error: '+e.message); }
+  finally { if(card) card.classList.remove('ai-busy'); }
+}
+/* ===== END GEMINI AI TOOLS ===== */
+</script>
 </body>
 </html>
