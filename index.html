@@ -1532,7 +1532,7 @@ async function uploadFile(file, category) {
           baseUrl = 'https://' + cfg.customDomain.replace(/^https?:\/\//, '').replace(/\/$/, '');
         } else {
           const [owner, repo] = cfg.ghRepo.split('/');
-          baseUrl = 'https://' + owner + '.github.io/' + repo;
+          baseUrl = cfg.customDomain ? 'https://' + cfg.customDomain : 'https://' + owner + '.github.io/' + repo;
         }
         return { url: baseUrl + '/' + path, sha: data.content.sha, path };
       }
