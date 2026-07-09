@@ -744,7 +744,7 @@
 .member-vip-badge{display:inline-block;background:linear-gradient(135deg,var(--purple),var(--pink));color:#fff;padding:5px 18px;border-radius:999px;font-size:.82rem;font-weight:800;margin:10px auto 6px;letter-spacing:.3px;}
 .member-perks{list-style:none;padding:0;margin:14px 0 20px;text-align:right;direction:rtl;}
 .member-perks li{color:var(--muted);font-size:.85rem;padding:4px 0;}
-.member-perks li::before{content:"â ";color:var(--purple);font-weight:700;}
+.member-perks li::before{content:"✓ ";color:var(--purple);font-weight:700;}
 .auth-logout{color:var(--muted);font-size:.82rem;cursor:pointer;background:none;border:none;font-family:inherit;margin-top:8px;}
 .auth-logout:hover{color:var(--text);}
 .guest-price{color:var(--muted);text-decoration:line-through;font-size:.88em;font-weight:500;}
@@ -777,7 +777,7 @@ body.show-admin .wa-btn,body.show-login .wa-btn{display:none;}
 .reset-link-btn{display:inline-block;background:linear-gradient(135deg,var(--purple),var(--pink));color:#fff;border:none;border-radius:10px;padding:10px 22px;font-weight:700;font-size:.9rem;cursor:pointer;font-family:inherit;text-decoration:none;width:100%;}
 .reset-link-btn:hover{opacity:.9;}
 
-    /* ===== THEME UPGRADE v2 â More vibrant, animated, squishy (2026-07) ===== */
+    /* ===== THEME UPGRADE v2 — More vibrant, animated, squishy (2026-07) ===== */
     :root {
       --purple:  #9333ea;
       --purple2: #c026d3;
@@ -834,7 +834,7 @@ body.show-admin .wa-btn,body.show-login .wa-btn{display:none;}
     .prod-card:nth-child(9){animation-delay:.61s} .prod-card:nth-child(10){animation-delay:.68s}
     .prod-card:nth-child(11){animation-delay:.75s}.prod-card:nth-child(12){animation-delay:.82s}
 
-    /* Available badge â gradient + pulsing glow */
+    /* Available badge — gradient + pulsing glow */
     .prod-badge {
       background: linear-gradient(135deg,#9333ea,#ec4899) !important;
       animation: badge-pulse 2.5s ease-in-out infinite !important;
@@ -851,7 +851,7 @@ body.show-admin .wa-btn,body.show-login .wa-btn{display:none;}
     .tab-btn.homemade-tab.active { background: linear-gradient(135deg,#22c55e,#16a34a) !important; box-shadow: 0 6px 20px rgba(34,197,94,.45) !important; }
     .tab-btn:hover:not(.active)  { transform: translateY(-3px) scale(1.06) !important; }
 
-    /* Price â gradient text */
+    /* Price — gradient text */
     .prod-price-val {
       background: linear-gradient(135deg,#9333ea,#ec4899) !important;
       -webkit-background-clip: text !important; background-clip: text !important;
@@ -882,7 +882,7 @@ body.show-admin .wa-btn,body.show-login .wa-btn{display:none;}
       box-shadow: 0 8px 25px rgba(147,51,234,.4) !important;
     }
 
-    /* Hero â more vivid gradient + spinning rings */
+    /* Hero — more vivid gradient + spinning rings */
     .hero { background: linear-gradient(160deg,#ede9fe 0%,#fce7f3 50%,#e0f2fe 100%) !important; }
     .hero-ring-1 { animation: spin-slow 25s linear infinite; border-color: rgba(147,51,234,.25) !important; }
     .hero-ring-2 { animation: spin-slow 18s linear infinite reverse; border-color: rgba(236,72,153,.3) !important; }
@@ -892,7 +892,7 @@ body.show-admin .wa-btn,body.show-login .wa-btn{display:none;}
       to   { transform: rotate(360deg); }
     }
 
-    /* Hero deco images â float animation */
+    /* Hero deco images — float animation */
     .hero-img-deco { animation: deco-float 4s ease-in-out infinite !important; }
     .hero-img-deco:nth-child(even) { animation-delay: -2s !important; }
     @keyframes deco-float {
@@ -900,7 +900,7 @@ body.show-admin .wa-btn,body.show-login .wa-btn{display:none;}
       50%    { transform: translateY(-14px) rotate(2deg); }
     }
 
-    /* Section title â gradient */
+    /* Section title — gradient */
     h2[data-i18n="gallery"] {
       background: linear-gradient(90deg,#9333ea,#ec4899,#06b6d4) !important;
       -webkit-background-clip: text !important; background-clip: text !important;
