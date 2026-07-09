@@ -1459,7 +1459,7 @@ window._showDonkey=function(){
   el.classList.remove('dk-run');
   void el.offsetWidth;
   el.classList.add('dk-run');
-  var dkv=document.getElementById('dk-img');if(dkv){dkv.loop=false;dkv.currentTime=0;dkv.muted=false;dkv.play().catch(function(){});dkv.addEventListener('ended',function(){el.classList.remove('dk-run');dkv.muted=true;},{once:true});}else{setTimeout(function(){el.classList.remove('dk-run');},10000);}
+  var dkv=document.getElementById('dk-img');if(dkv){dkv.loop=false;dkv.currentTime=0;dkv.play().catch(function(){});dkv.addEventListener('ended',function(){el.classList.remove('dk-run');},{once:true});}else{setTimeout(function(){el.classList.remove('dk-run');},10000);}
 };
 
 
