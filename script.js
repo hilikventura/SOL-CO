@@ -1456,7 +1456,8 @@ window._showDonkey=function(){
   if(!el)return;
   el.classList.remove('dk-run');
   void el.offsetWidth;
-  if(el.classList.contains('dk-run')){var dkv2=document.getElementById('dk-img');if(dkv2){dkv2.pause();dkv2.currentTime=0;}el.style.animation='dk-exit 0.45s ease-in forwards';setTimeout(function(){el.classList.remove('dk-run');el.style.animation='';},450);}else{el.classList.add('dk-run');var dkv=document.getElementById('dk-img');if(dkv){dkv.loop=false;dkv.currentTime=0;dkv.play().catch(function(){});dkv.addEventListener('ended',function(){el.classList.remove('dk-run');},{once:true});}else{setTimeout(function(){el.classList.remove('dk-run');},10000);}}
+  el.classList.add('dk-run');
+  var dkv=document.getElementById('dk-img');if(dkv){dkv.loop=false;dkv.currentTime=0;dkv.play().catch(function(){});dkv.addEventListener('ended',function(){el.classList.remove('dk-run');},{once:true});}else{setTimeout(function(){el.classList.remove('dk-run');},10000);}
 };
 
 
@@ -1499,3 +1500,4 @@ window.batchOptimizeImages = async function(){
   }catch(eOuter){status.textContent='Error: '+eOuter.message;}
   btn.disabled=false;
 };
+document.addEventListener('click',function(e){if(!e.target.closest('.btn-cart'))return;var p=document.getElementById('dk-popup');if(!p||!p.classList.contains('dk-run'))return;e.stopImmediatePropagation();var v=document.getElementById('dk-img');if(v){v.pause();v.currentTime=0;}p.style.animation='dk-exit 0.45s ease-in forwards';setTimeout(function(){p.classList.remove('dk-run');p.style.animation='';},450);},true);
