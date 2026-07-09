@@ -1007,19 +1007,6 @@ body.show-admin .wa-btn,body.show-login .wa-btn{display:none;}
     #ai-modal .btn-cancel{padding:11px 14px;background:#f3f4f6;border:none;border-radius:12px;cursor:pointer;font-size:14px;}
     /* ===== END GEMINI AI CSS ===== */
 
-    /* ===== DONKEY MASCOT ===== */
-    #dk-mascot{position:fixed;bottom:18px;left:18px;z-index:8800;pointer-events:none;width:170px;}
-    #dk-speech{position:absolute;bottom:205px;left:-20px;right:-20px;text-align:center;}
-    #dk-bubble{display:inline-block;background:#fff;border:2.5px solid #9333ea;border-radius:14px;
-      padding:8px 12px;font-size:11.5px;font-weight:700;color:#7c3aed;line-height:1.4;
-      box-shadow:0 4px 18px rgba(147,51,234,.22);max-width:210px;word-break:break-word;
-      transition:all .35s cubic-bezier(.34,1.56,.64,1);opacity:0;transform:scale(.7);}
-    #dk-bubble.vis{opacity:1;transform:scale(1);}
-    #dk-bubble.happy{border-color:#ec4899;color:#be185d;background:linear-gradient(135deg,#faf5ff,#fce7f3);}
-    #dk-bubble::after{content:'';display:block;width:0;height:0;border:7px solid transparent;border-top-color:#9333ea;margin:3px auto 0;}
-    #dk-bubble.happy::after{border-top-color:#ec4899;}
-    #dk-canvas{display:block;width:170px;height:200px;}
-    /* ===== END DONKEY MASCOT ===== */
     </style>
 </head>
 <body>
@@ -1873,7 +1860,6 @@ function addToCart(id) {
     selected.delete(id);
   } else {
     selected.add(id);
-    if(window._dkHappy) window._dkHappy(id);
   }
   updateCartUI();
   // Re-render just this card's button states without full re-render
@@ -2934,169 +2920,6 @@ function initTilt() {
 })();
 </script>
 <script>(function(){var heMode=false;function applyLang(l){document.querySelectorAll('.btn-cart').forEach(function(b){var ic=b.textContent.trim().charCodeAt(0)===10003;b.textContent=ic?(l==='he'?'✓ בעגלה':'✓ In Cart'):(l==='he'?'🛒 הוסף לעגלה':'🛒 Add to Cart');});document.querySelectorAll('.btn-buy').forEach(function(b){b.textContent=l==='he'?'קנה עכשיו':'Buy Now';});document.querySelectorAll('[data-he][data-en]').forEach(function(e){e.textContent=l==='he'?e.getAttribute('data-he'):e.getAttribute('data-en');});}var origTL=window.toggleLang;window.toggleLang=function(){origTL&&origTL();heMode=!heMode;applyLang(heMode?'he':'en');};})();</script>
-<script>(function(){var hero=document.querySelector('.hero');if(!hero)return;var elems=Array.from(document.querySelectorAll('.float-deco,.hero-img-deco'));var states=elems.map(function(el){return{el:el,dx:0,dy:0,vx:0,vy:0};});var mx=0,my=0,inHero=false,heroVis=true,rafRun=false;function startRaf(){if(!rafRun){rafRun=true;requestAnimationFrame(tick);}}new IntersectionObserver(function(e){heroVis=e[0].isIntersecting;if(heroVis)startRaf();},{threshold:0}).observe(hero);hero.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;inHero=true;});hero.addEventListener('mouseleave',function(){inHero=false;});hero.addEventListener('touchstart',function(e){if(e.touches.length>0){mx=e.touches[0].clientX;my=e.touches[0].clientY;inHero=true;}},{passive:true});hero.addEventListener('touchmove',function(e){if(e.touches.length>0){mx=e.touches[0].clientX;my=e.touches[0].clientY;inHero=true;}},{passive:true});hero.addEventListener('touchend',function(){inHero=false;});hero.addEventListener('touchcancel',function(){inHero=false;});function tick(){rafRun=false;if(!heroVis)return;var hRect=hero.getBoundingClientRect();states.forEach(function(s){s.vx+=-0.065*s.dx;s.vy+=-0.065*s.dy;if(inHero){var er=s.el.getBoundingClientRect();var ecx=er.left+er.width/2;var ecy=er.top+er.height/2;var ddx=ecx-mx,ddy=ecy-my;var dist=Math.sqrt(ddx*ddx+ddy*ddy)||1;var R=150;if(dist<R){var force=((R-dist)/R)*12;s.vx+=(ddx/dist)*force;s.vy+=(ddy/dist)*force;}}s.vx*=0.82;s.vy*=0.82;s.dx+=s.vx;s.dy+=s.vy;var cap=80;s.dx=Math.max(-cap,Math.min(cap,s.dx));s.dy=Math.max(-cap,Math.min(cap,s.dy));s.el.style.setProperty('--px',s.dx.toFixed(1)+'px');s.el.style.setProperty('--py',s.dy.toFixed(1)+'px');});if(inHero){var cx=(mx-hRect.left-hRect.width/2)/hRect.width;var cy=(my-hRect.top-hRect.height/2)/hRect.height;document.querySelectorAll('.hero-ring').forEach(function(el,i){var d=(i+1)*9;el.style.transform='translate('+(cx*d).toFixed(1)+'px,'+(cy*d*0.6).toFixed(1)+'px)';});}rafRun=true;requestAnimationFrame(tick);}startRaf();})();
 
-/* ===== GEMINI AI TOOLS ===== */
-async function _geminiReq(apiKey, parts, isImage) {
-  const model = 'gemini-2.0-flash-preview-image-generation';
-  const mods = isImage ? ['TEXT','IMAGE'] : ['IMAGE'];
-  const resp = await fetch(
-    'https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent?key='+apiKey,
-    { method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ contents:[{parts}], generationConfig:{responseModalities:mods} }) }
-  );
-  const data = await resp.json();
-  if (data.error) throw new Error(data.error.message);
-  const parts2 = data?.candidates?.[0]?.content?.parts || [];
-  const imgPart = parts2.find(p => p.inlineData);
-  if (!imgPart) throw new Error('Gemini returned no image. ' + JSON.stringify(data).slice(0,120));
-  return imgPart.inlineData;
-}
-
-async function _img2b64(url) {
-  const r = await fetch(url);
-  const buf = await r.arrayBuffer();
-  const bytes = new Uint8Array(buf);
-  let bin = '';
-  for (let i=0;i<bytes.length;i++) bin += String.fromCharCode(bytes[i]);
-  return { b64: btoa(bin), mime: r.headers.get('content-type') || 'image/jpeg' };
-}
-
-async function _aiUpload(id, b64data, mime) {
-  const prod = products.find(p=>p.id===id);
-  if (!prod) throw new Error('Product not found');
-  const ext = mime.includes('png') ? 'png' : 'jpeg';
-  const byteChars = atob(b64data);
-  const arr = new Uint8Array(byteChars.length);
-  for (let i=0;i<byteChars.length;i++) arr[i]=byteChars.charCodeAt(i);
-  const blob = new Blob([arr],{type:mime});
-  const fname = prod.path.split('/').pop().replace(/\.[^.]+$/,'.'+ext);
-  const file = new File([blob],fname,{type:mime});
-  await uploadImageFile(file, prod.category, id);
-}
-
-async function aiEnhance(id) {
-  const key = cfg.geminiKey;
-  if (!key) return alert('⚠️ Add your Gemini API Key in Settings first.');
-  const prod = products.find(p=>p.id===id);
-  if (!prod) return;
-  const card = document.getElementById('card-'+id);
-  if (card) card.classList.add('ai-busy');
-  try {
-    const {b64,mime} = await _img2b64(prod.dataUrl);
-    const inlineData = await _geminiReq(key, [
-      {text:'Enhance this product photo: boost vibrance and saturation, sharpen edges and details, improve lighting. Keep the subject identical. Return the enhanced image only.'},
-      {inlineData:{mimeType:mime,data:b64}}
-    ], false);
-    if (!confirm('✨ Enhancement ready! Replace the current image?')) return;
-    await _aiUpload(id, inlineData.data, inlineData.mimeType);
-    alert('✅ Image enhanced and uploaded!');
-  } catch(e) { alert('Error: '+e.message); }
-  finally { if(card) card.classList.remove('ai-busy'); }
-}
-
-async function aiRemoveBg(id) {
-  const key = cfg.geminiKey;
-  if (!key) return alert('⚠️ Add your Gemini API Key in Settings first.');
-  const prod = products.find(p=>p.id===id);
-  if (!prod) return;
-  const card = document.getElementById('card-'+id);
-  if (card) card.classList.add('ai-busy');
-  try {
-    const {b64,mime} = await _img2b64(prod.dataUrl);
-    const inlineData = await _geminiReq(key, [
-      {text:'Remove the background from this product image and replace it with a pure white background. Keep the product itself completely unchanged. Return the edited image only.'},
-      {inlineData:{mimeType:mime,data:b64}}
-    ], false);
-    if (!confirm('✂️ Background removed! Replace the current image?')) return;
-    await _aiUpload(id, inlineData.data, inlineData.mimeType);
-    alert('✅ Background removed and uploaded!');
-  } catch(e) { alert('Error: '+e.message); }
-  finally { if(card) card.classList.remove('ai-busy'); }
-}
-
-function aiGenerate(id) {
-  const key = cfg.geminiKey;
-  if (!key) return alert('⚠️ Add your Gemini API Key in Settings first.');
-  const modal = document.createElement('div');
-  modal.id = 'ai-modal';
-  modal.innerHTML = '<div class="ai-box"><h3>🍌 Generate product image with AI</h3><label style="font-size:13px;font-weight:600">Describe the product:</label><textarea id="ai-prompt" placeholder="e.g. pink slime squishy shaped like a strawberry, on white background"></textarea><label style="font-size:13px;font-weight:600">Style:</label><select id="ai-style"><option value="realistic">📸 Realistic product photo</option><option value="cute">🎀 Kawaii / cute</option><option value="minimal">⬜ Minimal clean</option></select><div class="ai-row"><button class="btn-gen" onclick="aiGenerateRun(\''+id+'\')">✨ Generate</button><button class="btn-cancel" onclick="document.getElementById(\'ai-modal\').remove()">Cancel</button></div></div>';
-  document.body.appendChild(modal);
-}
-
-async function aiGenerateRun(id) {
-  const key = cfg.geminiKey;
-  const prompt = document.getElementById('ai-prompt')?.value?.trim();
-  const style = document.getElementById('ai-style')?.value || 'realistic';
-  if (!prompt) return alert('Please describe the product first.');
-  document.getElementById('ai-modal')?.remove();
-  const styleMap = {
-    realistic:'high-resolution e-commerce product photo, white background, studio lighting, photorealistic',
-    cute:'cute kawaii squishy toy, soft pastel colors, clean white background',
-    minimal:'minimal product shot, pure white background, simple and clean'
-  };
-  const card = document.getElementById('card-'+id);
-  if (card) card.classList.add('ai-busy');
-  try {
-    const inlineData = await _geminiReq(key,[{text:prompt+'. '+styleMap[style]}],false);
-    if (!confirm('🍌 Image generated! Replace the current image?')) return;
-    await _aiUpload(id, inlineData.data, inlineData.mimeType);
-    alert('✅ New image generated and uploaded!');
-  } catch(e) { alert('Error: '+e.message); }
-  finally { if(card) card.classList.remove('ai-busy'); }
-}
-/* ===== END GEMINI AI TOOLS ===== */
-
-/* ===== DONKEY MASCOT ===== */
-(function(){
-function init(){
-if(typeof THREE==='undefined'||!document.getElementById('dk-canvas'))return;
-const cv=document.getElementById('dk-canvas'),W=170,H=200;
-const rdr=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});
-rdr.setPixelRatio(Math.min(devicePixelRatio,2));rdr.setSize(W,H);
-const sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(48,W/H,0.1,100);
-cam.position.set(0,0.3,5.5);cam.lookAt(0,0.2,0);
-sc.add(new THREE.AmbientLight(0xffffff,0.75));
-const sun=new THREE.DirectionalLight(0xffffff,1.0);sun.position.set(3,8,5);sc.add(sun);
-const fill=new THREE.PointLight(0xff88cc,0.6,20);fill.position.set(-3,3,3);sc.add(fill);
-const M=(c,s=35)=>new THREE.MeshPhongMaterial({color:c,shininess:s});
-const mBd=M(0x9b8b74),mLg=M(0xc8b89a),mWh=M(0xffffff,100),mPu=M(0x3d1a05),
-  mIr=M(0x6b3215),mBk=M(0x111111),mPk=M(0xff9999),mMn=M(0x2a1a08),
-  mTo=new THREE.MeshPhongMaterial({color:0xfffff0,shininess:90}),mHf=M(0x2a2015),mGm=M(0xff7777);
-const dk=new THREE.Group();sc.add(dk);
-const body=new THREE.Mesh(new THREE.SphereGeometry(0.9,18,14),mBd);body.scale.set(1.0,1.3,0.95);body.position.set(0,-0.6,0);dk.add(body);
-const belly=new THREE.Mesh(new THREE.SphereGeometry(0.6,14,10),mLg);belly.scale.set(0.85,0.9,0.7);belly.position.set(0.05,-0.55,0.5);dk.add(belly);
-const neck=new THREE.Mesh(new THREE.CylinderGeometry(0.28,0.35,0.75,12),mBd);neck.position.set(0,0.3,0.15);neck.rotation.x=0.2;dk.add(neck);
-const hg=new THREE.Group();hg.position.set(0,1.05,0.2);dk.add(hg);
-hg.add(new THREE.Mesh(new THREE.SphereGeometry(0.62,20,16),mBd));
-const muz=new THREE.Mesh(new THREE.SphereGeometry(0.42,16,12),mLg);muz.scale.set(0.95,0.82,1.1);muz.position.set(0,-0.12,0.52);hg.add(muz);
-[-0.14,0.14].forEach(x=>{const n=new THREE.Mesh(new THREE.CircleGeometry(0.07,10),M(0x3a2010));n.position.set(x,-0.1,0.93);hg.add(n);});
-const mg=new THREE.Group();mg.position.set(0,-0.32,0.62);hg.add(mg);
-const gm=new THREE.Mesh(new THREE.BoxGeometry(0.48,0.1,0.06),mGm);gm.position.y=0.02;mg.add(gm);
-[-0.15,-0.05,0.05,0.15].forEach(x=>{const t=new THREE.Mesh(new THREE.BoxGeometry(0.09,0.18,0.09),mTo);t.position.set(x,-0.08,0);mg.add(t);});
-const eyes=[];[-1,1].forEach(s=>{const eg=new THREE.Group();eg.position.set(s*0.31,0.2,0.5);hg.add(eg);eg.add(new THREE.Mesh(new THREE.SphereGeometry(0.18,14,12),mWh));const ir=new THREE.Mesh(new THREE.SphereGeometry(0.12,10,10),mIr);ir.position.z=0.09;eg.add(ir);const pu=new THREE.Mesh(new THREE.SphereGeometry(0.07,8,8),mPu);pu.position.z=0.16;eg.add(pu);const sh=new THREE.Mesh(new THREE.SphereGeometry(0.03,6,6),new THREE.MeshPhongMaterial({color:0xffffff,emissive:0xffffff}));sh.position.set(0.03,0.04,0.17);eg.add(sh);eyes.push(eg);});
-const ears=[];[-1,1].forEach(s=>{const eg=new THREE.Group();eg.position.set(s*0.36,0.62,-0.05);eg.rotation.z=s*0.1;eg.rotation.x=-0.1;hg.add(eg);eg.add(new THREE.Mesh(new THREE.CylinderGeometry(0.075,0.14,0.82,10),mBd));const ep=new THREE.Mesh(new THREE.CylinderGeometry(0.038,0.08,0.68,10),mPk);ep.position.y=0.04;eg.add(ep);ears.push(eg);});
-for(let i=0;i<8;i++){const t=new THREE.Mesh(new THREE.CylinderGeometry(0.022,0.04,0.24+i%3*0.07,5),mMn);t.position.set(-0.18+i*0.055,0.62,-0.12);t.rotation.z=(i-3.5)*0.1;hg.add(t);}
-const legs=[];[[0.35,-0.55,0.28],[0.35,-0.55,-0.28],[-0.35,-0.55,0.28],[-0.35,-0.55,-0.28]].forEach(([x,y,z])=>{const lg=new THREE.Group();lg.position.set(x,y,z);dk.add(lg);const up=new THREE.Mesh(new THREE.CylinderGeometry(0.11,0.09,0.6,8),mBd);up.position.y=-0.3;lg.add(up);const lo=new THREE.Mesh(new THREE.CylinderGeometry(0.085,0.075,0.55,8),mBd);lo.position.y=-0.87;lg.add(lo);const hf=new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.085,0.12,8),mHf);hf.position.y=-1.17;lg.add(hf);legs.push(lg);});
-const tg=new THREE.Group();tg.position.set(-0.1,-0.15,-0.85);dk.add(tg);
-const ts=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.055,0.55,7),mBd);ts.rotation.x=0.6;ts.position.set(0,-0.15,-0.1);tg.add(ts);
-const tf=new THREE.Mesh(new THREE.SphereGeometry(0.12,8,8),mBk);tf.position.set(0,-0.38,-0.25);tg.add(tf);
-let st='idle',ht=0,pt=200,pi=0;
-const IP=['בחר מוצר! ��','כולם מהממים! 😁','תבחר/י אחד! 🙏','יצירות אמנות! ✨','Go on, pick one! 😄'];
-const HP=['תודה שבחרת במוצר הכי יפה באתר! 💜','בחירה מושלמת! 🎉','וואו! יש לך טעם! ✨','זה הפייבוריט שלי! ��💜'];
-function bubble(txt,h=false){const el=document.getElementById('dk-bubble');if(!el)return;el.textContent=txt;el.className='vis'+(h?' happy':'');clearTimeout(el._t);el._t=setTimeout(()=>{el.className='';},h?4800:3200);}
-window._dkHappy=function(id){const prod=window.products&&window.products.find(p=>p.id===id);const nm=prod?prod.title:'המוצר';st='happy';ht=0;bubble('תודה שבחרת ב-'+nm+'! זה המוצר הכי יפה באתר! 💜',true);};
-setTimeout(()=>bubble(IP[0]),1800);
-function tick(t){requestAnimationFrame(tick);const s=t*0.001;
-if(st==='idle'){hg.rotation.y=Math.sin(s*0.7)*0.15;hg.rotation.x=Math.sin(s*0.5)*0.06;hg.rotation.z=Math.sin(s*0.4)*0.04;ears[0].rotation.z=0.1+Math.sin(s*1.2)*0.12;ears[1].rotation.z=-0.1-Math.sin(s*1.2)*0.12;const bl=(Math.floor(s*1.8)%70===0)?.05:1;eyes.forEach(e=>e.scale.y=bl);mg.scale.set(1,1,1);mg.position.y=-0.32;tg.rotation.x=Math.sin(s*2)*0.2;dk.rotation.y=Math.sin(s*0.3)*0.08;dk.position.y=Math.sin(s*1.5)*0.03;pt++;if(pt>300){pt=0;bubble(IP[pi++%IP.length]);}}
-else{ht++;dk.position.y=Math.abs(Math.sin(s*6))*0.22;dk.rotation.z=Math.sin(s*5)*0.08;hg.rotation.z=Math.sin(s*5)*0.15;hg.rotation.x=-0.1+Math.sin(s*4)*0.1;hg.rotation.y=Math.sin(s*3)*0.2;eyes.forEach(e=>e.scale.y=0.38+Math.sin(s*6)*.04);mg.scale.set(1.3,1.45,1.3);mg.position.y=-0.27;ears[0].rotation.z=0.1+Math.sin(s*6)*0.28;ears[1].rotation.z=-0.1-Math.sin(s*6)*0.28;tg.rotation.x=Math.sin(s*8)*0.45;legs[0].rotation.x=Math.sin(s*6)*0.3;legs[1].rotation.x=Math.sin(s*6+Math.PI)*0.3;legs[2].rotation.x=Math.sin(s*6+Math.PI)*0.3;legs[3].rotation.x=Math.sin(s*6)*0.3;if(ht>250){st='idle';pt=280;}}
-rdr.render(sc,cam);}
-requestAnimationFrame(tick);}
-const s2=document.createElement('script');s2.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';s2.onload=init;document.head.appendChild(s2);
-})();
-/* ===== END DONKEY MASCOT ===== */
-</script>
-  <!-- DONKEY MASCOT -->
-  <div id="dk-mascot"><div id="dk-speech"><span id="dk-bubble"></span></div><canvas id="dk-canvas" width="340" height="400"></canvas></div>
 </body>
 </html>
