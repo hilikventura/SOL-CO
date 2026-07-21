@@ -41,7 +41,7 @@ async function loadSettings() {
     const saved = JSON.parse(localStorage.getItem(LS_CFG) || '{}');
     Object.keys(saved).forEach(k => { if (saved[k]) cfg[k] = saved[k]; });
   } catch {}
-  // 3. If still missing token Ã¢ÂÂ fetch _config.json from public repo (works on any device, no auth needed)
+  // 3. If still missing token — fetch _config.json from public repo (works on any device, no auth needed)
   if (!cfg.ghToken) {
     try {
       const r = await fetch('https://raw.githubusercontent.com/' + GH_REPO_DEFAULT + '/main/_config.json?t=' + Date.now());
@@ -70,14 +70,14 @@ async function saveSettings() {
   cfg.customDomain = (document.getElementById('s-custom-domain').value || '').trim();
   localStorage.setItem(LS_CFG, JSON.stringify(cfg));
   updateSettingsUI();
-  showToast('Ã°ÂÂÂ¾ Saving settingsÃ¢ÂÂ¦');
+  showToast('💾 Saving settings…');
   await bakeSettingsToGitHub();
 }
 
 async function bakeSettingsToGitHub() {
-  if (!cfg.ghRepo || !cfg.ghToken) { showToast('Ã¢ÂÂ Settings saved (locally only Ã¢ÂÂ enter a GitHub token to sync across devices)'); return; }
+  if (!cfg.ghRepo || !cfg.ghToken) { showToast('✅ Settings saved (locally only — enter a GitHub token to sync across devices)'); return; }
   try {
-    // Write credentials to _config.json Ã¢ÂÂ short keys + reversed base64 to bypass secret scanning
+    // Write credentials to _config.json — short keys + reversed base64 to bypass secret scanning
     const configData = {
       t:            obfuscate(cfg.ghToken),
       w:            obfuscate(cfg.w3fKey || ''),
@@ -93,11 +93,11 @@ async function bakeSettingsToGitHub() {
     const body = { message: 'Update config', content };
     if (sha) body.sha = sha;
     const putRes = await ghApi('PUT', 'contents/_config.json', body);
-    if (putRes.ok) showToast('Ã¢ÂÂ Settings saved & synced Ã¢ÂÂ auto-loads on every device!');
-    else { const e = await putRes.json().catch(()=>({})); showToast('Ã¢ÂÂ Ã¯Â¸Â Saved locally; GitHub sync failed: ' + (e.message||putRes.status)); }
+    if (putRes.ok) showToast('✅ Settings saved & synced — auto-loads on every device!');
+    else { const e = await putRes.json().catch(()=>({})); showToast('⚠️ Saved locally; GitHub sync failed: ' + (e.message||putRes.status)); }
   } catch (err) {
     console.warn('bakeSettingsToGitHub error', err);
-    showToast('Ã¢ÂÂ Settings saved locally (' + err.message + ')');
+    showToast('✅ Settings saved locally (' + err.message + ')');
   }
 }
 
@@ -108,18 +108,18 @@ function updateSettingsUI() {
 
   const statusEl = document.getElementById('settings-status');
   if (statusEl) {
-    statusEl.textContent = allOk ? 'All Set Ã¢ÂÂ' : (ghOk || w3fOk ? 'Partial Setup' : 'Not Configured');
+    statusEl.textContent = allOk ? 'All Set ✓' : (ghOk || w3fOk ? 'Partial Setup' : 'Not Configured');
     statusEl.className   = 's-status ' + (allOk ? 'ok' : 'bad');
   }
-  setChip('chip-github', ghOk,  'Ã°ÂÂÂ GitHub',    ghOk  ? 'Active' : 'Not Set');
-  setChip('chip-w3f',    w3fOk, 'Ã¢ÂÂÃ¯Â¸Â Web3Forms',  w3fOk ? 'Active' : 'Not Set');
+  setChip('chip-github', ghOk,  '🐙 GitHub',    ghOk  ? 'Active' : 'Not Set');
+  setChip('chip-w3f',    w3fOk, '✉️ Web3Forms',  w3fOk ? 'Active' : 'Not Set');
   setVal('s-gh-repo', cfg.ghRepo);
   setVal('s-custom-domain', cfg.customDomain);
   // Show masked token so user knows it's saved
   const tokenEl = document.getElementById('s-gh-token');
   if (tokenEl) {
     tokenEl.value       = '';
-    tokenEl.placeholder = cfg.ghToken ? 'Ã¢ÂÂ¢Ã¢ÂÂ¢Ã¢ÂÂ¢Ã¢ÂÂ¢Ã¢ÂÂ¢Ã¢ÂÂ¢Ã¢ÂÂ¢Ã¢ÂÂ¢  (Saved Ã¢ÂÂ re-enter only to change)' : 'github_pat_...';
+    tokenEl.placeholder = cfg.ghToken ? '••••••••  (Saved — re-enter only to change)' : 'github_pat_...';
   }
   setVal('s-w3f-key', cfg.w3fKey);
   setVal('s-ejs-service', cfg.ejsServiceId);
@@ -164,7 +164,7 @@ function ghApi(method, path, body) {
 }
 
 /* ================================================================
-   GITHUB Ã¢ÂÂ Test connection
+   GITHUB — Test connection
 ================================================================ */
 async function testGithubConnection() {
   // Pull token from field if user just typed a new one
@@ -173,10 +173,10 @@ async function testGithubConnection() {
   const resultEl = document.getElementById('gh-test-result');
   resultEl.style.display = 'block';
   resultEl.style.color = '#64748b';
-  resultEl.textContent = 'Ã¢ÂÂ³ TestingÃ¢ÂÂ¦';
+  resultEl.textContent = '⏳ Testing…';
   if (!token) {
     resultEl.style.color = '#ef4444';
-    resultEl.textContent = 'Ã¢ÂÂ No token entered Ã¢ÂÂ paste your GitHub Personal Access Token above first.';
+    resultEl.textContent = '❌ No token entered — paste your GitHub Personal Access Token above first.';
     return;
   }
   try {
@@ -189,26 +189,26 @@ async function testGithubConnection() {
     });
     if (res.ok || res.status === 404) {
       resultEl.style.color = '#16a34a';
-      resultEl.textContent = 'Ã¢ÂÂ Token valid! GitHub connection OK.';
+      resultEl.textContent = '✅ Token valid! GitHub connection OK.';
       if (tokenInput) { cfg.ghToken = token; }
     } else if (res.status === 401) {
       resultEl.style.color = '#ef4444';
-      resultEl.textContent = 'Ã¢ÂÂ Unauthorized (401) Ã¢ÂÂ token is invalid or expired. Generate a new one.';
+      resultEl.textContent = '❌ Unauthorized (401) — token is invalid or expired. Generate a new one.';
     } else if (res.status === 403) {
       resultEl.style.color = '#ef4444';
-      resultEl.textContent = 'Ã¢ÂÂ Forbidden (403) Ã¢ÂÂ token exists but lacks "Contents: Read & Write" permission.';
+      resultEl.textContent = '❌ Forbidden (403) — token exists but lacks "Contents: Read & Write" permission.';
     } else {
       resultEl.style.color = '#ef4444';
-      resultEl.textContent = 'Ã¢ÂÂ Error ' + res.status + ' Ã¢ÂÂ check repo name in settings.';
+      resultEl.textContent = '❌ Error ' + res.status + ' — check repo name in settings.';
     }
   } catch (err) {
     resultEl.style.color = '#ef4444';
-    resultEl.textContent = 'Ã¢ÂÂ Network error: ' + err.message;
+    resultEl.textContent = '❌ Network error: ' + err.message;
   }
 }
 
 /* ================================================================
-   CATALOG Ã¢ÂÂ GitHub + localStorage fallback
+   CATALOG — GitHub + localStorage fallback
 ================================================================ */
 function getDeletedIds() {
   try { return new Set(JSON.parse(localStorage.getItem(LS_DELETED) || '[]')); }
@@ -226,7 +226,7 @@ async function loadCatalog() {
   // Only trust GitHub if we have a token (meaning we also SAVE there)
   if (cfg.ghToken) {
     try {
-      // Use GitHub API (not raw CDN) Ã¢ÂÂ always returns latest, not cached
+      // Use GitHub API (not raw CDN) — always returns latest, not cached
       const r = await ghApi('GET', 'contents/catalog.json');
       if (r.ok) {
         const d = await r.json();
@@ -261,7 +261,7 @@ async function loadCatalog() {
       }
     }
   } catch (pubErr) { console.warn('Public catalog fallback failed', pubErr); }
-// No token or GitHub failed Ã¢ÂÂ use localStorage, filter out deleted IDs
+// No token or GitHub failed — use localStorage, filter out deleted IDs
   images = local.filter(i => !deletedIds.has(i.id));
 }
 
@@ -286,28 +286,28 @@ async function saveCatalog() {
     try {
       const r = await ghApi('GET', 'contents/catalog.json');
       if (r.ok) { const d = await r.json(); sha = d.sha; }
-      else if (r.status === 401) { showToast('Ã¢ÂÂ GitHub token invalid or expired Ã¢ÂÂ update in Settings'); return; }
-      else if (r.status === 403) { showToast('Ã¢ÂÂ GitHub token lacks write permission Ã¢ÂÂ check repo access in Settings'); return; }
+      else if (r.status === 401) { showToast('❌ GitHub token invalid or expired — update in Settings'); return; }
+      else if (r.status === 403) { showToast('❌ GitHub token lacks write permission — check repo access in Settings'); return; }
     } catch {}
     const body = { message: 'Update catalog', content };
     if (sha) body.sha = sha;
     const saveRes = await ghApi('PUT', 'contents/catalog.json', body);
     if (saveRes.ok) {
-      // Prune LS_DELETED Ã¢ÂÂ catalog is now authoritative, no need to keep stale deleted IDs
+      // Prune LS_DELETED — catalog is now authoritative, no need to keep stale deleted IDs
       localStorage.removeItem(LS_DELETED);
     } else {
       const errData = await saveRes.json().catch(() => ({}));
       const msg = errData.message || ('HTTP ' + saveRes.status);
-      if (saveRes.status === 401) showToast('Ã¢ÂÂ GitHub: Unauthorized Ã¢ÂÂ re-enter your token in Settings');
-      else if (saveRes.status === 403) showToast('Ã¢ÂÂ GitHub: Forbidden Ã¢ÂÂ token missing "Contents: Read & Write" permission');
-      else if (saveRes.status === 409) showToast('Ã¢ÂÂ Ã¯Â¸Â GitHub: Conflict Ã¢ÂÂ refresh and try again');
-      else if (saveRes.status === 422) showToast('Ã¢ÂÂ Ã¯Â¸Â GitHub: ' + msg);
-      else showToast('Ã¢ÂÂ Ã¯Â¸Â GitHub save failed (' + saveRes.status + '): ' + msg);
+      if (saveRes.status === 401) showToast('❌ GitHub: Unauthorized — re-enter your token in Settings');
+      else if (saveRes.status === 403) showToast('❌ GitHub: Forbidden — token missing "Contents: Read & Write" permission');
+      else if (saveRes.status === 409) showToast('⚠️ GitHub: Conflict — refresh and try again');
+      else if (saveRes.status === 422) showToast('⚠️ GitHub: ' + msg);
+      else showToast('⚠️ GitHub save failed (' + saveRes.status + '): ' + msg);
       console.warn('GitHub catalog save failed', saveRes.status, errData);
     }
   } catch (err) {
     console.warn('GitHub catalog save failed', err);
-    showToast('Ã¢ÂÂ Ã¯Â¸Â GitHub: Save error (saved locally) Ã¢ÂÂ ' + (err.message || ''));
+    showToast('⚠️ GitHub: Save error (saved locally) — ' + (err.message || ''));
   }
 }
 
@@ -338,7 +338,7 @@ async function uploadFile(file, category) {
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
         console.warn('GitHub upload failed (' + (errData.message || res.status) + '), using local fallback');
-        showToast('Ã¢ÂÂ Ã¯Â¸Â GitHub upload failed Ã¢ÂÂ saved locally');
+        showToast('⚠️ GitHub upload failed — saved locally');
         // Fall through to base64 fallback below
       } else {
         const data = await res.json();
@@ -353,7 +353,7 @@ async function uploadFile(file, category) {
       }
     } catch (err) {
       console.warn('GitHub upload error, using local fallback:', err);
-      showToast('Ã¢ÂÂ Ã¯Â¸Â GitHub error Ã¢ÂÂ saved locally');
+      showToast('⚠️ GitHub error — saved locally');
     }
   }
   // Fallback: base64
@@ -364,7 +364,7 @@ async function uploadFile(file, category) {
 async function deleteFileFromGitHub(img) {
   if (!cfg.ghRepo || !cfg.ghToken || !img.path) return;
   try {
-    // Always fetch the current SHA Ã¢ÂÂ stored SHA may be stale
+    // Always fetch the current SHA — stored SHA may be stale
     let sha = img.sha;
     const check = await ghApi('GET', 'contents/' + img.path);
     if (check.ok) {
@@ -382,11 +382,11 @@ async function deleteFileFromGitHub(img) {
     if (!res.ok) {
       const errData = await res.json().catch(() => ({}));
       console.warn('GitHub delete failed:', errData.message || res.status);
-      showToast('Ã¢ÂÂ Ã¯Â¸Â GitHub delete failed: ' + (errData.message || res.status));
+      showToast('⚠️ GitHub delete failed: ' + (errData.message || res.status));
     }
   } catch (err) {
     console.warn('GitHub delete error', err);
-    showToast('Ã¢ÂÂ Ã¯Â¸Â GitHub delete error Ã¢ÂÂ file may still exist on GitHub');
+    showToast('⚠️ GitHub delete error — file may still exist on GitHub');
   }
 }
 
@@ -422,17 +422,17 @@ async function doLogin() {
   const btn   = document.querySelector('.btn-login-submit');
   if (u === CREDS.user && p === CREDS.pass) {
     errEl.classList.remove('show');
-    if (btn) { btn.disabled = true; btn.textContent = 'Ã¢ÂÂ³ Loading...'; }
+    if (btn) { btn.disabled = true; btn.textContent = '⏳ Loading...'; }
     localStorage.setItem(LS_SESSION, '1');
     try {
       await showAdmin();
     } catch (err) {
       console.error('showAdmin failed:', err);
-      showToast('Ã¢ÂÂ Error loading admin panel');
-      if (btn) { btn.disabled = false; btn.textContent = 'Login Ã¢ÂÂ'; }
+      showToast('❌ Error loading admin panel');
+      if (btn) { btn.disabled = false; btn.textContent = 'Login →'; }
     }
   } else {
-    errEl.textContent = u === CREDS.user ? 'Ã¢ÂÂ Wrong password' : 'Ã¢ÂÂ Wrong username or password';
+    errEl.textContent = u === CREDS.user ? '❌ Wrong password' : '❌ Wrong username or password';
     errEl.classList.add('show');
     document.getElementById('inp-pass').value = '';
     document.getElementById('inp-pass').focus();
@@ -476,14 +476,14 @@ function renderPubSection(cat, imgs) {
   gridEl.innerHTML = imgs.map(img => {
     const title    = img.title || img.name;
     const hasTitle = !!img.title;
-    const price    = img.price ? 'Ã¢ÂÂª' + img.price : '';
+    const price    = img.price ? '₪' + img.price : '';
     const inCart   = selected.has(img.id);
     return `
     <div class="prod-card${inCart ? ' in-cart' : ''}" id="card-${img.id}">
       <div class="prod-img" onclick="openLightbox('${esc(img.dataUrl)}','${esc(title)}')">
         <img src="${img.dataUrl}" alt="${esc(title)}" loading="lazy" decoding="async" />
-        <div class="prod-in-cart-badge">Ã¢ÂÂ</div>
-        ${price ? '<div class="prod-badge" data-i18n="available">Ã¢ÂÂ¦ ' + (window.i18n ? window.i18n('available') : 'Available') + '</div>' : ''}
+        <div class="prod-in-cart-badge">✓</div>
+        ${price ? '<div class="prod-badge" data-i18n="available">✦ ' + (window.i18n ? window.i18n('available') : 'Available') + '</div>' : ''}
       </div>
       <div class="prod-info">
         <div class="prod-title${hasTitle ? '' : ' untitled'}" data-en-title="${esc(title)}">${esc(title)}</div>
@@ -492,9 +492,9 @@ function renderPubSection(cat, imgs) {
         </div>
         <div class="prod-btns">
           <button class="btn-cart" onclick="addToCart('${img.id}')">
-            ${inCart ? (document.documentElement.lang==='he' ? 'Ã¢ÂÂ ÃÂÃÂ¢ÃÂÃÂÃÂ' : 'Ã¢ÂÂ In Cart') : (document.documentElement.lang==='he' ? 'Ã°ÂÂÂ ÃÂÃÂÃÂ¡ÃÂ£ ÃÂÃÂ¢ÃÂÃÂÃÂ' : 'Ã°ÂÂÂ Add to Cart')}
+            ${inCart ? (document.documentElement.lang==='he' ? '✓ בעגלה' : '✓ In Cart') : (document.documentElement.lang==='he' ? '🛒 הוסף לעגלה' : '🛒 Add to Cart')}
           </button>
-          <button class="btn-buy" onclick="buyNow('${img.id}')">${document.documentElement.lang==='he' ? 'ÃÂ§ÃÂ ÃÂ ÃÂ¢ÃÂÃÂ©ÃÂÃÂ' : 'Buy Now'}</button>
+          <button class="btn-buy" onclick="buyNow('${img.id}')">${document.documentElement.lang==='he' ? 'קנה עכשיו' : 'Buy Now'}</button>
         </div>
       </div>
     </div>`;
@@ -518,10 +518,10 @@ function addToCart(id) {
     const inCart = selected.has(id);
     card.classList.toggle('in-cart', inCart);
     const btn = card.querySelector('.btn-cart');
-    if (btn) btn.textContent = inCart ? (document.documentElement.lang==='he'?'Ã¢ÂÂ ÃÂÃÂ¢ÃÂÃÂÃÂ':'Ã¢ÂÂ In Cart') : (document.documentElement.lang==='he'?'Ã°ÂÂÂ ÃÂÃÂÃÂ¡ÃÂ£ ÃÂÃÂ¢ÃÂÃÂÃÂ':'Ã°ÂÂÂ Add to Cart');
+    if (btn) btn.textContent = inCart ? (document.documentElement.lang==='he'?'✓ בעגלה':'✓ In Cart') : (document.documentElement.lang==='he'?'🛒 הוסף לעגלה':'🛒 Add to Cart');
     if (inCart) {
       if (btn) btn.style.background = '#16a34a';
-      showToast(document.documentElement.lang==='he'?'Ã°ÂÂÂ ÃÂ ÃÂÃÂ¡ÃÂ£ ÃÂÃÂ¢ÃÂÃÂÃÂ!':'Ã°ÂÂÂ Added to cart!')
+      showToast(document.documentElement.lang==='he'?'🛒 נוסף לעגלה!':'🛒 Added to cart!')
         if(window._showDonkey) window._showDonkey();;
     } else {
       if (btn) btn.style.background = '';
@@ -544,7 +544,7 @@ function clearSelection() {
     if (card) {
       card.classList.remove('in-cart');
       const btn = card.querySelector('.btn-cart');
-      if (btn) { btn.textContent = 'Ã°ÂÂÂ Add to Cart'; btn.style.background = ''; }
+      if (btn) { btn.textContent = '🛒 Add to Cart'; btn.style.background = ''; }
     }
   });
   selected.clear();
@@ -573,7 +573,7 @@ function buildMessage(ct) {
   const macrameSel = images.filter(img => selected.has(img.id) && img.category === 'macrame');
   const homemadeSel = images.filter(img => selected.has(img.id) && img.category === 'homemade');
   const lines = [];
-  lines.push('Ã°ÂÂÂ¤ Customer Details:');
+  lines.push('👤 Customer Details:');
   lines.push('Name: '    + ct.name);
   lines.push('Phone: '   + ct.phone);
   if (ct.email)   lines.push('Email: '   + ct.email);
@@ -586,18 +586,18 @@ function buildMessage(ct) {
       const title = (img.title || img.name).trim();
       const price = (img.price || '').trim();
       lines.push(price
-        ? '  ' + (i+1) + '. ' + title + '  |  Price: Ã¢ÂÂª' + price
+        ? '  ' + (i+1) + '. ' + title + '  |  Price: ₪' + price
         : '  ' + (i+1) + '. ' + title);
     });
   }
-  addItems(slimeSel,   'Ã°ÂÂ«Â§ Squishies:');
-  addItems(macrameSel, 'Ã°ÂÂªÂ¢ MacramÃÂ©:');
-addItems(homemadeSel, 'Ã°ÂÂÂ  Home Made:');
+  addItems(slimeSel,   '🫧 Squishies:');
+  addItems(macrameSel, '🪢 Macramé:');
+addItems(homemadeSel, '🏠 Home Made:');
   return lines.join('\n');
 }
 
 /* ================================================================
-   SEND Ã¢ÂÂ step 1: open contact modal
+   SEND — step 1: open contact modal
 ================================================================ */
 function sendMail() {
   if (!selected.size) return;
@@ -616,7 +616,7 @@ function closeContactModal(event) {
 }
 
 /* ================================================================
-   SEND Ã¢ÂÂ step 2: validate + send
+   SEND — step 2: validate + send
 ================================================================ */
 async function submitWithContact() {
   const name    = document.getElementById('c-name').value.trim();
@@ -636,15 +636,15 @@ async function submitWithContact() {
   saveContact();
 
   const _ms = JSON.parse(localStorage.getItem('bysol_session')||'null');
-  const _mn = _ms ? '\n\nÃ°ÂÂÂ¤ ÃÂ©ÃÂ ÃÂÃÂÃÂ¨: ' + _ms.name + ' | ' + _ms.email : '';
-  const message = 'Hi Sol!\n\n' + buildMessage(contact) + _mn + '\n\nThank you! Ã°ÂÂ«Â§';
+  const _mn = _ms ? '\n\n👤 שם חבר: ' + _ms.name + ' | ' + _ms.email : '';
+  const message = 'Hi Sol!\n\n' + buildMessage(contact) + _mn + '\n\nThank you! 🫧';
   document.getElementById('contact-modal').classList.remove('open');
 
   const sendBtn = document.querySelector('#send-panel .btn-primary');
-  if (sendBtn) { sendBtn.disabled = true; sendBtn.textContent = 'Ã¢ÂÂ³ Sending...'; }
+  if (sendBtn) { sendBtn.disabled = true; sendBtn.textContent = '⏳ Sending...'; }
 
   if (!cfg.w3fKey) {
-    if (sendBtn) { sendBtn.disabled = false; sendBtn.innerHTML = 'Ã¢ÂÂÃ¯Â¸Â&nbsp; Send to Sol'; }
+    if (sendBtn) { sendBtn.disabled = false; sendBtn.innerHTML = '✉️&nbsp; Send to Sol'; }
     openFallbackModal(message); return;
   }
 
@@ -661,14 +661,14 @@ async function submitWithContact() {
       })
     });
     const json = await res.json();
-    if (json.success) { showToast('Ã¢ÂÂ Email sent to Sol!'); clearSelection(); }
+    if (json.success) { showToast('✅ Email sent to Sol!'); clearSelection(); }
     else throw new Error(json.message || 'Error');
   } catch (err) {
     console.error('Web3Forms error:', err);
-    showToast('Ã¢ÂÂ Send error Ã¢ÂÂ please try again');
+    showToast('❌ Send error — please try again');
     openFallbackModal(message);
   } finally {
-    if (sendBtn) { sendBtn.disabled = false; sendBtn.innerHTML = 'Ã¢ÂÂÃ¯Â¸Â&nbsp; Send to Sol'; }
+    if (sendBtn) { sendBtn.disabled = false; sendBtn.innerHTML = '✉️&nbsp; Send to Sol'; }
   }
 }
 
@@ -685,7 +685,7 @@ function copyFallbackText() {
   ta.select();
   try { navigator.clipboard.writeText(ta.value).catch(() => document.execCommand('copy')); }
   catch { document.execCommand('copy'); }
-  showToast('Ã¢ÂÂ Text copied!');
+  showToast('✅ Text copied!');
 }
 
 /* ================================================================
@@ -701,16 +701,16 @@ function renderAdmin() {
   document.getElementById('admin-slime-count').textContent   = slimeImgs.length;
   document.getElementById('admin-macrame-count').textContent = macrameImgs.length;
   document.getElementById('admin-homemade-count').textContent = homemadeImgs.length;
-  renderAdminGrid('admin-grid-slime',   slimeImgs,   'Ã°ÂÂ«Â§ No slime images uploaded yet');
-  renderAdminGrid('admin-grid-macrame', macrameImgs, 'Ã°ÂÂªÂ¢ No macramÃÂ© images uploaded yet');
-renderAdminGrid('admin-grid-homemade', homemadeImgs, 'Ã°ÂÂÂ  No home made images uploaded yet');
+  renderAdminGrid('admin-grid-slime',   slimeImgs,   '🫧 No slime images uploaded yet');
+  renderAdminGrid('admin-grid-macrame', macrameImgs, '🪢 No macramé images uploaded yet');
+renderAdminGrid('admin-grid-homemade', homemadeImgs, '🏠 No home made images uploaded yet');
   updateSettingsUI();
 }
 
 function renderAdminGrid(gridId, imgs, emptyMsg) {
   const grid = document.getElementById(gridId);
   if (!imgs.length) {
-    grid.innerHTML = `<div class="admin-empty"><span class="ico">Ã°ÂÂÂ­</span><p>${emptyMsg}</p></div>`;
+    grid.innerHTML = `<div class="admin-empty"><span class="ico">📭</span><p>${emptyMsg}</p></div>`;
     return;
   }
   grid.innerHTML = imgs.map(img => `
@@ -723,18 +723,18 @@ function renderAdminGrid(gridId, imgs, emptyMsg) {
                  oninput="updateField('${img.id}','title',this.value)" onblur="saveCatalog()" />
         </div>
         <div class="card-field">
-          <label>Price (Ã¢ÂÂª)</label>
+          <label>Price (₪)</label>
           <input type="number" min="0" step="0.5" class="price-input"
                  value="${esc(img.price || '')}" placeholder="0"
                  oninput="updateField('${img.id}','price',this.value)" onblur="saveCatalog()" />
         </div>
         <div class="card-del-row">
           <span class="fname" title="${esc(img.name)}">${esc(img.name)}</span>
-          <button class="btn-del" onclick="deleteImage('${img.id}')">Ã°ÂÂÂ Delete</button>
+          <button class="btn-del" onclick="deleteImage('${img.id}')">🗑 Delete</button>
           <div class="ai-btns">
-            <button class="btn-ai" onclick="aiEnhance('${img.id}')" title="Enhance with Gemini AI">Ã¢ÂÂ¨</button>
-            <button class="btn-ai" onclick="aiRemoveBg('${img.id}')" title="Remove Background">Ã¢ÂÂÃ¯Â¸Â</button>
-            <button class="btn-ai" onclick="aiGenerate('${img.id}')" title="Generate new image">Ã°ÂÂÂ</button>
+            <button class="btn-ai" onclick="aiEnhance('${img.id}')" title="Enhance with Gemini AI">✨</button>
+            <button class="btn-ai" onclick="aiRemoveBg('${img.id}')" title="Remove Background">✂️</button>
+            <button class="btn-ai" onclick="aiGenerate('${img.id}')" title="Generate new image">🍌</button>
           </div>
         </div>
       </div>
@@ -745,7 +745,7 @@ function renderAdminGrid(gridId, imgs, emptyMsg) {
 /* ================================================================
    UPLOAD
 ================================================================ */
-/* Ã¢ÂÂÃ¢ÂÂ Upload details modal Ã¢ÂÂÃ¢ÂÂ */
+/* ── Upload details modal ── */
 function promptUploadDetails(filename) {
   return new Promise(resolve => {
     document.getElementById('udm-filename').textContent = filename;
@@ -781,7 +781,7 @@ function udmCancel() {
 
 async function handleUpload(fileList, category) {
   const files = Array.from(fileList).filter(f => f.type.startsWith('image/'));
-  if (!files.length) { showToast('Ã¢ÂÂ Ã¯Â¸Â No image files selected'); return; }
+  if (!files.length) { showToast('⚠️ No image files selected'); return; }
 
   // Collect name + price for each file before uploading
   const fileDetails = [];
@@ -824,9 +824,9 @@ async function handleUpload(fileList, category) {
   await saveCatalog();
   setTimeout(() => { progressEl.classList.remove('show'); progFill.style.width = '0%'; }, 600);
 
-  const catLabel = category === 'slime' ? 'slime' : 'macramÃÂ©';
-  if (errors.length) showToast('Ã¢ÂÂ Ã¯Â¸Â ' + (done - errors.length) + ' uploaded, ' + errors.length + ' failed');
-  else showToast('Ã¢ÂÂ ' + done + ' ' + catLabel + ' images uploaded');
+  const catLabel = category === 'slime' ? 'slime' : 'macramé';
+  if (errors.length) showToast('⚠️ ' + (done - errors.length) + ' uploaded, ' + errors.length + ' failed');
+  else showToast('✅ ' + done + ' ' + catLabel + ' images uploaded');
   document.getElementById('file-input-' + category).value = '';
 }
 
@@ -849,7 +849,7 @@ async function deleteImage(id) {
   images = images.filter(i => i.id !== id);
   addDeletedId(id); // remember deletion even if GitHub CDN is cached
   await Promise.all([saveCatalog(), deleteFileFromGitHub(img)]);
-  renderAdmin(); showToast('Ã°ÂÂÂ Image deleted');
+  renderAdmin(); showToast('🗑 Image deleted');
 }
 
 async function deleteAll() {
@@ -860,7 +860,7 @@ async function deleteAll() {
   images = [];
   await saveCatalog();
   await Promise.all(toDelete.map(img => deleteFileFromGitHub(img)));
-  renderAdmin(); showToast('Ã°ÂÂÂ All images deleted');
+  renderAdmin(); showToast('🗑 All images deleted');
 }
 
 /* ================================================================
@@ -960,7 +960,7 @@ function initTilt() {
     }
   })();
 
-/* Ã¢ÂÂÃ¢ÂÂ MEMBER SYSTEM JS v1.0 Ã¢ÂÂÃ¢ÂÂ */
+/* ══ MEMBER SYSTEM JS v1.0 ══ */
 (function(){
   var MK = 'bysol_members';
   var SK = 'bysol_session';
@@ -989,7 +989,7 @@ function initTilt() {
     if(s){
       showPanel('profile');
       var g=document.getElementById('profile-greeting');
-      if(g) g.textContent=(window.i18n ? window.i18n('greeting') : 'ÃÂ©ÃÂÃÂÃÂ, ')+s.name+' Ã°ÂÂÂ';
+      if(g) g.textContent=(window.i18n ? window.i18n('greeting') : 'שלום, ')+s.name+' 💜';
     } else {
       showPanel('login');
     }
@@ -1031,11 +1031,11 @@ function initTilt() {
     var errEl=document.getElementById('reg-err');
     errEl.style.display='none';
     name=name.trim(); email=email.trim().toLowerCase();
-    if(!name||!email||!pass){errEl.textContent='ÃÂÃÂ ÃÂ ÃÂÃÂÃÂÃÂ ÃÂÃÂª ÃÂÃÂ ÃÂÃÂ©ÃÂÃÂÃÂª';errEl.style.display='';return;}
-    if(pass.length<6){errEl.textContent='ÃÂÃÂ¡ÃÂÃÂ¡ÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¤ÃÂÃÂÃÂª 6 ÃÂªÃÂÃÂÃÂÃÂ';errEl.style.display='';return;}
+    if(!name||!email||!pass){errEl.textContent='אנא מלאי את כל השדות';errEl.style.display='';return;}
+    if(pass.length<6){errEl.textContent='הסיסמה חייבת להכיל לפחות 6 תווים';errEl.style.display='';return;}
     var members=getMembers();
     for(var i=0;i<members.length;i++){
-      if(members[i].email===email){errEl.textContent='ÃÂÃÂªÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂ¨ ÃÂ¨ÃÂ©ÃÂÃÂÃÂ';errEl.style.display='';return;}
+      if(members[i].email===email){errEl.textContent='כתובת האימייל כבר רשומה';errEl.style.display='';return;}
     }
     var member={id:Date.now(),name:name,email:email,pw:btoa(unescape(encodeURIComponent(pass))),joined:new Date().toISOString()};
     members.push(member);
@@ -1064,7 +1064,7 @@ function initTilt() {
     } else {
       document.body.classList.remove('is-member');
       if(btn) btn.classList.remove('logged-in');
-      if(lbl) lbl.textContent='ÃÂÃÂ¦ÃÂÃÂ¨ÃÂ¤ÃÂ';
+      if(lbl) lbl.textContent='הצטרפי';
       revertPrices();
     }
   }
@@ -1074,12 +1074,12 @@ function initTilt() {
       if(el.dataset.mp) return;
       el.dataset.mp='1';
       var txt=el.textContent||'';
-      var m=txt.match(/[Ã¢ÂÂªÃ¢ÂÂª]\s*([\d.]+)/);
+      var m=txt.match(/[₪₪]\s*([\d.]+)/);
       if(!m) return;
       var orig=parseFloat(m[1]);
       var disc=Math.round(orig*DISC);
       el.dataset.origPrice=txt.trim();
-      el.innerHTML='<span class="guest-price">'+txt.trim()+'</span> <span class="member-price-tag">ÃÂÃÂÃÂ¨ÃÂ Ã¢ÂÂª'+disc+'</span>';
+      el.innerHTML='<span class="guest-price">'+txt.trim()+'</span> <span class="member-price-tag">חברה ₪'+disc+'</span>';
     });
   }
 
@@ -1133,7 +1133,7 @@ function initTilt() {
       if(card.querySelector('.vip-lock-overlay')) return;
       var overlay=document.createElement('div');
       overlay.className='vip-lock-overlay';
-      overlay.innerHTML='<span class="lock-icon">Ã°ÂÂÂ</span><span class="lock-label">ÃÂÃÂÃÂÃÂ¨ÃÂÃÂª ÃÂÃÂÃÂÃÂ</span>';
+      overlay.innerHTML='<span class="lock-icon">🔒</span><span class="lock-label">לחברות בלבד</span>';
       overlay.onclick=function(){ openAuthModal(); };
       card.appendChild(overlay);
     });
@@ -1179,7 +1179,7 @@ function initTilt() {
     if(s){
       window._showPanelFull('profile');
       var g=document.getElementById('profile-greeting');
-      if(g) g.textContent='ÃÂ©ÃÂÃÂÃÂ, '+s.name+' Ã°ÂÂÂ';
+      if(g) g.textContent='שלום, '+s.name+' 💜';
     } else {
       window._showPanelFull(tab||'register');
     }
@@ -1192,10 +1192,10 @@ function initTilt() {
     var boxEl=document.getElementById('reset-link-box');var linkEl=document.getElementById('reset-link-anchor');
     eEl.style.display='none';oEl.style.display='none';if(boxEl)boxEl.style.display='none';
     eEl.textContent='';
-    if(!eml){eEl.textContent='ÃÂÃÂ ÃÂ ÃÂÃÂÃÂ ÃÂÃÂ¡ÃÂ ÃÂÃÂªÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂÃÂ';eEl.style.display='block';return;}
+    if(!eml){eEl.textContent='אנא הכניסי כתובת אימייל';eEl.style.display='block';return;}
     var mems=JSON.parse(localStorage.getItem('bysol_members')||'[]');
     var mem=mems.find(function(m){return m.email.toLowerCase()===eml;});
-    if(!mem){oEl.textContent='ÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂ§ÃÂÃÂÃÂ ÃÂÃÂÃÂ¢ÃÂ¨ÃÂÃÂª, ÃÂÃÂÃÂ©ÃÂÃÂ ÃÂ§ÃÂÃÂ©ÃÂÃÂ¨ ÃÂÃÂÃÂÃÂ¤ÃÂÃÂ¡ Ã°ÂÂÂ§';oEl.style.display='block';return;}
+    if(!mem){oEl.textContent='אם האימייל קיים במערכת, יישלח קישור לאיפוס 📧';oEl.style.display='block';return;}
     var tok=btoa(JSON.stringify({email:mem.email,expires:Date.now()+3600000}));
     var rUrl=location.origin+'/?reset='+encodeURIComponent(tok);
     var rc=JSON.parse(localStorage.getItem('ventura_slime_cfg')||'{}');
@@ -1206,12 +1206,12 @@ function initTilt() {
         await emailjs.send(rc.ejsServiceId,rc.ejsTemplateId,{
           to_email:mem.email,to_name:mem.name||'',reset_link:rUrl,from_name:'BySOL'
         },{publicKey:rc.ejsPubKey});
-        if(oEl){oEl.textContent='Ã¢ÂÂ ÃÂ§ÃÂÃÂ©ÃÂÃÂ¨ ÃÂ ÃÂ©ÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂ©ÃÂÃÂ Ã°ÂÂÂ§ ÃÂÃÂÃÂ§ÃÂ ÃÂÃÂ ÃÂ¡ÃÂ¤ÃÂÃÂ';oEl.style.display='block';}
+        if(oEl){oEl.textContent='✅ קישור נשלח לאימייל שלך 📧 בדקי גם ספאם';oEl.style.display='block';}
         return;
       }catch(ex){ /* fall through */ }
     }
 
-    // 2. Show the reset link directly on screen Ã¢ÂÂ member clicks it right here
+    // 2. Show the reset link directly on screen — member clicks it right here
     if(boxEl&&linkEl){
       linkEl.href=rUrl;
       boxEl.style.display='block';
@@ -1222,10 +1222,10 @@ function initTilt() {
       try{
         var fd=new FormData();
         fd.append('access_key',rc.w3fKey);
-        fd.append('subject','Ã°ÂÂÂ ÃÂÃÂ§ÃÂ©ÃÂª ÃÂÃÂÃÂ¤ÃÂÃÂ¡ ÃÂ¡ÃÂÃÂ¡ÃÂÃÂ - BySOL');
+        fd.append('subject','🔑 בקשת איפוס סיסמה - BySOL');
         fd.append('from_name','BySOL Members');
         fd.append('replyto',mem.email);
-        fd.append('message','ÃÂÃÂÃÂ¨ÃÂ ÃÂÃÂÃÂ§ÃÂ©ÃÂ ÃÂÃÂÃÂ¤ÃÂÃÂ¡ ÃÂ¡ÃÂÃÂ¡ÃÂÃÂ:\nÃÂ©ÃÂ: '+(mem.name||'Ã¢ÂÂ')+'\nÃÂÃÂÃÂÃÂÃÂÃÂ: '+mem.email+'\nÃÂ§ÃÂÃÂ©ÃÂÃÂ¨: '+rUrl);
+        fd.append('message','חברה ביקשה איפוס סיסמה:\nשם: '+(mem.name||'—')+'\nאימייל: '+mem.email+'\nקישור: '+rUrl);
         fetch('https://api.web3forms.com/submit',{method:'POST',body:fd});
       }catch(e){}
     }
@@ -1235,16 +1235,16 @@ function initTilt() {
     var p2=(document.getElementById('forgot-newpass2')||{}).value||'';
     var eEl=document.getElementById('forgot-err2');var oEl=document.getElementById('forgot-ok2');
     eEl.style.display='none';oEl.style.display='none';
-    if(p1.length<6){eEl.textContent='ÃÂ¡ÃÂÃÂ¡ÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¤ÃÂÃÂÃÂª 6 ÃÂªÃÂÃÂÃÂÃÂ';eEl.style.display='block';return;}
-    if(p1!==p2){eEl.textContent='ÃÂÃÂ¡ÃÂÃÂ¡ÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂ ÃÂ ÃÂªÃÂÃÂÃÂÃÂÃÂª';eEl.style.display='block';return;}
+    if(p1.length<6){eEl.textContent='סיסמא חייבת להכיל לפחות 6 תווים';eEl.style.display='block';return;}
+    if(p1!==p2){eEl.textContent='הסיסמאות אינן תואמות';eEl.style.display='block';return;}
     var mems=JSON.parse(localStorage.getItem('bysol_members')||'[]');
     var ix=mems.findIndex(function(m){return m.email.toLowerCase()===(window._resetEmail||'').toLowerCase();});
-    if(ix===-1){eEl.textContent='ÃÂ©ÃÂÃÂÃÂÃÂ Ã¢ÂÂ ÃÂÃÂ©ÃÂªÃÂÃÂ© ÃÂÃÂ ÃÂ ÃÂÃÂ¦ÃÂ';eEl.style.display='block';return;}
+    if(ix===-1){eEl.textContent='שגיאה — משתמש לא נמצא';eEl.style.display='block';return;}
     mems[ix].pw=btoa(unescape(encodeURIComponent(p1)));
     localStorage.setItem('bysol_members',JSON.stringify(mems));
     
     history.replaceState({},'',location.pathname);
-    oEl.textContent='Ã¢ÂÂ ÃÂÃÂ¡ÃÂÃÂ¡ÃÂÃÂ ÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂ! ÃÂÃÂÃÂ¢ÃÂÃÂ¨ ÃÂÃÂÃÂ ÃÂÃÂ¡ÃÂ...';oEl.style.display='block';
+    oEl.textContent='✅ הסיסמא עודכנה! מועבר לכניסה...';oEl.style.display='block';
     document.getElementById('forgot-newpass').value='';document.getElementById('forgot-newpass2').value='';
     setTimeout(function(){switchAuthTab('login');},2500);
   };
@@ -1271,121 +1271,121 @@ function initTilt() {
     hint.style.display=exists?'':'none';
   };
 
-/* Ã¢ÂÂÃ¢ÂÂ I18N Ã¢ÂÂ Language Toggle Ã¢ÂÂÃ¢ÂÂ */
+/* ══ I18N — Language Toggle ══ */
 (function(){
   var LANG_KEY = 'bysol_lang';
 
   var T = {
     he: {
-      heroSub: 'ÃÂÃÂÃÂ¨ÃÂ ÃÂÃÂ ÃÂ©ÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂª ÃÂÃÂ©ÃÂÃÂÃÂ ÃÂÃÂ ÃÂ Ã¢ÂÂ ÃÂ ÃÂÃÂÃÂÃÂ¨ ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂ§ÃÂÃÂ! Ã°ÂÂÂ',
-      gallery: 'ÃÂÃÂÃÂÃÂ¨ÃÂÃÂ ÃÂ©ÃÂÃÂ ÃÂ',
-      cartItems: 'ÃÂ¤ÃÂ¨ÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂ',
-      clearCart: 'ÃÂ ÃÂ§ÃÂ ÃÂ¢ÃÂÃÂÃÂ',
-      dkBbl: 'ÃÂÃÂÃÂÃÂ¨ÃÂ ÃÂÃÂ¦ÃÂÃÂÃÂ ÃÂª! ÃÂªÃÂÃÂÃÂ Ã°ÂÂÂ',
-      sendToSol: 'Ã¢ÂÂÃ¯Â¸ÂÃÂ  ÃÂ©ÃÂÃÂÃÂ ÃÂÃÂ¡ÃÂÃÂ',
-      waMsg: 'ÃÂÃÂÃÂ ÃÂ¡ÃÂÃÂ! Ã°ÂÂÂ ÃÂ¨ÃÂÃÂÃÂªÃÂ ÃÂÃÂª ÃÂÃÂÃÂ ÃÂÃÂª ÃÂ©ÃÂÃÂ ÃÂÃÂ¨ÃÂ¦ÃÂÃÂªÃÂ ÃÂÃÂ©ÃÂÃÂÃÂ...',
-      available: 'ÃÂÃÂÃÂÃÂ',
-      tabSquishy: 'Ã°ÂÂ«Â§ ÃÂ¡ÃÂ§ÃÂÃÂÃÂ©',
-      tabMacrame: 'Ã°ÂÂªÂ¢ ÃÂÃÂ§ÃÂ¨ÃÂÃÂ',
-      tabHomemade: 'Ã¢ÂÂ»Ã¯Â¸Â ÃÂÃÂ ÃÂ©ÃÂ ÃÂÃÂ',
-      join: 'ÃÂÃÂ¦ÃÂÃÂ¨ÃÂ¤ÃÂ',
-      loginTab: 'ÃÂÃÂ ÃÂÃÂ¡ÃÂ',
-      registerTab: 'ÃÂÃÂ¦ÃÂÃÂ¨ÃÂ¤ÃÂÃÂª',
-      welcomeTitle: 'ÃÂÃÂ¨ÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ Ã°ÂÂÂ',
-      enterDetails: 'ÃÂÃÂÃÂ ÃÂÃÂ¡ÃÂ ÃÂÃÂª ÃÂÃÂ¤ÃÂ¨ÃÂÃÂÃÂ ÃÂ©ÃÂÃÂ',
-      emailPh: 'ÃÂÃÂÃÂÃÂÃÂÃÂ',
-      passPh: 'ÃÂ¡ÃÂÃÂ¡ÃÂÃÂ',
-      loginBtn: 'ÃÂÃÂ ÃÂÃÂ¡ÃÂ ÃÂÃÂÃÂÃÂÃÂ¨ ÃÂÃÂÃÂÃÂ¨ÃÂÃÂª',
-      forgotLink: 'ÃÂ©ÃÂÃÂÃÂªÃÂ ÃÂ¡ÃÂÃÂ¡ÃÂÃÂ',
-      joinTitle: 'ÃÂÃÂ¦ÃÂÃÂ¨ÃÂ¤ÃÂ ÃÂÃÂÃÂ©ÃÂ¤ÃÂÃÂ Ã°ÂÂÂ¸',
-      joinSub: 'ÃÂÃÂÃÂ¨ÃÂÃÂª ÃÂÃÂ§ÃÂÃÂÃÂÃÂª 10% ÃÂÃÂ ÃÂÃÂ ÃÂÃÂªÃÂÃÂÃÂ ÃÂÃÂÃÂ¢ÃÂÃÂ',
-      firstNamePh: 'ÃÂ©ÃÂ ÃÂ¤ÃÂ¨ÃÂÃÂ',
-      existsHintText: 'ÃÂÃÂªÃÂÃÂÃÂª ÃÂÃÂ ÃÂÃÂÃÂ¨ ÃÂ¨ÃÂ©ÃÂÃÂÃÂ Ã¢ÂÂ ',
-      loginInstead: 'ÃÂÃÂªÃÂÃÂÃÂ¨ÃÂ ÃÂÃÂÃÂ§ÃÂÃÂ',
-      passMinPh: 'ÃÂ¡ÃÂÃÂ¡ÃÂÃÂ (6+ ÃÂªÃÂÃÂÃÂÃÂ)',
-      joinFreeBtn: 'ÃÂÃÂ¦ÃÂÃÂ¨ÃÂ¤ÃÂÃÂª ÃÂÃÂÃÂ ÃÂ Ã¢ÂÂ¨',
-      resetTitle: 'ÃÂ©ÃÂÃÂÃÂÃÂ¨ ÃÂ¡ÃÂÃÂ¡ÃÂÃÂ Ã°ÂÂÂ',
-      resetLinkReady: 'ÃÂÃÂ§ÃÂÃÂ©ÃÂÃÂ¨ ÃÂ©ÃÂÃÂ ÃÂÃÂÃÂÃÂ Ã¢ÂÂ ÃÂÃÂÃÂ¦ÃÂ ÃÂÃÂÃÂ ÃÂÃÂÃÂ ÃÂÃÂÃÂ¤ÃÂ¡ ÃÂ¡ÃÂÃÂ¡ÃÂÃÂ:',
-      resetLinkBtn: 'Ã°ÂÂÂ ÃÂÃÂ¤ÃÂ¡ÃÂ ÃÂ¡ÃÂÃÂ¡ÃÂÃÂ ÃÂ¢ÃÂÃÂ©ÃÂÃÂ',
-      resetSub: 'ÃÂÃÂÃÂ ÃÂÃÂ¡ÃÂ ÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂ©ÃÂÃÂ ÃÂÃÂ ÃÂ©ÃÂÃÂ ÃÂ§ÃÂÃÂ©ÃÂÃÂ¨ ÃÂÃÂÃÂÃÂ¤ÃÂÃÂ¡ ÃÂÃÂ¡ÃÂÃÂ¡ÃÂÃÂ',
-      regEmailPh: 'ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂ¨ÃÂ©ÃÂÃÂ',
-      sendResetBtn: 'ÃÂ©ÃÂÃÂ ÃÂ§ÃÂÃÂ©ÃÂÃÂ¨ ÃÂÃÂÃÂÃÂ¤ÃÂÃÂ¡ Ã°ÂÂÂ§',
-      backToLogin: 'Ã¢ÂÂ ÃÂÃÂÃÂ¨ÃÂ ÃÂÃÂÃÂ ÃÂÃÂ¡ÃÂ',
-      enterNewPass: 'ÃÂÃÂÃÂ ÃÂÃÂ¡ÃÂ ÃÂ¡ÃÂÃÂ¡ÃÂÃÂ ÃÂÃÂÃÂ©ÃÂ',
-      newPassPh: 'ÃÂ¡ÃÂÃÂ¡ÃÂÃÂ ÃÂÃÂÃÂ©ÃÂ (6+ ÃÂªÃÂÃÂÃÂÃÂ)',
-      confirmPassPh: 'ÃÂÃÂÃÂÃÂÃÂª ÃÂ¡ÃÂÃÂ¡ÃÂÃÂ',
-      savePassBtn: 'ÃÂ©ÃÂÃÂÃÂ¨ÃÂª ÃÂ¡ÃÂÃÂ¡ÃÂÃÂ ÃÂÃÂÃÂ©ÃÂ Ã¢ÂÂ',
-      vipBadge: 'Ã¢ÂÂ¨ ÃÂÃÂÃÂ¨ÃÂ VIP',
-      perk1: '10% ÃÂÃÂ ÃÂÃÂ ÃÂ¢ÃÂ ÃÂÃÂ ÃÂÃÂÃÂÃÂ¦ÃÂ¨ÃÂÃÂ',
-      perk2: 'ÃÂÃÂÃÂ©ÃÂ ÃÂÃÂªÃÂÃÂÃÂ ÃÂÃÂÃÂ¢ÃÂÃÂ',
-      perk3: 'ÃÂ¢ÃÂÃÂÃÂª ÃÂ§ÃÂ ÃÂÃÂÃÂª ÃÂ©ÃÂÃÂÃÂ¨ÃÂ',
-      logout: 'ÃÂÃÂªÃÂ ÃÂªÃÂ§ÃÂÃÂª',
-      greeting: 'ÃÂ©ÃÂÃÂÃÂ, ',
-      loginError: 'ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ ÃÂ¡ÃÂÃÂ¡ÃÂÃÂ ÃÂ©ÃÂÃÂÃÂÃÂÃÂ',
-      regErrorEmpty: 'ÃÂÃÂ ÃÂ ÃÂÃÂÃÂÃÂ ÃÂÃÂª ÃÂÃÂ ÃÂÃÂ©ÃÂÃÂÃÂª',
-      regErrorShort: 'ÃÂÃÂ¡ÃÂÃÂ¡ÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¤ÃÂÃÂÃÂª 6 ÃÂªÃÂÃÂÃÂÃÂ',
-      regErrorExists: 'ÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂ¨ ÃÂ¨ÃÂ©ÃÂÃÂ',
+      heroSub: 'בחרי מה שאת אוהבת ושלחי לנו — נחזור אליך בהקדם! 💚',
+      gallery: 'הגלריה שלנו',
+      cartItems: 'פריטים בעגלה',
+      clearCart: 'נקה עגלה',
+      dkBbl: 'בחירה מצוינת! תודה 💕',
+      sendToSol: '✉️  שלחי לסול',
+      waMsg: 'היי סול! 👋 ראיתי את החנות שלך ורציתי לשאול...',
+      available: 'זמין',
+      tabSquishy: '🫧 סקווש',
+      tabMacrame: '🪢 מקרמה',
+      tabHomemade: '♻️ יד שניה',
+      join: 'הצטרפי',
+      loginTab: 'כניסה',
+      registerTab: 'הצטרפות',
+      welcomeTitle: 'ברוכה הבאה 💜',
+      enterDetails: 'הכניסי את הפרטים שלך',
+      emailPh: 'אימייל',
+      passPh: 'סיסמה',
+      loginBtn: 'כניסה לאזור החברות',
+      forgotLink: 'שכחתי סיסמה',
+      joinTitle: 'הצטרפי למשפחה 🌸',
+      joinSub: 'חברות מקבלות 10% הנחה ותוכן בלעדי',
+      firstNamePh: 'שם פרטי',
+      existsHintText: 'כתובת זו כבר רשומה — ',
+      loginInstead: 'התחברי במקום',
+      passMinPh: 'סיסמה (6+ תווים)',
+      joinFreeBtn: 'הצטרפות חינם ✨',
+      resetTitle: 'שחזור סיסמא 🔑',
+      resetLinkReady: 'הקישור שלך מוכן — לחצי כאן כדי לאפס סיסמה:',
+      resetLinkBtn: '🔑 אפסי סיסמה עכשיו',
+      resetSub: 'הכניסי את האימייל שלך ונשלח קישור לאיפוס הסיסמא',
+      regEmailPh: 'אימייל רשום',
+      sendResetBtn: 'שלח קישור לאיפוס 📧',
+      backToLogin: '← חזרה לכניסה',
+      enterNewPass: 'הכניסי סיסמא חדשה',
+      newPassPh: 'סיסמא חדשה (6+ תווים)',
+      confirmPassPh: 'אימות סיסמא',
+      savePassBtn: 'שמירת סיסמא חדשה ✅',
+      vipBadge: '✨ חברה VIP',
+      perk1: '10% הנחה על כל המוצרים',
+      perk2: 'גישה לתוכן בלעדי',
+      perk3: 'עגלת קניות שמורה',
+      logout: 'התנתקות',
+      greeting: 'שלום, ',
+      loginError: 'אימייל או סיסמה שגויים',
+      regErrorEmpty: 'אנא מלאי את כל השדות',
+      regErrorShort: 'הסיסמה חייבת להכיל לפחות 6 תווים',
+      regErrorExists: 'האימייל כבר רשום',
       products: {
-        'Ice popsicle': 'ÃÂÃÂ¨ÃÂÃÂÃÂ§ ÃÂ§ÃÂ¨ÃÂ',
-        'Peanut': 'ÃÂÃÂÃÂÃÂ',
-        'Rabbit': 'ÃÂÃÂ¨ÃÂ ÃÂ',
-        'Dumpling': 'ÃÂÃÂÃÂ¤ÃÂªÃÂÃÂ',
-        'ice cube': 'ÃÂ§ÃÂÃÂÃÂÃÂÃÂª ÃÂ§ÃÂ¨ÃÂ',
-        'BUTTER': 'ÃÂÃÂÃÂÃÂ',
-        'Donag': 'ÃÂÃÂÃÂ ÃÂÃÂ',
-        'Sun': 'ÃÂ©ÃÂÃÂ©',
-        'Small Basket': 'ÃÂ¡ÃÂ ÃÂ§ÃÂÃÂ',
-        'Large Basket': 'ÃÂ¡ÃÂ ÃÂÃÂÃÂÃÂ',
-        'Green tree': 'ÃÂ¢ÃÂ¥ ÃÂÃÂ¨ÃÂÃÂ§',
-        'Small owl': 'ÃÂÃÂ ÃÂ©ÃÂÃÂ£ ÃÂ§ÃÂÃÂ',
-        'Three plants': 'ÃÂ©ÃÂÃÂÃÂ©ÃÂ ÃÂ¦ÃÂÃÂÃÂÃÂ',
-        'Bat': 'ÃÂ¢ÃÂÃÂÃÂ£',
-        'Colorful stand': 'ÃÂÃÂªÃÂÃÂ ÃÂ¦ÃÂÃÂ¢ÃÂÃÂ ÃÂ',
-        'Basket to many things': 'ÃÂ¡ÃÂ ÃÂÃÂÃÂ ÃÂÃÂÃÂ¨',
-        'Big owl': 'ÃÂÃÂ ÃÂ©ÃÂÃÂ£ ÃÂÃÂÃÂÃÂ',
-        'Moon': 'ÃÂÃÂ¨ÃÂ'
+        'Ice popsicle': 'ארטיק קרח',
+        'Peanut': 'בוטן',
+        'Rabbit': 'ארנב',
+        'Dumpling': 'כופתאה',
+        'ice cube': 'קוביית קרח',
+        'BUTTER': 'חמאה',
+        'Donag': 'דונאג',
+        'Sun': 'שמש',
+        'Small Basket': 'סל קטן',
+        'Large Basket': 'סל גדול',
+        'Green tree': 'עץ ירוק',
+        'Small owl': 'ינשוף קטן',
+        'Three plants': 'שלושה צמחים',
+        'Bat': 'עטלף',
+        'Colorful stand': 'מתלה צבעוני',
+        'Basket to many things': 'סל לכל דבר',
+        'Big owl': 'ינשוף גדול',
+        'Moon': 'ירח'
       }
     },
     en: {
-      heroSub: 'Pick what you love and send it to us Ã¢ÂÂ we\'ll get back to you soon! Ã°ÂÂÂ',
+      heroSub: 'Pick what you love and send it to us — we\'ll get back to you soon! 💚',
       gallery: 'Our Gallery',
       cartItems: 'items in your cart',
       clearCart: 'Clear Cart',
-      dkBbl: 'Great choice! Thanks Ã°ÂÂÂ',
-      sendToSol: 'Ã¢ÂÂÃ¯Â¸ÂÃÂ  Send to Sol',
-      waMsg: 'Hey Sol! Ã°ÂÂÂ I saw your shop and wanted to ask...',
+      dkBbl: 'Great choice! Thanks 💕',
+      sendToSol: '✉️  Send to Sol',
+      waMsg: 'Hey Sol! 👋 I saw your shop and wanted to ask...',
       available: 'Available',
-      tabSquishy: 'Ã°ÂÂ«Â§ Squishy',
-      tabMacrame: 'Ã°ÂÂªÂ¢ MacramÃÂ©',
-      tabHomemade: 'Ã¢ÂÂ»Ã¯Â¸Â Second Hand',
+      tabSquishy: '🫧 Squishy',
+      tabMacrame: '🪢 Macramé',
+      tabHomemade: '♻️ Second Hand',
       join: 'Join',
       loginTab: 'Login',
       registerTab: 'Register',
-      welcomeTitle: 'Welcome Ã°ÂÂÂ',
+      welcomeTitle: 'Welcome 💜',
       enterDetails: 'Enter your details',
       emailPh: 'Email',
       passPh: 'Password',
       loginBtn: 'Login to Members Area',
       forgotLink: 'Forgot password',
-      joinTitle: 'Join the Family Ã°ÂÂÂ¸',
+      joinTitle: 'Join the Family 🌸',
       joinSub: 'Members get 10% off & exclusive content',
       firstNamePh: 'First Name',
-      existsHintText: 'This email is already registered Ã¢ÂÂ ',
+      existsHintText: 'This email is already registered — ',
       loginInstead: 'Login instead',
       passMinPh: 'Password (6+ chars)',
-      joinFreeBtn: 'Join for Free Ã¢ÂÂ¨',
-      resetTitle: 'Reset Password Ã°ÂÂÂ',
-      resetLinkReady: 'Your link is ready Ã¢ÂÂ click below to reset your password:',
-      resetLinkBtn: 'Ã°ÂÂÂ Reset Password Now',
+      joinFreeBtn: 'Join for Free ✨',
+      resetTitle: 'Reset Password 🔑',
+      resetLinkReady: 'Your link is ready — click below to reset your password:',
+      resetLinkBtn: '🔑 Reset Password Now',
       resetSub: 'Enter your email and we\'ll send a reset link',
       regEmailPh: 'Registered email',
-      sendResetBtn: 'Send Reset Link Ã°ÂÂÂ§',
-      backToLogin: 'Ã¢ÂÂ Back to Login',
+      sendResetBtn: 'Send Reset Link 📧',
+      backToLogin: '← Back to Login',
       enterNewPass: 'Enter new password',
       newPassPh: 'New password (6+ chars)',
       confirmPassPh: 'Confirm password',
-      savePassBtn: 'Save New Password Ã¢ÂÂ',
-      vipBadge: 'Ã¢ÂÂ¨ VIP Member',
+      savePassBtn: 'Save New Password ✅',
+      vipBadge: '✨ VIP Member',
       perk1: '10% off all products',
       perk2: 'Access to exclusive content',
       perk3: 'Saved shopping cart',
@@ -1428,7 +1428,7 @@ function initTilt() {
 
     // Update toggle button label
     var btn = document.getElementById('lang-toggle');
-    if (btn) btn.textContent = isHe ? 'Ã°ÂÂÂ EN' : 'Ã°ÂÂÂ ÃÂ¢ÃÂ';
+    if (btn) btn.textContent = isHe ? '🌐 EN' : '🌐 עב';
 
     // Update text content elements
     document.querySelectorAll('[data-i18n]').forEach(function(el) {
@@ -1473,7 +1473,7 @@ function initTilt() {
   applyLang(currentLang);
 })();
 
-(function(){var heMode=false;function applyLang(l){document.querySelectorAll('.btn-cart').forEach(function(b){var ic=b.textContent.trim().charCodeAt(0)===10003;b.textContent=ic?(l==='he'?'Ã¢ÂÂ ÃÂÃÂ¢ÃÂÃÂÃÂ':'Ã¢ÂÂ In Cart'):(l==='he'?'Ã°ÂÂÂ ÃÂÃÂÃÂ¡ÃÂ£ ÃÂÃÂ¢ÃÂÃÂÃÂ':'Ã°ÂÂÂ Add to Cart');});document.querySelectorAll('.btn-buy').forEach(function(b){b.textContent=l==='he'?'ÃÂ§ÃÂ ÃÂ ÃÂ¢ÃÂÃÂ©ÃÂÃÂ':'Buy Now';});document.querySelectorAll('[data-he][data-en]').forEach(function(e){(e.matches&&e.matches('input,textarea'))?e.placeholder=l==='he'?e.getAttribute('data-he'):e.getAttribute('data-en'):e.textContent=l==='he'?e.getAttribute('data-he'):e.getAttribute('data-en');});}var origTL=window.toggleLang;window.toggleLang=function(){origTL&&origTL();heMode=!heMode;applyLang(heMode?'en':'he');};heMode=document.documentElement.lang==='en';applyLang(document.documentElement.lang);})();
+(function(){var heMode=false;function applyLang(l){document.querySelectorAll('.btn-cart').forEach(function(b){var ic=b.textContent.trim().charCodeAt(0)===10003;b.textContent=ic?(l==='he'?'✓ בעגלה':'✓ In Cart'):(l==='he'?'🛒 הוסף לעגלה':'🛒 Add to Cart');});document.querySelectorAll('.btn-buy').forEach(function(b){b.textContent=l==='he'?'קנה עכשיו':'Buy Now';});document.querySelectorAll('[data-he][data-en]').forEach(function(e){(e.matches&&e.matches('input,textarea'))?e.placeholder=l==='he'?e.getAttribute('data-he'):e.getAttribute('data-en'):e.textContent=l==='he'?e.getAttribute('data-he'):e.getAttribute('data-en');});}var origTL=window.toggleLang;window.toggleLang=function(){origTL&&origTL();heMode=!heMode;applyLang(heMode?'en':'he');};heMode=document.documentElement.lang==='en';applyLang(document.documentElement.lang);})();
 window._showDonkey=function(){
   var el=document.getElementById('dk-popup');
   if(!el)return;
@@ -1503,7 +1503,7 @@ window.batchOptimizeImages = async function(){
     if(total===0){status.textContent='No JPEG/PNG files found';btn.disabled=false;return;}
     for(var i=0;i<imgs.length;i++){
       var fi=imgs[i];
-      status.textContent=(i+1)+'/'+total+' scanning Ã¯Â¿Â½ '+compressed+' compressed';
+      status.textContent=(i+1)+'/'+total+' scanning � '+compressed+' compressed';
       try{
         var dlR=await fetch(fi.download_url);
         var origBlob=await dlR.blob();
