@@ -245,7 +245,23 @@ async function loadCatalog() {
     } catch (err) { console.warn('GitHub catalog load failed', err); }
   }
 
-  // No token or GitHub failed — use localStorage, filter out deleted IDs
+    // Fallback: try public catalog.json URL (no auth needed, works on all devices)
+  try {
+    const pubDomain = (cfg.customDomain || '').replace(/^https?:\/\//, '').replace(/\/$/, '');
+    if (pubDomain) {
+      const pubRes = await fetch('https://' + pubDomain + '/catalog.json', { cache: 'no-store' });
+      if (pubRes.ok) {
+        let pubData = await pubRes.json();
+        pubData = pubData.filter(i => !deletedIds.has(i.id));
+        const pubIds = new Set(pubData.map(i => i.id));
+        const pubLocal = local.filter(i => !pubIds.has(i.id) && !deletedIds.has(i.id));
+        images = [...pubData, ...pubLocal];
+        localStorage.setItem(LS_KEY, JSON.stringify(images));
+        return;
+      }
+    }
+  } catch (pubErr) { console.warn('Public catalog fallback failed', pubErr); }
+// No token or GitHub failed — use localStorage, filter out deleted IDs
   images = local.filter(i => !deletedIds.has(i.id));
 }
 
