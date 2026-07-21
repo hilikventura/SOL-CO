@@ -93,7 +93,7 @@
     <!-- Title -->
     <h1>BySOL</h1>
     <p class="hero-sub" data-i18n="heroSub">Pick what you love and send it to us — we'll get back to you soon! 💚</p>
-    <div class="hero-cta">Browse the Collection ↓</div>
+    <div class="hero-cta" data-he="גלי את הקולקציה ↓" data-en="Browse the Collection ↓">Browse the Collection ↓</div>
       <img class="hero-img-deco" fetchpriority="high" decoding="async" src="https://venturatrend.co.il/images/slime/1782496007569_IMG_0875.jpeg" alt="" style="width:68px;height:68px;top:8%;left:3%;--dur:4.8s;--delay:.3s;--r1:-6deg;--r2:4deg;--r3:-3deg">
     <img class="hero-img-deco" fetchpriority="high" decoding="async" src="https://venturatrend.co.il/images/slime/1782496113309_IMG_0871.jpeg" alt="" style="width:54px;height:54px;top:16%;right:5%;--dur:5.6s;--delay:1.1s;--r1:5deg;--r2:-6deg;--r3:3deg">
     <img class="hero-img-deco" fetchpriority="high" decoding="async" src="https://venturatrend.co.il/images/slime/1782496290277_IMG_0869.jpeg" alt="" style="width:74px;height:74px;top:52%;left:1.5%;--dur:4.2s;--delay:.7s;--r1:-4deg;--r2:7deg;--r3:-5deg">
@@ -107,10 +107,8 @@
     <div class="action-bar">
       <h2 data-i18n="gallery">Our Gallery</h2>
       <div class="action-bar-right">
-        <button class="btn btn-ghost" id="btn-clear-pub" onclick="clearSelection()" style="display:none;font-size:.82rem;padding:7px 14px">✕ Clear Cart</button>
-        <button class="cart-icon-btn" id="cart-action-btn" onclick="sendMail()" style="display:none">
-          🛒 Send to Sol
-          <span class="cart-count-badge has-items" id="cart-badge-top">0</span>
+        <button class="btn btn-ghost" id="btn-clear-pub" onclick="clearSelection()" style="display:none;font-size:.82rem;padding:7px 14px" data-he="✕ נקה עגלה" data-en="✕ Clear Cart">✕ Clear Cart</button>
+        <button class="cart-icon-btn" id="cart-action-btn" onclick="sendMail()" style="display:none"><span data-he="🛒 שלחי לסול" data-en="🛒 Send to Sol">🛒 Send to Sol</span><span class="cart-count-badge has-items" id="cart-badge-top">0</span>
         </button>
       </div>
     </div>
@@ -201,7 +199,7 @@
 
     <div class="cloud-chips">
       <span class="chip chip-bad" id="chip-github">🐙 GitHub: Not Set</span>
-      <span class="chip chip-bad" id="chip-w3f">✉️ Web3Forms: Not Set</span>
+      <span class="chip chip-bad" id="chip-w3f">✉️ EmailJS: Not Set</span>
     </div>
 
     
@@ -256,9 +254,9 @@
           </div>
         </div>
 
-        <!-- Web3Forms -->
+        <!-- EmailJS -->
         <div class="service-section">
-          <div class="service-title">✉️ Web3Forms — Email Sending</div>
+          <div class="service-title">✉️ EmailJS — Email Sending</div>
           <div class="service-body">
             <div class="setup-guide">
               <strong>One-time setup:</strong>
@@ -270,7 +268,7 @@
             </div>
             <div class="sfield">
               <label>WEB3FORMS ACCESS KEY</label>
-              <input id="s-w3f-key" type="text" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" aria-label="Web3Forms Access Key" required>
+              <input id="s-w3f-key" type="text" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" aria-label="EmailJS Access Key" required>
             </div>
             <div class="sfield">
               <label>EMAILJS SERVICE ID</label>
@@ -409,15 +407,15 @@
     <div class="contact-modal-title"><span style="font-size:1.6rem">📋</span><h3 data-he="הפרטים שלך" data-en="Your Details">Your Details</h3></div>
     <p class="contact-modal-sub" data-he="מלאו את הפרטים שלכם ונחזור אלייכם בקרוב 💚" data-en="Fill in your details and we'll get back to you soon 💚">Fill in your details and we'll get back to you soon 💚</p>
     <div class="contact-modal-grid">
-      <div class="cfield"><label for="c-name" data-he="שם מלא *" data-en="Full Name *">Full Name *</label><input id="c-name" type="text" placeholder="Jane Smith" required></div>
-      <div class="cfield"><label for="c-phone" data-he="טלפון *" data-en="Phone *">Phone *</label><input id="c-phone" type="tel" placeholder="+1-555-0000" required></div>
+      <div class="cfield"><label for="c-name" data-he="שם מלא *" data-en="Full Name *">Full Name *</label><input id="c-name" type="text" placeholder="Jane Smith" required data-he="שם מלא" data-en="Full Name"></div>
+      <div class="cfield"><label for="c-phone" data-he="טלפון *" data-en="Phone *">Phone *</label><input id="c-phone" type="tel" placeholder="+1-555-0000" required data-he="050-000-0000" data-en="+1-555-0000"></div>
       <div class="cfield"><label for="c-email" data-he="אימייל" data-en="Email">Email</label><input id="c-email" type="email" placeholder="jane@gmail.com" /></div>
       <div class="cfield"><label for="c-address" data-he="כתובת" data-en="Address">Address</label><input id="c-address" type="text" placeholder="Street, City" /></div>
     </div>
     <div class="contact-err" id="contact-err">Please fill in name and phone ❌</div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeContactModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="submitWithContact()">✉️ Send to Sol</button>
+      <button class="btn btn-primary" onclick="submitWithContact()" data-he="✉️ שלחי לסול" data-en="✉️ Send to Sol">✉️ Send to Sol</button>
     </div>
   </div>
 </div>
@@ -552,6 +550,6 @@
 
   <script defer src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script defer src="script.js?v=15"></script>
+  <script defer src="script.js?v=16"></script>
 </body>
 </html>
