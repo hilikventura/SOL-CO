@@ -1473,7 +1473,7 @@ function initTilt() {
   applyLang(currentLang);
 })();
 
-(function(){var heMode=false;function applyLang(l){document.querySelectorAll('.btn-cart').forEach(function(b){var ic=b.textContent.trim().charCodeAt(0)===10003;b.textContent=ic?(l==='he'?'✓ בעגלה':'✓ In Cart'):(l==='he'?'🛒 הוסף לעגלה':'🛒 Add to Cart');});document.querySelectorAll('.btn-buy').forEach(function(b){b.textContent=l==='he'?'קנה עכשיו':'Buy Now';});document.querySelectorAll('[data-he][data-en]').forEach(function(e){e.textContent=l==='he'?e.getAttribute('data-he'):e.getAttribute('data-en');});}var origTL=window.toggleLang;window.toggleLang=function(){origTL&&origTL();heMode=!heMode;applyLang(heMode?'he':'en');};})();
+(function(){var heMode=false;function applyLang(l){document.querySelectorAll('.btn-cart').forEach(function(b){var ic=b.textContent.trim().charCodeAt(0)===10003;b.textContent=ic?(l==='he'?'✓ בעגלה':'✓ In Cart'):(l==='he'?'🛒 הוסף לעגלה':'🛒 Add to Cart');});document.querySelectorAll('.btn-buy').forEach(function(b){b.textContent=l==='he'?'קנה עכשיו':'Buy Now';});document.querySelectorAll('[data-he][data-en]').forEach(function(e){(e.matches&&e.matches('input,textarea'))?e.placeholder=l==='he'?e.getAttribute('data-he'):e.getAttribute('data-en'):e.textContent=l==='he'?e.getAttribute('data-he'):e.getAttribute('data-en');});}var origTL=window.toggleLang;window.toggleLang=function(){origTL&&origTL();heMode=!heMode;applyLang(heMode?'he':'en');};})();
 window._showDonkey=function(){
   var el=document.getElementById('dk-popup');
   if(!el)return;
