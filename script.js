@@ -998,6 +998,9 @@ function initTilt() {
   window.closeAuthModal = function(){
     var modal=document.getElementById('auth-modal');
     if(modal){ modal.style.display='none'; modal.style.opacity=''; modal.style.pointerEvents=''; }
+  document.getElementById('reg-name').value = '';
+  document.getElementById('reg-email').value = '';
+  document.getElementById('reg-pass').value = '';
   };
 
   window.switchAuthTab = function(tab){
@@ -1008,7 +1011,7 @@ function initTilt() {
     var email=(document.getElementById('login-email')||{}).value||'';
     var pass=(document.getElementById('login-pass')||{}).value||'';
     var errEl=document.getElementById('login-err');
-    errEl.style.display='none';
+    errEl.style.display='block';
     email=email.trim().toLowerCase();
     var members=getMembers();
     var member=null;
