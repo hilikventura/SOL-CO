@@ -41,7 +41,7 @@ async function loadSettings() {
     const saved = JSON.parse(localStorage.getItem(LS_CFG) || '{}');
     Object.keys(saved).forEach(k => { if (saved[k]) cfg[k] = saved[k]; });
   } catch {}
-  // 3. If still missing token — fetch _config.json from public repo (works on any device, no auth needed)
+  // 3. If still missing token â fetch _config.json from public repo (works on any device, no auth needed)
   if (!cfg.ghToken) {
     try {
       const r = await fetch('https://raw.githubusercontent.com/' + GH_REPO_DEFAULT + '/main/_config.json?t=' + Date.now());
@@ -70,14 +70,14 @@ async function saveSettings() {
   cfg.customDomain = (document.getElementById('s-custom-domain').value || '').trim();
   localStorage.setItem(LS_CFG, JSON.stringify(cfg));
   updateSettingsUI();
-  showToast('💾 Saving settings…');
+  showToast('ð¾ Saving settingsâ¦');
   await bakeSettingsToGitHub();
 }
 
 async function bakeSettingsToGitHub() {
-  if (!cfg.ghRepo || !cfg.ghToken) { showToast('✅ Settings saved (locally only — enter a GitHub token to sync across devices)'); return; }
+  if (!cfg.ghRepo || !cfg.ghToken) { showToast('â Settings saved (locally only â enter a GitHub token to sync across devices)'); return; }
   try {
-    // Write credentials to _config.json — short keys + reversed base64 to bypass secret scanning
+    // Write credentials to _config.json â short keys + reversed base64 to bypass secret scanning
     const configData = {
       t:            obfuscate(cfg.ghToken),
       w:            obfuscate(cfg.w3fKey || ''),
@@ -93,11 +93,11 @@ async function bakeSettingsToGitHub() {
     const body = { message: 'Update config', content };
     if (sha) body.sha = sha;
     const putRes = await ghApi('PUT', 'contents/_config.json', body);
-    if (putRes.ok) showToast('✅ Settings saved & synced — auto-loads on every device!');
-    else { const e = await putRes.json().catch(()=>({})); showToast('⚠️ Saved locally; GitHub sync failed: ' + (e.message||putRes.status)); }
+    if (putRes.ok) showToast('â Settings saved & synced â auto-loads on every device!');
+    else { const e = await putRes.json().catch(()=>({})); showToast('â ï¸ Saved locally; GitHub sync failed: ' + (e.message||putRes.status)); }
   } catch (err) {
     console.warn('bakeSettingsToGitHub error', err);
-    showToast('✅ Settings saved locally (' + err.message + ')');
+    showToast('â Settings saved locally (' + err.message + ')');
   }
 }
 
@@ -108,18 +108,18 @@ function updateSettingsUI() {
 
   const statusEl = document.getElementById('settings-status');
   if (statusEl) {
-    statusEl.textContent = allOk ? 'All Set ✓' : (ghOk || w3fOk ? 'Partial Setup' : 'Not Configured');
+    statusEl.textContent = allOk ? 'All Set â' : (ghOk || w3fOk ? 'Partial Setup' : 'Not Configured');
     statusEl.className   = 's-status ' + (allOk ? 'ok' : 'bad');
   }
-  setChip('chip-github', ghOk,  '🐙 GitHub',    ghOk  ? 'Active' : 'Not Set');
-  setChip('chip-w3f',    w3fOk, '✉️ Web3Forms',  w3fOk ? 'Active' : 'Not Set');
+  setChip('chip-github', ghOk,  'ð GitHub',    ghOk  ? 'Active' : 'Not Set');
+  setChip('chip-w3f',    w3fOk, 'âï¸ Web3Forms',  w3fOk ? 'Active' : 'Not Set');
   setVal('s-gh-repo', cfg.ghRepo);
   setVal('s-custom-domain', cfg.customDomain);
   // Show masked token so user knows it's saved
   const tokenEl = document.getElementById('s-gh-token');
   if (tokenEl) {
     tokenEl.value       = '';
-    tokenEl.placeholder = cfg.ghToken ? '••••••••  (Saved — re-enter only to change)' : 'github_pat_...';
+    tokenEl.placeholder = cfg.ghToken ? 'â¢â¢â¢â¢â¢â¢â¢â¢  (Saved â re-enter only to change)' : 'github_pat_...';
   }
   setVal('s-w3f-key', cfg.w3fKey);
   setVal('s-ejs-service', cfg.ejsServiceId);
@@ -164,7 +164,7 @@ function ghApi(method, path, body) {
 }
 
 /* ================================================================
-   GITHUB — Test connection
+   GITHUB â Test connection
 ================================================================ */
 async function testGithubConnection() {
   // Pull token from field if user just typed a new one
@@ -173,10 +173,10 @@ async function testGithubConnection() {
   const resultEl = document.getElementById('gh-test-result');
   resultEl.style.display = 'block';
   resultEl.style.color = '#64748b';
-  resultEl.textContent = '⏳ Testing…';
+  resultEl.textContent = 'â³ Testingâ¦';
   if (!token) {
     resultEl.style.color = '#ef4444';
-    resultEl.textContent = '❌ No token entered — paste your GitHub Personal Access Token above first.';
+    resultEl.textContent = 'â No token entered â paste your GitHub Personal Access Token above first.';
     return;
   }
   try {
@@ -189,26 +189,26 @@ async function testGithubConnection() {
     });
     if (res.ok || res.status === 404) {
       resultEl.style.color = '#16a34a';
-      resultEl.textContent = '✅ Token valid! GitHub connection OK.';
+      resultEl.textContent = 'â Token valid! GitHub connection OK.';
       if (tokenInput) { cfg.ghToken = token; }
     } else if (res.status === 401) {
       resultEl.style.color = '#ef4444';
-      resultEl.textContent = '❌ Unauthorized (401) — token is invalid or expired. Generate a new one.';
+      resultEl.textContent = 'â Unauthorized (401) â token is invalid or expired. Generate a new one.';
     } else if (res.status === 403) {
       resultEl.style.color = '#ef4444';
-      resultEl.textContent = '❌ Forbidden (403) — token exists but lacks "Contents: Read & Write" permission.';
+      resultEl.textContent = 'â Forbidden (403) â token exists but lacks "Contents: Read & Write" permission.';
     } else {
       resultEl.style.color = '#ef4444';
-      resultEl.textContent = '❌ Error ' + res.status + ' — check repo name in settings.';
+      resultEl.textContent = 'â Error ' + res.status + ' â check repo name in settings.';
     }
   } catch (err) {
     resultEl.style.color = '#ef4444';
-    resultEl.textContent = '❌ Network error: ' + err.message;
+    resultEl.textContent = 'â Network error: ' + err.message;
   }
 }
 
 /* ================================================================
-   CATALOG — GitHub + localStorage fallback
+   CATALOG â GitHub + localStorage fallback
 ================================================================ */
 function getDeletedIds() {
   try { return new Set(JSON.parse(localStorage.getItem(LS_DELETED) || '[]')); }
@@ -226,7 +226,7 @@ async function loadCatalog() {
   // Only trust GitHub if we have a token (meaning we also SAVE there)
   if (cfg.ghToken) {
     try {
-      // Use GitHub API (not raw CDN) — always returns latest, not cached
+      // Use GitHub API (not raw CDN) â always returns latest, not cached
       const r = await ghApi('GET', 'contents/catalog.json');
       if (r.ok) {
         const d = await r.json();
@@ -261,7 +261,7 @@ async function loadCatalog() {
       }
     }
   } catch (pubErr) { console.warn('Public catalog fallback failed', pubErr); }
-// No token or GitHub failed — use localStorage, filter out deleted IDs
+// No token or GitHub failed â use localStorage, filter out deleted IDs
   images = local.filter(i => !deletedIds.has(i.id));
 }
 
@@ -286,28 +286,28 @@ async function saveCatalog() {
     try {
       const r = await ghApi('GET', 'contents/catalog.json');
       if (r.ok) { const d = await r.json(); sha = d.sha; }
-      else if (r.status === 401) { showToast('❌ GitHub token invalid or expired — update in Settings'); return; }
-      else if (r.status === 403) { showToast('❌ GitHub token lacks write permission — check repo access in Settings'); return; }
+      else if (r.status === 401) { showToast('â GitHub token invalid or expired â update in Settings'); return; }
+      else if (r.status === 403) { showToast('â GitHub token lacks write permission â check repo access in Settings'); return; }
     } catch {}
     const body = { message: 'Update catalog', content };
     if (sha) body.sha = sha;
     const saveRes = await ghApi('PUT', 'contents/catalog.json', body);
     if (saveRes.ok) {
-      // Prune LS_DELETED — catalog is now authoritative, no need to keep stale deleted IDs
+      // Prune LS_DELETED â catalog is now authoritative, no need to keep stale deleted IDs
       localStorage.removeItem(LS_DELETED);
     } else {
       const errData = await saveRes.json().catch(() => ({}));
       const msg = errData.message || ('HTTP ' + saveRes.status);
-      if (saveRes.status === 401) showToast('❌ GitHub: Unauthorized — re-enter your token in Settings');
-      else if (saveRes.status === 403) showToast('❌ GitHub: Forbidden — token missing "Contents: Read & Write" permission');
-      else if (saveRes.status === 409) showToast('⚠️ GitHub: Conflict — refresh and try again');
-      else if (saveRes.status === 422) showToast('⚠️ GitHub: ' + msg);
-      else showToast('⚠️ GitHub save failed (' + saveRes.status + '): ' + msg);
+      if (saveRes.status === 401) showToast('â GitHub: Unauthorized â re-enter your token in Settings');
+      else if (saveRes.status === 403) showToast('â GitHub: Forbidden â token missing "Contents: Read & Write" permission');
+      else if (saveRes.status === 409) showToast('â ï¸ GitHub: Conflict â refresh and try again');
+      else if (saveRes.status === 422) showToast('â ï¸ GitHub: ' + msg);
+      else showToast('â ï¸ GitHub save failed (' + saveRes.status + '): ' + msg);
       console.warn('GitHub catalog save failed', saveRes.status, errData);
     }
   } catch (err) {
     console.warn('GitHub catalog save failed', err);
-    showToast('⚠️ GitHub: Save error (saved locally) — ' + (err.message || ''));
+    showToast('â ï¸ GitHub: Save error (saved locally) â ' + (err.message || ''));
   }
 }
 
@@ -338,7 +338,7 @@ async function uploadFile(file, category) {
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
         console.warn('GitHub upload failed (' + (errData.message || res.status) + '), using local fallback');
-        showToast('⚠️ GitHub upload failed — saved locally');
+        showToast('â ï¸ GitHub upload failed â saved locally');
         // Fall through to base64 fallback below
       } else {
         const data = await res.json();
@@ -353,7 +353,7 @@ async function uploadFile(file, category) {
       }
     } catch (err) {
       console.warn('GitHub upload error, using local fallback:', err);
-      showToast('⚠️ GitHub error — saved locally');
+      showToast('â ï¸ GitHub error â saved locally');
     }
   }
   // Fallback: base64
@@ -364,7 +364,7 @@ async function uploadFile(file, category) {
 async function deleteFileFromGitHub(img) {
   if (!cfg.ghRepo || !cfg.ghToken || !img.path) return;
   try {
-    // Always fetch the current SHA — stored SHA may be stale
+    // Always fetch the current SHA â stored SHA may be stale
     let sha = img.sha;
     const check = await ghApi('GET', 'contents/' + img.path);
     if (check.ok) {
@@ -382,11 +382,11 @@ async function deleteFileFromGitHub(img) {
     if (!res.ok) {
       const errData = await res.json().catch(() => ({}));
       console.warn('GitHub delete failed:', errData.message || res.status);
-      showToast('⚠️ GitHub delete failed: ' + (errData.message || res.status));
+      showToast('â ï¸ GitHub delete failed: ' + (errData.message || res.status));
     }
   } catch (err) {
     console.warn('GitHub delete error', err);
-    showToast('⚠️ GitHub delete error — file may still exist on GitHub');
+    showToast('â ï¸ GitHub delete error â file may still exist on GitHub');
   }
 }
 
@@ -422,17 +422,17 @@ async function doLogin() {
   const btn   = document.querySelector('.btn-login-submit');
   if (u === CREDS.user && p === CREDS.pass) {
     errEl.classList.remove('show');
-    if (btn) { btn.disabled = true; btn.textContent = '⏳ Loading...'; }
+    if (btn) { btn.disabled = true; btn.textContent = 'â³ Loading...'; }
     localStorage.setItem(LS_SESSION, '1');
     try {
       await showAdmin();
     } catch (err) {
       console.error('showAdmin failed:', err);
-      showToast('❌ Error loading admin panel');
-      if (btn) { btn.disabled = false; btn.textContent = 'Login →'; }
+      showToast('â Error loading admin panel');
+      if (btn) { btn.disabled = false; btn.textContent = 'Login â'; }
     }
   } else {
-    errEl.textContent = u === CREDS.user ? '❌ Wrong password' : '❌ Wrong username or password';
+    errEl.textContent = u === CREDS.user ? 'â Wrong password' : 'â Wrong username or password';
     errEl.classList.add('show');
     document.getElementById('inp-pass').value = '';
     document.getElementById('inp-pass').focus();
@@ -476,14 +476,14 @@ function renderPubSection(cat, imgs) {
   gridEl.innerHTML = imgs.map(img => {
     const title    = img.title || img.name;
     const hasTitle = !!img.title;
-    const price    = img.price ? '₪' + img.price : '';
+    const price    = img.price ? 'âª' + img.price : '';
     const inCart   = selected.has(img.id);
     return `
     <div class="prod-card${inCart ? ' in-cart' : ''}" id="card-${img.id}">
       <div class="prod-img" onclick="openLightbox('${esc(img.dataUrl)}','${esc(title)}')">
         <img src="${img.dataUrl}" alt="${esc(title)}" loading="lazy" decoding="async" />
-        <div class="prod-in-cart-badge">✓</div>
-        ${price ? '<div class="prod-badge" data-i18n="available">✦ ' + (window.i18n ? window.i18n('available') : 'Available') + '</div>' : ''}
+        <div class="prod-in-cart-badge">â</div>
+        ${price ? '<div class="prod-badge" data-i18n="available">â¦ ' + (window.i18n ? window.i18n('available') : 'Available') + '</div>' : ''}
       </div>
       <div class="prod-info">
         <div class="prod-title${hasTitle ? '' : ' untitled'}" data-en-title="${esc(title)}">${esc(title)}</div>
@@ -492,9 +492,9 @@ function renderPubSection(cat, imgs) {
         </div>
         <div class="prod-btns">
           <button class="btn-cart" onclick="addToCart('${img.id}')">
-            ${inCart ? (document.documentElement.lang==='he' ? '✓ בעגלה' : '✓ In Cart') : (document.documentElement.lang==='he' ? '🛒 הוסף לעגלה' : '🛒 Add to Cart')}
+            ${inCart ? (document.documentElement.lang==='he' ? 'â ××¢×××' : 'â In Cart') : (document.documentElement.lang==='he' ? 'ð ×××¡×£ ××¢×××' : 'ð Add to Cart')}
           </button>
-          <button class="btn-buy" onclick="buyNow('${img.id}')">${document.documentElement.lang==='he' ? 'קנה עכשיו' : 'Buy Now'}</button>
+          <button class="btn-buy" onclick="buyNow('${img.id}')">${document.documentElement.lang==='he' ? '×§× × ×¢××©××' : 'Buy Now'}</button>
         </div>
       </div>
     </div>`;
@@ -518,10 +518,10 @@ function addToCart(id) {
     const inCart = selected.has(id);
     card.classList.toggle('in-cart', inCart);
     const btn = card.querySelector('.btn-cart');
-    if (btn) btn.textContent = inCart ? (document.documentElement.lang==='he'?'✓ בעגלה':'✓ In Cart') : (document.documentElement.lang==='he'?'🛒 הוסף לעגלה':'🛒 Add to Cart');
+    if (btn) btn.textContent = inCart ? (document.documentElement.lang==='he'?'â ××¢×××':'â In Cart') : (document.documentElement.lang==='he'?'ð ×××¡×£ ××¢×××':'ð Add to Cart');
     if (inCart) {
       if (btn) btn.style.background = '#16a34a';
-      showToast(document.documentElement.lang==='he'?'🛒 נוסף לעגלה!':'🛒 Added to cart!')
+      showToast(document.documentElement.lang==='he'?'ð × ××¡×£ ××¢×××!':'ð Added to cart!')
         if(window._showDonkey) window._showDonkey();;
     } else {
       if (btn) btn.style.background = '';
@@ -544,7 +544,7 @@ function clearSelection() {
     if (card) {
       card.classList.remove('in-cart');
       const btn = card.querySelector('.btn-cart');
-      if (btn) { btn.textContent = '🛒 Add to Cart'; btn.style.background = ''; }
+      if (btn) { btn.textContent = 'ð Add to Cart'; btn.style.background = ''; }
     }
   });
   selected.clear();
@@ -573,7 +573,7 @@ function buildMessage(ct) {
   const macrameSel = images.filter(img => selected.has(img.id) && img.category === 'macrame');
   const homemadeSel = images.filter(img => selected.has(img.id) && img.category === 'homemade');
   const lines = [];
-  lines.push('👤 Customer Details:');
+  lines.push('ð¤ Customer Details:');
   lines.push('Name: '    + ct.name);
   lines.push('Phone: '   + ct.phone);
   if (ct.email)   lines.push('Email: '   + ct.email);
@@ -586,18 +586,18 @@ function buildMessage(ct) {
       const title = (img.title || img.name).trim();
       const price = (img.price || '').trim();
       lines.push(price
-        ? '  ' + (i+1) + '. ' + title + '  |  Price: ₪' + price
+        ? '  ' + (i+1) + '. ' + title + '  |  Price: âª' + price
         : '  ' + (i+1) + '. ' + title);
     });
   }
-  addItems(slimeSel,   '🫧 Squishies:');
-  addItems(macrameSel, '🪢 Macramé:');
-addItems(homemadeSel, '🏠 Home Made:');
+  addItems(slimeSel,   'ð«§ Squishies:');
+  addItems(macrameSel, 'ðª¢ MacramÃ©:');
+addItems(homemadeSel, 'ð  Home Made:');
   return lines.join('\n');
 }
 
 /* ================================================================
-   SEND — step 1: open contact modal
+   SEND â step 1: open contact modal
 ================================================================ */
 function sendMail() {
   if (!selected.size) return;
@@ -616,7 +616,7 @@ function closeContactModal(event) {
 }
 
 /* ================================================================
-   SEND — step 2: validate + send
+   SEND â step 2: validate + send
 ================================================================ */
 async function submitWithContact() {
   const name    = document.getElementById('c-name').value.trim();
@@ -636,15 +636,15 @@ async function submitWithContact() {
   saveContact();
 
   const _ms = JSON.parse(localStorage.getItem('bysol_session')||'null');
-  const _mn = _ms ? '\n\n👤 שם חבר: ' + _ms.name + ' | ' + _ms.email : '';
-  const message = 'Hi Sol!\n\n' + buildMessage(contact) + _mn + '\n\nThank you! 🫧';
+  const _mn = _ms ? '\n\nð¤ ×©× ×××¨: ' + _ms.name + ' | ' + _ms.email : '';
+  const message = 'Hi Sol!\n\n' + buildMessage(contact) + _mn + '\n\nThank you! ð«§';
   document.getElementById('contact-modal').classList.remove('open');
 
   const sendBtn = document.querySelector('#send-panel .btn-primary');
-  if (sendBtn) { sendBtn.disabled = true; sendBtn.textContent = '⏳ Sending...'; }
+  if (sendBtn) { sendBtn.disabled = true; sendBtn.textContent = 'â³ Sending...'; }
 
   if (!cfg.w3fKey) {
-    if (sendBtn) { sendBtn.disabled = false; sendBtn.innerHTML = '✉️&nbsp; Send to Sol'; }
+    if (sendBtn) { sendBtn.disabled = false; sendBtn.innerHTML = 'âï¸&nbsp; Send to Sol'; }
     openFallbackModal(message); return;
   }
 
@@ -661,14 +661,14 @@ async function submitWithContact() {
       })
     });
     const json = await res.json();
-    if (json.success) { showToast('✅ Email sent to Sol!'); clearSelection(); }
+    if (json.success) { showToast('â Email sent to Sol!'); clearSelection(); }
     else throw new Error(json.message || 'Error');
   } catch (err) {
     console.error('Web3Forms error:', err);
-    showToast('❌ Send error — please try again');
+    showToast('â Send error â please try again');
     openFallbackModal(message);
   } finally {
-    if (sendBtn) { sendBtn.disabled = false; sendBtn.innerHTML = '✉️&nbsp; Send to Sol'; }
+    if (sendBtn) { sendBtn.disabled = false; sendBtn.innerHTML = 'âï¸&nbsp; Send to Sol'; }
   }
 }
 
@@ -685,7 +685,7 @@ function copyFallbackText() {
   ta.select();
   try { navigator.clipboard.writeText(ta.value).catch(() => document.execCommand('copy')); }
   catch { document.execCommand('copy'); }
-  showToast('✅ Text copied!');
+  showToast('â Text copied!');
 }
 
 /* ================================================================
@@ -701,16 +701,16 @@ function renderAdmin() {
   document.getElementById('admin-slime-count').textContent   = slimeImgs.length;
   document.getElementById('admin-macrame-count').textContent = macrameImgs.length;
   document.getElementById('admin-homemade-count').textContent = homemadeImgs.length;
-  renderAdminGrid('admin-grid-slime',   slimeImgs,   '🫧 No slime images uploaded yet');
-  renderAdminGrid('admin-grid-macrame', macrameImgs, '🪢 No macramé images uploaded yet');
-renderAdminGrid('admin-grid-homemade', homemadeImgs, '🏠 No home made images uploaded yet');
+  renderAdminGrid('admin-grid-slime',   slimeImgs,   'ð«§ No slime images uploaded yet');
+  renderAdminGrid('admin-grid-macrame', macrameImgs, 'ðª¢ No macramÃ© images uploaded yet');
+renderAdminGrid('admin-grid-homemade', homemadeImgs, 'ð  No home made images uploaded yet');
   updateSettingsUI();
 }
 
 function renderAdminGrid(gridId, imgs, emptyMsg) {
   const grid = document.getElementById(gridId);
   if (!imgs.length) {
-    grid.innerHTML = `<div class="admin-empty"><span class="ico">📭</span><p>${emptyMsg}</p></div>`;
+    grid.innerHTML = `<div class="admin-empty"><span class="ico">ð­</span><p>${emptyMsg}</p></div>`;
     return;
   }
   grid.innerHTML = imgs.map(img => `
@@ -723,18 +723,18 @@ function renderAdminGrid(gridId, imgs, emptyMsg) {
                  oninput="updateField('${img.id}','title',this.value)" onblur="saveCatalog()" />
         </div>
         <div class="card-field">
-          <label>Price (₪)</label>
+          <label>Price (âª)</label>
           <input type="number" min="0" step="0.5" class="price-input"
                  value="${esc(img.price || '')}" placeholder="0"
                  oninput="updateField('${img.id}','price',this.value)" onblur="saveCatalog()" />
         </div>
         <div class="card-del-row">
           <span class="fname" title="${esc(img.name)}">${esc(img.name)}</span>
-          <button class="btn-del" onclick="deleteImage('${img.id}')">🗑 Delete</button>
+          <button class="btn-del" onclick="deleteImage('${img.id}')">ð Delete</button>
           <div class="ai-btns">
-            <button class="btn-ai" onclick="aiEnhance('${img.id}')" title="Enhance with Gemini AI">✨</button>
-            <button class="btn-ai" onclick="aiRemoveBg('${img.id}')" title="Remove Background">✂️</button>
-            <button class="btn-ai" onclick="aiGenerate('${img.id}')" title="Generate new image">🍌</button>
+            <button class="btn-ai" onclick="aiEnhance('${img.id}')" title="Enhance with Gemini AI">â¨</button>
+            <button class="btn-ai" onclick="aiRemoveBg('${img.id}')" title="Remove Background">âï¸</button>
+            <button class="btn-ai" onclick="aiGenerate('${img.id}')" title="Generate new image">ð</button>
           </div>
         </div>
       </div>
@@ -745,7 +745,7 @@ function renderAdminGrid(gridId, imgs, emptyMsg) {
 /* ================================================================
    UPLOAD
 ================================================================ */
-/* ── Upload details modal ── */
+/* ââ Upload details modal ââ */
 function promptUploadDetails(filename) {
   return new Promise(resolve => {
     document.getElementById('udm-filename').textContent = filename;
@@ -781,7 +781,7 @@ function udmCancel() {
 
 async function handleUpload(fileList, category) {
   const files = Array.from(fileList).filter(f => f.type.startsWith('image/'));
-  if (!files.length) { showToast('⚠️ No image files selected'); return; }
+  if (!files.length) { showToast('â ï¸ No image files selected'); return; }
 
   // Collect name + price for each file before uploading
   const fileDetails = [];
@@ -824,9 +824,9 @@ async function handleUpload(fileList, category) {
   await saveCatalog();
   setTimeout(() => { progressEl.classList.remove('show'); progFill.style.width = '0%'; }, 600);
 
-  const catLabel = category === 'slime' ? 'slime' : 'macramé';
-  if (errors.length) showToast('⚠️ ' + (done - errors.length) + ' uploaded, ' + errors.length + ' failed');
-  else showToast('✅ ' + done + ' ' + catLabel + ' images uploaded');
+  const catLabel = category === 'slime' ? 'slime' : 'macramÃ©';
+  if (errors.length) showToast('â ï¸ ' + (done - errors.length) + ' uploaded, ' + errors.length + ' failed');
+  else showToast('â ' + done + ' ' + catLabel + ' images uploaded');
   document.getElementById('file-input-' + category).value = '';
 }
 
@@ -849,7 +849,7 @@ async function deleteImage(id) {
   images = images.filter(i => i.id !== id);
   addDeletedId(id); // remember deletion even if GitHub CDN is cached
   await Promise.all([saveCatalog(), deleteFileFromGitHub(img)]);
-  renderAdmin(); showToast('🗑 Image deleted');
+  renderAdmin(); showToast('ð Image deleted');
 }
 
 async function deleteAll() {
@@ -860,7 +860,7 @@ async function deleteAll() {
   images = [];
   await saveCatalog();
   await Promise.all(toDelete.map(img => deleteFileFromGitHub(img)));
-  renderAdmin(); showToast('🗑 All images deleted');
+  renderAdmin(); showToast('ð All images deleted');
 }
 
 /* ================================================================
@@ -960,7 +960,7 @@ function initTilt() {
     }
   })();
 
-/* ══ MEMBER SYSTEM JS v1.0 ══ */
+/* ââ MEMBER SYSTEM JS v1.0 ââ */
 (function(){
   var MK = 'bysol_members';
   var SK = 'bysol_session';
@@ -989,7 +989,7 @@ function initTilt() {
     if(s){
       showPanel('profile');
       var g=document.getElementById('profile-greeting');
-      if(g) g.textContent=(window.i18n ? window.i18n('greeting') : 'שלום, ')+s.name+' 💜';
+      if(g) g.textContent=(window.i18n ? window.i18n('greeting') : '×©×××, ')+s.name+' ð';
     } else {
       showPanel('login');
     }
@@ -1031,11 +1031,11 @@ function initTilt() {
     var errEl=document.getElementById('reg-err');
     errEl.style.display='none';
     name=name.trim(); email=email.trim().toLowerCase();
-    if(!name||!email||!pass){errEl.textContent='אנא מלאי את כל השדות';errEl.style.display='';return;}
-    if(pass.length<6){errEl.textContent='הסיסמה חייבת להכיל לפחות 6 תווים';errEl.style.display='';return;}
+    if(!name||!email||!pass){errEl.textContent='×× × ×××× ××ª ×× ××©×××ª';errEl.style.display='';return;}
+    if(pass.length<6){errEl.textContent='××¡××¡×× ×××××ª ××××× ××¤×××ª 6 ×ª××××';errEl.style.display='';return;}
     var members=getMembers();
     for(var i=0;i<members.length;i++){
-      if(members[i].email===email){errEl.textContent='כתובת האימייל כבר רשומה';errEl.style.display='';return;}
+      if(members[i].email===email){errEl.textContent='××ª×××ª ××××××× ×××¨ ×¨×©×××';errEl.style.display='';return;}
     }
     var member={id:Date.now(),name:name,email:email,pw:btoa(unescape(encodeURIComponent(pass))),joined:new Date().toISOString()};
     members.push(member);
@@ -1064,7 +1064,7 @@ function initTilt() {
     } else {
       document.body.classList.remove('is-member');
       if(btn) btn.classList.remove('logged-in');
-      if(lbl) lbl.textContent='הצטרפי';
+      if(lbl) lbl.textContent='××¦××¨×¤×';
       revertPrices();
     }
   }
@@ -1074,12 +1074,12 @@ function initTilt() {
       if(el.dataset.mp) return;
       el.dataset.mp='1';
       var txt=el.textContent||'';
-      var m=txt.match(/[₪₪]\s*([\d.]+)/);
+      var m=txt.match(/[âªâª]\s*([\d.]+)/);
       if(!m) return;
       var orig=parseFloat(m[1]);
       var disc=Math.round(orig*DISC);
       el.dataset.origPrice=txt.trim();
-      el.innerHTML='<span class="guest-price">'+txt.trim()+'</span> <span class="member-price-tag">חברה ₪'+disc+'</span>';
+      el.innerHTML='<span class="guest-price">'+txt.trim()+'</span> <span class="member-price-tag">×××¨× âª'+disc+'</span>';
     });
   }
 
@@ -1133,7 +1133,7 @@ function initTilt() {
       if(card.querySelector('.vip-lock-overlay')) return;
       var overlay=document.createElement('div');
       overlay.className='vip-lock-overlay';
-      overlay.innerHTML='<span class="lock-icon">🔒</span><span class="lock-label">לחברות בלבד</span>';
+      overlay.innerHTML='<span class="lock-icon">ð</span><span class="lock-label">××××¨××ª ××××</span>';
       overlay.onclick=function(){ openAuthModal(); };
       card.appendChild(overlay);
     });
@@ -1179,7 +1179,7 @@ function initTilt() {
     if(s){
       window._showPanelFull('profile');
       var g=document.getElementById('profile-greeting');
-      if(g) g.textContent='שלום, '+s.name+' 💜';
+      if(g) g.textContent='×©×××, '+s.name+' ð';
     } else {
       window._showPanelFull(tab||'register');
     }
@@ -1192,10 +1192,10 @@ function initTilt() {
     var boxEl=document.getElementById('reset-link-box');var linkEl=document.getElementById('reset-link-anchor');
     eEl.style.display='none';oEl.style.display='none';if(boxEl)boxEl.style.display='none';
     eEl.textContent='';
-    if(!eml){eEl.textContent='אנא הכניסי כתובת אימייל';eEl.style.display='block';return;}
+    if(!eml){eEl.textContent='×× × ××× ××¡× ××ª×××ª ××××××';eEl.style.display='block';return;}
     var mems=JSON.parse(localStorage.getItem('bysol_members')||'[]');
     var mem=mems.find(function(m){return m.email.toLowerCase()===eml;});
-    if(!mem){oEl.textContent='אם האימייל קיים במערכת, יישלח קישור לאיפוס 📧';oEl.style.display='block';return;}
+    if(!mem){oEl.textContent='×× ××××××× ×§××× ×××¢×¨××ª, ×××©×× ×§××©××¨ ××××¤××¡ ð§';oEl.style.display='block';return;}
     var tok=btoa(JSON.stringify({email:mem.email,expires:Date.now()+3600000}));
     var rUrl=location.origin+'/?reset='+encodeURIComponent(tok);
     var rc=JSON.parse(localStorage.getItem('ventura_slime_cfg')||'{}');
@@ -1206,12 +1206,12 @@ function initTilt() {
         await emailjs.send(rc.ejsServiceId,rc.ejsTemplateId,{
           to_email:mem.email,to_name:mem.name||'',reset_link:rUrl,from_name:'BySOL'
         },{publicKey:rc.ejsPubKey});
-        if(oEl){oEl.textContent='✅ קישור נשלח לאימייל שלך 📧 בדקי גם ספאם';oEl.style.display='block';}
+        if(oEl){oEl.textContent='â ×§××©××¨ × ×©×× ××××××× ×©×× ð§ ×××§× ×× ×¡×¤××';oEl.style.display='block';}
         return;
       }catch(ex){ /* fall through */ }
     }
 
-    // 2. Show the reset link directly on screen — member clicks it right here
+    // 2. Show the reset link directly on screen â member clicks it right here
     if(boxEl&&linkEl){
       linkEl.href=rUrl;
       boxEl.style.display='block';
@@ -1222,10 +1222,10 @@ function initTilt() {
       try{
         var fd=new FormData();
         fd.append('access_key',rc.w3fKey);
-        fd.append('subject','🔑 בקשת איפוס סיסמה - BySOL');
+        fd.append('subject','ð ××§×©×ª ×××¤××¡ ×¡××¡×× - BySOL');
         fd.append('from_name','BySOL Members');
         fd.append('replyto',mem.email);
-        fd.append('message','חברה ביקשה איפוס סיסמה:\nשם: '+(mem.name||'—')+'\nאימייל: '+mem.email+'\nקישור: '+rUrl);
+        fd.append('message','×××¨× ×××§×©× ×××¤××¡ ×¡××¡××:\n×©×: '+(mem.name||'â')+'\n××××××: '+mem.email+'\n×§××©××¨: '+rUrl);
         fetch('https://api.web3forms.com/submit',{method:'POST',body:fd});
       }catch(e){}
     }
@@ -1235,16 +1235,16 @@ function initTilt() {
     var p2=(document.getElementById('forgot-newpass2')||{}).value||'';
     var eEl=document.getElementById('forgot-err2');var oEl=document.getElementById('forgot-ok2');
     eEl.style.display='none';oEl.style.display='none';
-    if(p1.length<6){eEl.textContent='סיסמא חייבת להכיל לפחות 6 תווים';eEl.style.display='block';return;}
-    if(p1!==p2){eEl.textContent='הסיסמאות אינן תואמות';eEl.style.display='block';return;}
+    if(p1.length<6){eEl.textContent='×¡××¡×× ×××××ª ××××× ××¤×××ª 6 ×ª××××';eEl.style.display='block';return;}
+    if(p1!==p2){eEl.textContent='××¡××¡××××ª ××× × ×ª×××××ª';eEl.style.display='block';return;}
     var mems=JSON.parse(localStorage.getItem('bysol_members')||'[]');
     var ix=mems.findIndex(function(m){return m.email.toLowerCase()===(window._resetEmail||'').toLowerCase();});
-    if(ix===-1){eEl.textContent='שגיאה — משתמש לא נמצא';eEl.style.display='block';return;}
+    if(ix===-1){eEl.textContent='×©×××× â ××©×ª××© ×× × ××¦×';eEl.style.display='block';return;}
     mems[ix].pw=btoa(unescape(encodeURIComponent(p1)));
     localStorage.setItem('bysol_members',JSON.stringify(mems));
     
     history.replaceState({},'',location.pathname);
-    oEl.textContent='✅ הסיסמא עודכנה! מועבר לכניסה...';oEl.style.display='block';
+    oEl.textContent='â ××¡××¡×× ×¢×××× ×! ×××¢××¨ ××× ××¡×...';oEl.style.display='block';
     document.getElementById('forgot-newpass').value='';document.getElementById('forgot-newpass2').value='';
     setTimeout(function(){switchAuthTab('login');},2500);
   };
@@ -1271,121 +1271,121 @@ function initTilt() {
     hint.style.display=exists?'':'none';
   };
 
-/* ══ I18N — Language Toggle ══ */
+/* ââ I18N â Language Toggle ââ */
 (function(){
   var LANG_KEY = 'bysol_lang';
 
   var T = {
     he: {
-      heroSub: 'בחרי מה שאת אוהבת ושלחי לנו — נחזור אליך בהקדם! 💚',
-      gallery: 'הגלריה שלנו',
-      cartItems: 'פריטים בעגלה',
-      clearCart: 'נקה עגלה',
-      dkBbl: 'בחירה מצוינת! תודה 💕',
-      sendToSol: '✉️  שלחי לסול',
-      waMsg: 'היי סול! 👋 ראיתי את החנות שלך ורציתי לשאול...',
-      available: 'זמין',
-      tabSquishy: '🫧 סקווש',
-      tabMacrame: '🪢 מקרמה',
-      tabHomemade: '♻️ יד שניה',
-      join: 'הצטרפי',
-      loginTab: 'כניסה',
-      registerTab: 'הצטרפות',
-      welcomeTitle: 'ברוכה הבאה 💜',
-      enterDetails: 'הכניסי את הפרטים שלך',
-      emailPh: 'אימייל',
-      passPh: 'סיסמה',
-      loginBtn: 'כניסה לאזור החברות',
-      forgotLink: 'שכחתי סיסמה',
-      joinTitle: 'הצטרפי למשפחה 🌸',
-      joinSub: 'חברות מקבלות 10% הנחה ותוכן בלעדי',
-      firstNamePh: 'שם פרטי',
-      existsHintText: 'כתובת זו כבר רשומה — ',
-      loginInstead: 'התחברי במקום',
-      passMinPh: 'סיסמה (6+ תווים)',
-      joinFreeBtn: 'הצטרפות חינם ✨',
-      resetTitle: 'שחזור סיסמא 🔑',
-      resetLinkReady: 'הקישור שלך מוכן — לחצי כאן כדי לאפס סיסמה:',
-      resetLinkBtn: '🔑 אפסי סיסמה עכשיו',
-      resetSub: 'הכניסי את האימייל שלך ונשלח קישור לאיפוס הסיסמא',
-      regEmailPh: 'אימייל רשום',
-      sendResetBtn: 'שלח קישור לאיפוס 📧',
-      backToLogin: '← חזרה לכניסה',
-      enterNewPass: 'הכניסי סיסמא חדשה',
-      newPassPh: 'סיסמא חדשה (6+ תווים)',
-      confirmPassPh: 'אימות סיסמא',
-      savePassBtn: 'שמירת סיסמא חדשה ✅',
-      vipBadge: '✨ חברה VIP',
-      perk1: '10% הנחה על כל המוצרים',
-      perk2: 'גישה לתוכן בלעדי',
-      perk3: 'עגלת קניות שמורה',
-      logout: 'התנתקות',
-      greeting: 'שלום, ',
-      loginError: 'אימייל או סיסמה שגויים',
-      regErrorEmpty: 'אנא מלאי את כל השדות',
-      regErrorShort: 'הסיסמה חייבת להכיל לפחות 6 תווים',
-      regErrorExists: 'האימייל כבר רשום',
+      heroSub: '×××¨× ×× ×©××ª ×××××ª ××©××× ×× × â × ××××¨ ×××× ×××§××! ð',
+      gallery: '××××¨×× ×©×× ×',
+      cartItems: '×¤×¨×××× ××¢×××',
+      clearCart: '× ×§× ×¢×××',
+      dkBbl: '××××¨× ××¦××× ×ª! ×ª××× ð',
+      sendToSol: 'âï¸Â  ×©××× ××¡××',
+      waMsg: '××× ×¡××! ð ×¨×××ª× ××ª ××× ××ª ×©×× ××¨×¦××ª× ××©×××...',
+      available: '××××',
+      tabSquishy: 'ð«§ ×¡×§×××©',
+      tabMacrame: 'ðª¢ ××§×¨××',
+      tabHomemade: 'â»ï¸ ×× ×©× ××',
+      join: '××¦××¨×¤×',
+      loginTab: '×× ××¡×',
+      registerTab: '××¦××¨×¤××ª',
+      welcomeTitle: '××¨××× ×××× ð',
+      enterDetails: '××× ××¡× ××ª ××¤×¨××× ×©××',
+      emailPh: '××××××',
+      passPh: '×¡××¡××',
+      loginBtn: '×× ××¡× ×××××¨ ××××¨××ª',
+      forgotLink: '×©×××ª× ×¡××¡××',
+      joinTitle: '××¦××¨×¤× ×××©×¤×× ð¸',
+      joinSub: '×××¨××ª ××§××××ª 10% ×× ×× ××ª××× ×××¢××',
+      firstNamePh: '×©× ×¤×¨××',
+      existsHintText: '××ª×××ª ×× ×××¨ ×¨×©××× â ',
+      loginInstead: '××ª×××¨× ×××§××',
+      passMinPh: '×¡××¡×× (6+ ×ª××××)',
+      joinFreeBtn: '××¦××¨×¤××ª ××× × â¨',
+      resetTitle: '×©××××¨ ×¡××¡×× ð',
+      resetLinkReady: '××§××©××¨ ×©×× ×××× â ×××¦× ××× ××× ×××¤×¡ ×¡××¡××:',
+      resetLinkBtn: 'ð ××¤×¡× ×¡××¡×× ×¢××©××',
+      resetSub: '××× ××¡× ××ª ××××××× ×©×× ×× ×©×× ×§××©××¨ ××××¤××¡ ××¡××¡××',
+      regEmailPh: '×××××× ×¨×©××',
+      sendResetBtn: '×©×× ×§××©××¨ ××××¤××¡ ð§',
+      backToLogin: 'â ×××¨× ××× ××¡×',
+      enterNewPass: '××× ××¡× ×¡××¡×× ×××©×',
+      newPassPh: '×¡××¡×× ×××©× (6+ ×ª××××)',
+      confirmPassPh: '×××××ª ×¡××¡××',
+      savePassBtn: '×©×××¨×ª ×¡××¡×× ×××©× â',
+      vipBadge: 'â¨ ×××¨× VIP',
+      perk1: '10% ×× ×× ×¢× ×× ××××¦×¨××',
+      perk2: '×××©× ××ª××× ×××¢××',
+      perk3: '×¢×××ª ×§× ×××ª ×©×××¨×',
+      logout: '××ª× ×ª×§××ª',
+      greeting: '×©×××, ',
+      loginError: '×××××× ×× ×¡××¡×× ×©×××××',
+      regErrorEmpty: '×× × ×××× ××ª ×× ××©×××ª',
+      regErrorShort: '××¡××¡×× ×××××ª ××××× ××¤×××ª 6 ×ª××××',
+      regErrorExists: '××××××× ×××¨ ×¨×©××',
       products: {
-        'Ice popsicle': 'ארטיק קרח',
-        'Peanut': 'בוטן',
-        'Rabbit': 'ארנב',
-        'Dumpling': 'כופתאה',
-        'ice cube': 'קוביית קרח',
-        'BUTTER': 'חמאה',
-        'Donag': 'דונאג',
-        'Sun': 'שמש',
-        'Small Basket': 'סל קטן',
-        'Large Basket': 'סל גדול',
-        'Green tree': 'עץ ירוק',
-        'Small owl': 'ינשוף קטן',
-        'Three plants': 'שלושה צמחים',
-        'Bat': 'עטלף',
-        'Colorful stand': 'מתלה צבעוני',
-        'Basket to many things': 'סל לכל דבר',
-        'Big owl': 'ינשוף גדול',
-        'Moon': 'ירח'
+        'Ice popsicle': '××¨×××§ ×§×¨×',
+        'Peanut': '××××',
+        'Rabbit': '××¨× ×',
+        'Dumpling': '×××¤×ª××',
+        'ice cube': '×§×××××ª ×§×¨×',
+        'BUTTER': '××××',
+        'Donag': '××× ××',
+        'Sun': '×©××©',
+        'Small Basket': '×¡× ×§××',
+        'Large Basket': '×¡× ××××',
+        'Green tree': '×¢×¥ ××¨××§',
+        'Small owl': '×× ×©××£ ×§××',
+        'Three plants': '×©×××©× ×¦××××',
+        'Bat': '×¢×××£',
+        'Colorful stand': '××ª×× ×¦××¢×× ×',
+        'Basket to many things': '×¡× ××× ×××¨',
+        'Big owl': '×× ×©××£ ××××',
+        'Moon': '××¨×'
       }
     },
     en: {
-      heroSub: 'Pick what you love and send it to us — we\'ll get back to you soon! 💚',
+      heroSub: 'Pick what you love and send it to us â we\'ll get back to you soon! ð',
       gallery: 'Our Gallery',
       cartItems: 'items in your cart',
       clearCart: 'Clear Cart',
-      dkBbl: 'Great choice! Thanks 💕',
-      sendToSol: '✉️  Send to Sol',
-      waMsg: 'Hey Sol! 👋 I saw your shop and wanted to ask...',
+      dkBbl: 'Great choice! Thanks ð',
+      sendToSol: 'âï¸Â  Send to Sol',
+      waMsg: 'Hey Sol! ð I saw your shop and wanted to ask...',
       available: 'Available',
-      tabSquishy: '🫧 Squishy',
-      tabMacrame: '🪢 Macramé',
-      tabHomemade: '♻️ Second Hand',
+      tabSquishy: 'ð«§ Squishy',
+      tabMacrame: 'ðª¢ MacramÃ©',
+      tabHomemade: 'â»ï¸ Second Hand',
       join: 'Join',
       loginTab: 'Login',
       registerTab: 'Register',
-      welcomeTitle: 'Welcome 💜',
+      welcomeTitle: 'Welcome ð',
       enterDetails: 'Enter your details',
       emailPh: 'Email',
       passPh: 'Password',
       loginBtn: 'Login to Members Area',
       forgotLink: 'Forgot password',
-      joinTitle: 'Join the Family 🌸',
+      joinTitle: 'Join the Family ð¸',
       joinSub: 'Members get 10% off & exclusive content',
       firstNamePh: 'First Name',
-      existsHintText: 'This email is already registered — ',
+      existsHintText: 'This email is already registered â ',
       loginInstead: 'Login instead',
       passMinPh: 'Password (6+ chars)',
-      joinFreeBtn: 'Join for Free ✨',
-      resetTitle: 'Reset Password 🔑',
-      resetLinkReady: 'Your link is ready — click below to reset your password:',
-      resetLinkBtn: '🔑 Reset Password Now',
+      joinFreeBtn: 'Join for Free â¨',
+      resetTitle: 'Reset Password ð',
+      resetLinkReady: 'Your link is ready â click below to reset your password:',
+      resetLinkBtn: 'ð Reset Password Now',
       resetSub: 'Enter your email and we\'ll send a reset link',
       regEmailPh: 'Registered email',
-      sendResetBtn: 'Send Reset Link 📧',
-      backToLogin: '← Back to Login',
+      sendResetBtn: 'Send Reset Link ð§',
+      backToLogin: 'â Back to Login',
       enterNewPass: 'Enter new password',
       newPassPh: 'New password (6+ chars)',
       confirmPassPh: 'Confirm password',
-      savePassBtn: 'Save New Password ✅',
-      vipBadge: '✨ VIP Member',
+      savePassBtn: 'Save New Password â',
+      vipBadge: 'â¨ VIP Member',
       perk1: '10% off all products',
       perk2: 'Access to exclusive content',
       perk3: 'Saved shopping cart',
@@ -1428,7 +1428,7 @@ function initTilt() {
 
     // Update toggle button label
     var btn = document.getElementById('lang-toggle');
-    if (btn) btn.textContent = isHe ? '🌐 EN' : '🌐 עב';
+    if (btn) btn.textContent = isHe ? 'ð EN' : 'ð ×¢×';
 
     // Update text content elements
     document.querySelectorAll('[data-i18n]').forEach(function(el) {
@@ -1473,7 +1473,7 @@ function initTilt() {
   applyLang(currentLang);
 })();
 
-(function(){var heMode=false;function applyLang(l){document.querySelectorAll('.btn-cart').forEach(function(b){var ic=b.textContent.trim().charCodeAt(0)===10003;b.textContent=ic?(l==='he'?'✓ בעגלה':'✓ In Cart'):(l==='he'?'🛒 הוסף לעגלה':'🛒 Add to Cart');});document.querySelectorAll('.btn-buy').forEach(function(b){b.textContent=l==='he'?'קנה עכשיו':'Buy Now';});document.querySelectorAll('[data-he][data-en]').forEach(function(e){(e.matches&&e.matches('input,textarea'))?e.placeholder=l==='he'?e.getAttribute('data-he'):e.getAttribute('data-en'):e.textContent=l==='he'?e.getAttribute('data-he'):e.getAttribute('data-en');});}var origTL=window.toggleLang;window.toggleLang=function(){origTL&&origTL();heMode=!heMode;applyLang(heMode?'he':'en');};})();
+(function(){var heMode=false;function applyLang(l){document.querySelectorAll('.btn-cart').forEach(function(b){var ic=b.textContent.trim().charCodeAt(0)===10003;b.textContent=ic?(l==='he'?'â ××¢×××':'â In Cart'):(l==='he'?'ð ×××¡×£ ××¢×××':'ð Add to Cart');});document.querySelectorAll('.btn-buy').forEach(function(b){b.textContent=l==='he'?'×§× × ×¢××©××':'Buy Now';});document.querySelectorAll('[data-he][data-en]').forEach(function(e){(e.matches&&e.matches('input,textarea'))?e.placeholder=l==='he'?e.getAttribute('data-he'):e.getAttribute('data-en'):e.textContent=l==='he'?e.getAttribute('data-he'):e.getAttribute('data-en');});}var origTL=window.toggleLang;window.toggleLang=function(){origTL&&origTL();heMode=!heMode;applyLang(heMode?'en':'he');};})();
 window._showDonkey=function(){
   var el=document.getElementById('dk-popup');
   if(!el)return;
@@ -1503,7 +1503,7 @@ window.batchOptimizeImages = async function(){
     if(total===0){status.textContent='No JPEG/PNG files found';btn.disabled=false;return;}
     for(var i=0;i<imgs.length;i++){
       var fi=imgs[i];
-      status.textContent=(i+1)+'/'+total+' scanning � '+compressed+' compressed';
+      status.textContent=(i+1)+'/'+total+' scanning ï¿½ '+compressed+' compressed';
       try{
         var dlR=await fetch(fi.download_url);
         var origBlob=await dlR.blob();
